@@ -66,7 +66,7 @@ df_manual = spark.read.csv("s3://bucket/data.csv", schema=schema, header=True)
 df_manual.printSchema()
 ```
 
-### 1.4. Exercício Prático Avançado
+### 1.4. Exercício 1
 **Objetivo:** Criar um DataFrame a partir de um arquivo JSON, aplicar uma série de transformações e ações, e definir um esquema personalizado.
 
 **Instruções:**
@@ -106,21 +106,9 @@ df_custom.printSchema()
 ```
 
 ### 1.5. Parabéns!
-Parabéns por concluir o módulo 1! Você revisou os conceitos fundamentais de DataFrames no Apache Spark e praticou com transformações, ações e manipulação de esquemas.
+Parabéns por concluir o módulo! Você revisou os conceitos fundamentais de DataFrames no Apache Spark e praticou com transformações, ações e manipulação de esquemas.
 
 ### 1.6. Destruição dos recursos
 Para evitar custos desnecessários, lembre-se de destruir os recursos criados durante este módulo:
 - Exclua quaisquer instâncias do AWS Cloud9 que não sejam mais necessárias.
 - Remova dados temporários ou resultados intermediários armazenados no S3.
-
---- 
-
-**Estrutura do Repositório no GitHub:**
-```
-dataeng-modulo-1/
-│
-├── README.md
-├── modulo1.py
-```
-
-Este é o conteúdo do módulo 1. Podemos seguir para o próximo módulo quando estiver pronto!
