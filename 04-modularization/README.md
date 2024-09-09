@@ -47,7 +47,7 @@ dataeng-modulo-modularizacao/
 ```python
 from pyspark.sql import SparkSession
 
-def get_spark_session(app_name="MySparkApp"):
+def get_spark_session(app_name="dataeng-pyspark"):
     spark = SparkSession.builder \
         .appName(app_name) \
         .getOrCreate()
@@ -104,7 +104,7 @@ Neste laboratório, você modularizará um código PySpark existente, separando 
    python jobs/job_1.py
    ```
 
-##### 3.3. Exercício Avançado
+##### 3.3. Exercício 1
 - **Desafio:** Adapte a modularização para suportar diferentes ambientes (desenvolvimento, produção) utilizando configurações armazenadas em `config/settings.py`.
 
 #### 4. Atenção aos custos!
