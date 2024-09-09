@@ -77,7 +77,7 @@ if __name__ == "__main__":
     main()
 ```
 
-#### 3. Laboratório Prático
+#### 3. Laboratório
 
 ##### 3.1. Objetivo
 Neste laboratório, você modularizará um código PySpark existente, separando a lógica em diferentes módulos e organizando o projeto de maneira estruturada.
