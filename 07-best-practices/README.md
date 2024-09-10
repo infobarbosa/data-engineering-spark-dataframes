@@ -122,7 +122,7 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
     - name: Set up Python
       uses: actions/setup-python@v2
       with:
@@ -133,7 +133,7 @@ jobs:
       run: pytest
 ```
 
-### 7.5. Exercício Prático Avançado
+### 7.5. Exercício
 **Objetivo:** Implementar boas práticas e padrões de projeto em um pipeline Spark, focando na modularização do código, gerenciamento de dependências e configuração de integração contínua.
 
 **Instruções:**
