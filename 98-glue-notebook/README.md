@@ -6,11 +6,11 @@
 
 Para acessar o Glue Notebook, siga as etapas abaixo:
 
-1. Abra um navegador da web e vá para a página de login do AWS Glue Console.
-2. Faça login na sua conta da AWS usando suas credenciais.
-3. No painel de navegação à esquerda, clique em "Glue".
-4. Na página do Glue, clique em "Notebooks" no painel de navegação.
-5. Clique em "Criar notebook".
-6. Escolha **LabRole** no combo.
-7. Clique em "Abrir notebook" para abrir o Glue Notebook.
-
+1. Na barra de busca do AWS Console digite **Glue** e então clique em **AWS Glue**.
+2. No menu lateral, abaixo de **ETL Jobs**, clique em **Notebooks**.
+3. Será aberta a tela do **AWS Glue Studio**.
+4. Na sessão "Create job", clique em **Notebook**.
+5. Na tela **Notebook** que se abrir, mantenha selecionado **Start fresh**.
+6. Na mesma tela, no combo **IAM Role**, selecione **LabRole**.
+7. Clique em "Create notebook" para abrir o Glue Notebook.
+8. Em alguns instantes um novo notebook será disponibilizado.
