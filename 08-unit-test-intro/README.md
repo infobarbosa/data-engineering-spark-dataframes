@@ -1,4 +1,4 @@
-### Módulo 1: Introdução aos Testes Unitários em Spark
+### Módulo 8: Introdução aos Testes Unitários em Spark
 
 **Author:** Prof. Barbosa  
 **Contact:** infobarbosa@gmail.com  
@@ -38,7 +38,7 @@ Em pipelines de dados, os testes garantem que os dados sejam processados correta
 - **pytest:** Um framework de testes para Python que suporta fixtures e asserções.
 - **pyspark.sql.functions:** Biblioteca que fornece funções para manipulação de DataFrames no PySpark.
 
-### 1.3. Parte Prática
+### 1.3. Laboratório
 
 #### 1.3.1. Configuração do Ambiente de Testes
 
@@ -49,8 +49,8 @@ Em pipelines de dados, os testes garantem que os dados sejam processados correta
 2. **Instalar PySpark e pytest:**
    - Crie um arquivo `requirements.txt` com o seguinte conteúdo:
      ```
-     pyspark==3.4.0
-     pytest==7.1.2
+     pyspark==3.5.2
+     pytest==8.3.2
      ```
    - Instale as dependências:
      ```bash
@@ -98,7 +98,7 @@ Em pipelines de dados, os testes garantem que os dados sejam processados correta
    - Verifique a saída dos testes para garantir que tudo esteja funcionando conforme o esperado.
 
 ### 1.4. Parabéns!
-Parabéns por concluir o Módulo 1! Agora você tem uma base sólida sobre testes unitários em Spark e está pronto para avançar para módulos mais complexos.
+Parabéns por concluir o módulo! Agora você tem uma base sólida sobre testes unitários em Spark e está pronto para avançar para módulos mais complexos.
 
 ### 1.5. Destruição dos Recursos
 Para evitar custos desnecessários, lembre-se de destruir os recursos criados:
@@ -109,7 +109,7 @@ Para evitar custos desnecessários, lembre-se de destruir os recursos criados:
 
 **Estrutura do Repositório no GitHub:**
 ```
-dataeng-modulo-1/
+dataeng-modulo-8/
 ├── README.md
 ├── setup_pyspark.py
 ├── requirements.txt
