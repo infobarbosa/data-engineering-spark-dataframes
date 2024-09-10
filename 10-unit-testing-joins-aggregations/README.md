@@ -1,4 +1,4 @@
-### Módulo 3: Testando Operações de Junção e Agregação
+### Módulo 10: Testando Operações de Junção e Agregação
 
 **Author:** Prof. Barbosa  
 **Contact:** infobarbosa@gmail.com  
@@ -11,13 +11,13 @@
 
 ---
 
-### 3.1. Introdução
+### 1. Introdução
 
 Neste módulo, você aprenderá a testar operações de junção e agregação em Spark DataFrame. Vamos explorar como criar cenários de teste complexos para verificar a integridade e a precisão dessas operações.
 
-### 3.2. Parte Teórica
+### 2. Parte Teórica
 
-#### 3.2.1. Testes para Operações de Junção (Joins) e Agregações
+#### 2.1. Testes para Operações de Junção (Joins) e Agregações
 - **Junções (Joins):** São operações que combinam dados de dois ou mais DataFrames com base em uma chave comum. Os principais tipos de junção são:
   - **Inner Join:** Retorna apenas as linhas que têm correspondência em ambos os DataFrames.
   - **Left Join:** Retorna todas as linhas do DataFrame da esquerda e as correspondências do DataFrame da direita.
@@ -28,14 +28,14 @@ Neste módulo, você aprenderá a testar operações de junção e agregação e
   - **groupBy:** Agrupa dados com base em uma ou mais colunas.
   - **agg:** Aplica funções agregadas como `sum`, `avg`, `count`.
 
-#### 3.2.2. Estratégias para Criar Cenários de Teste Complexos
+#### 2.2. Estratégias para Criar Cenários de Teste Complexos
 - **Testar Comportamento com Dados Faltantes:** Verifique como as operações de junção lidam com dados faltantes.
 - **Testar Comportamento com Dados Duplicados:** Verifique como a operação de agregação lida com entradas duplicadas.
 - **Testar Comportamento com Diferentes Tipos de Junção:** Experimente diferentes tipos de junção para garantir que todos funcionem conforme o esperado.
 
-### 3.3. Parte Prática
+### 3. Parte Prática
 
-#### 3.3.1. Escrever Testes Unitários para Joins e Operações de Agregação
+#### 3.1. Escrever Testes Unitários para Joins e Operações de Agregação
 
 1. **Criar um script de teste `test_join_aggregation.py`:**
    - Crie um diretório `tests/` e um arquivo `test_join_aggregation.py` dentro dele.
@@ -84,7 +84,7 @@ Neste módulo, você aprenderá a testar operações de junção e agregação e
      ```
    - Verifique a saída dos testes para garantir que tudo esteja funcionando conforme o esperado.
 
-#### 3.3.2. Verificação de Resultados e Validação de Saída
+#### 3.2. Verificação de Resultados e Validação de Saída
 
 1. **Verificar Contagem e Valores Esperados:**
    - Assegure-se de que a contagem de resultados e os valores retornados estejam corretos para diferentes tipos de junção e agregação.
@@ -94,10 +94,10 @@ Neste módulo, você aprenderá a testar operações de junção e agregação e
 
 ---
 
-### 3.4. Parabéns!
-Parabéns por concluir o Módulo 3! Você agora sabe como escrever e executar testes para operações de junção e agregação em Spark DataFrame.
+### 4. Parabéns!
+Parabéns por concluir o módulo! Você agora sabe como escrever e executar testes para operações de junção e agregação em Spark DataFrame.
 
-### 3.5. Destruição dos Recursos
+### 5. Destruição dos Recursos
 Para evitar custos desnecessários, lembre-se de destruir os recursos criados:
 - Exclua quaisquer ambientes de desenvolvimento não utilizados na AWS Cloud9.
 - Remova arquivos temporários ou dados gerados durante os testes.
@@ -106,7 +106,7 @@ Para evitar custos desnecessários, lembre-se de destruir os recursos criados:
 
 **Estrutura do Repositório no GitHub:**
 ```
-dataeng-modulo-3/
+dataeng-modulo-10/
 ├── README.md
 ├── setup_pyspark.py
 ├── requirements.txt

@@ -1,4 +1,4 @@
-### Módulo 2: Testando Funções de Transformação de DataFrames
+### Módulo 9: Testando Funções de Transformação de DataFrames
 
 **Author:** Prof. Barbosa  
 **Contact:** infobarbosa@gmail.com  
@@ -11,13 +11,13 @@
 
 ---
 
-### 2.1. Introdução
+### 1. Introdução
 
 Neste módulo, você aprenderá a testar funções de transformação em Spark DataFrame. Vamos explorar diferentes tipos de funções de transformação, estratégias para testar essas funções e como usar fixtures para preparar dados de teste.
 
-### 2.2. Parte Teórica
+### 2. Parte Teórica
 
-#### 2.2.1. Tipos de Funções de Transformação em Spark DataFrame
+#### 2.1. Tipos de Funções de Transformação em Spark DataFrame
 As funções de transformação são usadas para alterar e manipular dados em um DataFrame. Aqui estão alguns tipos comuns:
 - **Filtros:** Filtram linhas com base em condições (e.g., `filter`, `where`).
 - **Seleções:** Selecionam colunas específicas (e.g., `select`).
@@ -25,20 +25,20 @@ As funções de transformação são usadas para alterar e manipular dados em um
 - **Ordenação:** Ordenam dados com base em uma ou mais colunas (e.g., `orderBy`).
 - **Transformações Complexas:** Incluem funções como `withColumn`, `drop`, `join`.
 
-#### 2.2.2. Estratégias para Testar Funções de Transformação
+#### 2.2. Estratégias para Testar Funções de Transformação
 Para garantir que suas funções de transformação funcionem corretamente, considere as seguintes estratégias:
 - **Teste de Condições Limites:** Teste com dados que estão na fronteira das condições esperadas.
 - **Teste de Casos de Erro:** Verifique como a função lida com dados incorretos ou ausentes.
 - **Teste de Dados Mínimos e Máximos:** Garanta que a função funciona tanto com pequenos conjuntos de dados quanto com grandes volumes.
 
-#### 2.2.3. Utilização de Fixtures para Preparar Dados de Teste
+#### 2.3. Utilização de Fixtures para Preparar Dados de Teste
 Fixtures são usadas para fornecer dados ou configurações para seus testes. No PySpark, você pode usar fixtures para criar DataFrames de teste:
 - **Fixture Básica:** Prepara um DataFrame com dados básicos.
 - **Fixture Avançada:** Cria DataFrames complexos com várias transformações pré-aplicadas.
 
-### 2.3. Parte Prática
+### 3. Laboratório
 
-#### 2.3.1. Escrever Testes para Funções de Transformação
+#### 3.1. Escrever Testes para Funções de Transformação
 
 1. **Criar um script de teste `test_transformations.py`:**
    - Crie um diretório `tests/` e um arquivo `test_transformations.py` dentro dele.
@@ -82,7 +82,7 @@ Fixtures são usadas para fornecer dados ou configurações para seus testes. No
      ```
    - Verifique a saída dos testes para garantir que tudo esteja funcionando conforme o esperado.
 
-#### 2.3.2. Uso de Fixtures para Criar DataFrames de Teste
+#### 3.2. Uso de Fixtures para Criar DataFrames de Teste
 
 1. **Criar um script `fixtures.py` para definir fixtures avançadas:**
    - Crie um arquivo `fixtures.py` e defina fixtures que gerem DataFrames com diferentes configurações e dados.
@@ -116,10 +116,10 @@ Fixtures são usadas para fornecer dados ou configurações para seus testes. No
 
 ---
 
-### 2.4. Parabéns!
-Parabéns por concluir o Módulo 2! Agora você está apto a escrever e executar testes para funções de transformação em Spark DataFrame.
+### 4. Parabéns!
+Parabéns por concluir o módulo! Agora você está apto a escrever e executar testes para funções de transformação em Spark DataFrame.
 
-### 2.5. Destruição dos Recursos
+### 5. Destruição dos Recursos
 Para evitar custos desnecessários, lembre-se de destruir os recursos criados:
 - Exclua quaisquer ambientes de desenvolvimento não utilizados na AWS Cloud9.
 - Remova arquivos temporários ou dados gerados durante os testes.
@@ -128,7 +128,7 @@ Para evitar custos desnecessários, lembre-se de destruir os recursos criados:
 
 **Estrutura do Repositório no GitHub:**
 ```
-dataeng-modulo-2/
+dataeng-modulo-9/
 ├── README.md
 ├── setup_pyspark.py
 ├── requirements.txt

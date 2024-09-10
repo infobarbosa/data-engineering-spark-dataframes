@@ -1,4 +1,4 @@
-### Módulo 5: Debugging e Melhorando Testes
+### Módulo 12: Debugging e Melhorando Testes
 
 **Author:** Prof. Barbosa  
 **Contact:** infobarbosa@gmail.com  
@@ -11,13 +11,13 @@
 
 ---
 
-### 5.1. Introdução
+### 1. Introdução
 
 Neste módulo, você aprenderá técnicas de debugging para testes unitários em Spark e explorará as melhores práticas para escrever testes eficazes. A prática focará na depuração de falhas em testes e na melhoria da cobertura e robustez dos mesmos.
 
-### 5.2. Parte Teórica
+### 2. Parte Teórica
 
-#### 5.2.1. Técnicas de Debugging para Testes Unitários
+#### 2.1. Técnicas de Debugging para Testes Unitários
 
 - **Identificação de Erros:** Saiba como identificar e isolar erros nos testes unitários. Ferramentas como logs e mensagens de erro detalhadas podem ajudar a localizar a origem dos problemas.
 
@@ -25,7 +25,7 @@ Neste módulo, você aprenderá técnicas de debugging para testes unitários em
 
 - **Verificação de Dados:** Imprima e inspecione pequenos subconjuntos de dados para garantir que os DataFrames estejam sendo criados e transformados conforme esperado antes de realizar asserções.
 
-#### 5.2.2. Melhores Práticas para Escrever Testes Eficazes
+#### 2.2. Melhores Práticas para Escrever Testes Eficazes
 
 - **Cobertura de Testes:** Escreva testes que cobrem todos os casos de uso, incluindo casos limites e cenários inesperados.
 
@@ -33,9 +33,9 @@ Neste módulo, você aprenderá técnicas de debugging para testes unitários em
 
 - **Manutenção de Testes:** Escreva testes que sejam fáceis de manter e que possam ser facilmente adaptados a mudanças no código base.
 
-### 5.3. Parte Prática
+### 3. Parte Prática
 
-#### 5.3.1. Debugging de Falhas em Testes Unitários
+#### 3.1. Debugging de Falhas em Testes Unitários
 
 1. **Criar e Configurar o Script `test_debugging.py`:**
    - Crie um arquivo `test_debugging.py` no diretório `tests/`.
@@ -73,7 +73,7 @@ Neste módulo, você aprenderá técnicas de debugging para testes unitários em
 3. **Corrigir e Validar o Teste:**
    - Corrija o erro no código e reexecute o teste para confirmar que ele passa.
 
-#### 5.3.2. Melhorar a Cobertura e a Robustez dos Testes
+#### 3.2. Melhorar a Cobertura e a Robustez dos Testes
 
 1. **Cobertura de Casos Limites:**
    - Expanda os testes para cobrir casos limites, como valores nulos, strings vazias ou listas vazias.
@@ -95,10 +95,10 @@ Neste módulo, você aprenderá técnicas de debugging para testes unitários em
 
 ---
 
-### 5.4. Parabéns!
-Parabéns por concluir o Módulo 5! Agora você tem habilidades avançadas de debugging e está mais capacitado para escrever testes unitários eficazes para pipelines Spark.
+### 4. Parabéns!
+Parabéns por concluir o módulo! Agora você tem habilidades avançadas de debugging e está mais capacitado para escrever testes unitários eficazes para pipelines Spark.
 
-### 5.5. Destruição dos Recursos
+### 5. Destruição dos Recursos
 Para evitar custos desnecessários, lembre-se de destruir os recursos criados:
 - Exclua quaisquer ambientes de desenvolvimento não utilizados na AWS Cloud9.
 - Remova arquivos temporários ou dados gerados durante os testes.
@@ -107,7 +107,7 @@ Para evitar custos desnecessários, lembre-se de destruir os recursos criados:
 
 **Estrutura do Repositório no GitHub:**
 ```
-dataeng-modulo-5/
+dataeng-modulo-12/
 ├── README.md
 ├── setup_pyspark.py
 ├── requirements.txt
@@ -115,5 +115,3 @@ dataeng-modulo-5/
 ├── tests/
 │   └── test_debugging.py
 ```
-
-Se precisar de mais detalhes ou ajustes, estou à disposição!

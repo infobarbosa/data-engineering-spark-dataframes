@@ -1,4 +1,4 @@
-### Módulo 4: Testando Código com DataFrames Aninhados
+### Módulo 11: Testando Código com DataFrames Aninhados
 
 **Author:** Prof. Barbosa  
 **Contact:** infobarbosa@gmail.com  
@@ -11,13 +11,13 @@
 
 ---
 
-### 4.1. Introdução
+### 1. Introdução
 
 Neste módulo, você aprenderá a testar código que manipula DataFrames com estruturas aninhadas, como arrays e structs, no Apache Spark. Vamos explorar estratégias para lidar com dados complexos em testes unitários e como validar a integridade dessas estruturas.
 
-### 4.2. Parte Teórica
+### 2. Parte Teórica
 
-#### 4.2.1. Manipulação e Teste de DataFrames com Estruturas Aninhadas
+#### 2.1. Manipulação e Teste de DataFrames com Estruturas Aninhadas
 
 - **DataFrames com Arrays:** Arrays são listas de valores, e em Spark, podem ser manipulados e acessados usando várias funções de array como `array_contains`, `explode`, entre outras.
 
@@ -25,15 +25,15 @@ Neste módulo, você aprenderá a testar código que manipula DataFrames com est
 
 - **Desafios em Testes:** Testar DataFrames com estruturas aninhadas requer um entendimento profundo de como acessar, manipular e validar esses dados complexos, garantindo que todos os casos possíveis sejam cobertos.
 
-#### 4.2.2. Estratégias para Lidar com Dados Complexos em Testes
+#### 2.2. Estratégias para Lidar com Dados Complexos em Testes
 
 - **Criação de DataFrames de Teste:** Use fixtures e funções dedicadas para criar DataFrames com arrays e structs aninhados, simulando casos reais.
 
 - **Validação de Estruturas Aninhadas:** Verifique se os dados dentro de arrays e structs estão corretos, usando métodos como `selectExpr`, `withColumn`, e funções específicas para manipulação dessas estruturas.
 
-### 4.3. Parte Prática
+### 3. Parte Prática
 
-#### 4.3.1. Escrever Testes para DataFrames com Arrays e Structs
+#### 3.1. Escrever Testes para DataFrames com Arrays e Structs
 
 1. **Criar um script de teste `test_nested_structs.py`:**
    - Crie um diretório `tests/` e um arquivo `test_nested_structs.py` dentro dele.
@@ -80,7 +80,7 @@ Neste módulo, você aprenderá a testar código que manipula DataFrames com est
      ```
    - Verifique os resultados dos testes para garantir que as operações com arrays e structs funcionem conforme esperado.
 
-#### 4.3.2. Uso de Métodos para Validar Estruturas Complexas
+#### 3.2. Uso de Métodos para Validar Estruturas Complexas
 
 1. **Manipular e Validar Arrays:**
    - Use funções como `explode`, `array_contains`, e `aggregate` para manipular arrays e validar os resultados esperados.
@@ -90,10 +90,10 @@ Neste módulo, você aprenderá a testar código que manipula DataFrames com est
 
 ---
 
-### 4.4. Parabéns!
-Parabéns por concluir o Módulo 4! Agora você domina a manipulação e o teste de DataFrames com estruturas aninhadas em Spark, incluindo arrays e structs.
+### 4. Parabéns!
+Parabéns por concluir o módulo! Agora você domina a manipulação e o teste de DataFrames com estruturas aninhadas em Spark, incluindo arrays e structs.
 
-### 4.5. Destruição dos Recursos
+### 5. Destruição dos Recursos
 Para evitar custos desnecessários, lembre-se de destruir os recursos criados:
 - Exclua quaisquer ambientes de desenvolvimento não utilizados na AWS Cloud9.
 - Remova arquivos temporários ou dados gerados durante os testes.
@@ -102,7 +102,7 @@ Para evitar custos desnecessários, lembre-se de destruir os recursos criados:
 
 **Estrutura do Repositório no GitHub:**
 ```
-dataeng-modulo-4/
+dataeng-modulo-11/
 ├── README.md
 ├── setup_pyspark.py
 ├── requirements.txt
