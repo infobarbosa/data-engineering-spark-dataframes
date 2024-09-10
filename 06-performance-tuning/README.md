@@ -142,14 +142,3 @@ Para evitar custos desnecessários, lembre-se de destruir os recursos criados du
 - Exclua quaisquer instâncias do AWS Cloud9 que não sejam mais necessárias.
 - Remova dados temporários ou resultados intermediários armazenados no S3.
 
----
-
-**Estrutura do Repositório no GitHub:**
-```
-dataeng-modulo-6/
-│
-├── README.md
-├── modulo6.py
-```
-
-Este é o conteúdo do módulo 6. Se precisar de algo mais, estarei à disposição!
