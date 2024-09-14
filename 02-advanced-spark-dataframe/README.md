@@ -241,45 +241,62 @@ Ou execute diretamente em um notebook ou ambiente interativo que suporte PySpark
 
 -----------------------------------------
 
-#### 2.2.2. User-Defined Aggregate Functions (UDAFs)
+#### 2.2.3. User-Defined Aggregate Functions (UDAFs)
 UDAFs permitem a criação de agregações personalizadas que podem ser aplicadas em grupos de dados. Isso é útil para cálculos complexos que não são possíveis com funções agregadas padrão.
 
 **Exemplo de código:**
+# Exemplo Simples do Uso de UDAF no PySpark
+
+Neste exemplo, vamos criar uma Função Agregada Definida pelo Usuário (UDAF) no PySpark que calcula o produto dos valores em cada grupo de dados.
+
+## Passos:
+
+
 ```python
-from pyspark.sql.expressions import UserDefinedAggregateFunction
-from pyspark.sql.types import *
+### 1. Importe as bibliotecas necessárias:
+from pyspark.sql import SparkSession
+from pyspark.sql.functions import pandas_udf, PandasUDFType
+import pandas as pd
 
-class MediaPersonalizadaUDAF(UserDefinedAggregateFunction):
-    def inputSchema(self):
-        return StructType([StructField("valor", IntegerType())])
+### 2. Inicialize o SparkSession:
+spark = SparkSession.builder.appName("Exemplo UDAF").getOrCreate()
 
-    def bufferSchema(self):
-        return StructType([StructField("soma", IntegerType()), StructField("contagem", IntegerType())])
+### 3. Crie um DataFrame de exemplo:
+data = [("A", 1), ("A", 2), ("A", 3), ("B", 4), ("B", 5)]
+df = spark.createDataFrame(data, ["grupo", "valor"])
 
-    def dataType(self):
-        return FloatType()
+### 4. Defina a UDAF:
+@pandas_udf("double", PandasUDFType.GROUPED_AGG)
+def produto_udaf(v: pd.Series) -> float:
+    return v.prod()
 
-    def deterministic(self):
-        return True
+### 5. Use a UDAF no agrupamento:
+resultado_df = df.groupby("grupo").agg(produto_udaf(df.valor).alias("produto"))
 
-    def initialize(self, buffer):
-        buffer[0] = 0
-        buffer[1] = 0
-
-    def update(self, buffer, input):
-        buffer[0] += input.valor
-        buffer[1] += 1
-
-    def merge(self, buffer1, buffer2):
-        buffer1[0] += buffer2[0]
-        buffer1[1] += buffer2[1]
-
-    def evaluate(self, buffer):
-        return buffer[0] / buffer[1]
-
-# Aplicando a UDAF em um grupo de dados
-df.groupBy("grupo").agg(MediaPersonalizadaUDAF(df["valor"])).show()
+### 6. Mostre os resultados:
+resultado_df.show()
 ```
+
+**Saída esperada:**
+
+```
++------+-------+
+| grupo|produto|
++------+-------+
+|     B|   20.0|
+|     A|    6.0|
++------+-------+
+```
+
+**Explicação:**
+
+- **produto_udaf**: Esta função calcula o produto de uma série de valores dentro de cada grupo.
+- **@pandas_udf**: Decorador que define uma função UDAF usando Pandas UDFs.
+  - `"double"`: Tipo de dado de retorno da função.
+  - `PandasUDFType.GROUPED_AGG`: Indica que a função é uma agregação agrupada.
+- **df.groupby("grupo")**: Agrupa o DataFrame pelo campo "grupo".
+- **agg(...)**: Aplica a função agregada definida ao grupo.
+
 
 ### 2.3. Manipulação de DataFrames Aninhados (Arrays, Structs)
 DataFrames no Spark podem conter estruturas de dados complexas como arrays e structs. Manipular esses tipos de dados requer técnicas específicas.
