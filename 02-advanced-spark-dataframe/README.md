@@ -245,12 +245,7 @@ Ou execute diretamente em um notebook ou ambiente interativo que suporte PySpark
 UDAFs permitem a criação de agregações personalizadas que podem ser aplicadas em grupos de dados. Isso é útil para cálculos complexos que não são possíveis com funções agregadas padrão.
 
 **Exemplo de código:**
-# Exemplo Simples do Uso de UDAF no PySpark
-
 Neste exemplo, vamos criar uma Função Agregada Definida pelo Usuário (UDAF) no PySpark que calcula o produto dos valores em cada grupo de dados.
-
-## Passos:
-
 
 ```python
 ### 1. Importe as bibliotecas necessárias:
