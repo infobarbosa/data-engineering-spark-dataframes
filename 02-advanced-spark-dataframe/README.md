@@ -33,6 +33,81 @@ df = df.withColumn("idade_em_anos", calcular_idade_em_anos(df["idade_em_dias"]))
 df.show()
 ```
 
+#### 2.2.2. Desafio
+
+**Desafio PySpark - Uso de UDF (User Defined Function)**
+
+Crie uma UDF que, dado o nome de uma pessoa e sua data de nascimento, retorne uma saudação personalizada informando a idade atual da pessoa. Adicione essa saudação como uma nova coluna no DataFrame.
+
+**Código inicial:**
+
+```python
+from pyspark.sql import SparkSession
+from pyspark.sql.types import StringType
+from pyspark.sql.functions import udf
+
+# Inicializando a sessão Spark
+spark = SparkSession.builder.appName("DesafioUDF").getOrCreate()
+
+# Criando um DataFrame de exemplo
+data = [
+    ("Alice", "1990-05-14"),
+    ("Bob", "1985-07-23"),
+    ("Charlie", "1992-12-02"),
+    ("Diana", "1988-03-08"),
+    ("Eve", "1995-10-30"),
+    ("Frank", "1991-08-19"),
+    ("Grace", "1987-01-11"),
+    ("Heidi", "1993-11-29"),
+    ("Ivan", "1989-06-05"),
+    ("Judy", "1994-09-17")
+]
+
+columns = ["nome", "data_nascimento"]
+df = spark.createDataFrame(data, columns)
+
+# Seu código aqui para definir e aplicar a UDF
+
+# Exibindo o DataFrame resultante
+df.show(truncate=False)
+```
+
+**Instruções:**
+
+- Implemente uma UDF que calcule a idade da pessoa com base na data de nascimento.
+- A UDF deve retornar uma saudação no formato: `"Olá, {nome}! Você tem {idade} anos."`
+- Adicione essa saudação como uma nova coluna chamada `"saudacao"` no DataFrame.
+- Considere a data atual como `"2023-10-01"` para o cálculo da idade.
+
+**Exemplo de saída esperada:**
+
+```
++-------+---------------+--------------------------------------+
+|nome   |data_nascimento|saudacao                              |
++-------+---------------+--------------------------------------+
+|Alice  |1990-05-14     |Olá, Alice! Você tem 33 anos.         |
+|Bob    |1985-07-23     |Olá, Bob! Você tem 38 anos.           |
+|Charlie|1992-12-02     |Olá, Charlie! Você tem 30 anos.       |
+|Diana  |1988-03-08     |Olá, Diana! Você tem 35 anos.         |
+|Eve    |1995-10-30     |Olá, Eve! Você tem 27 anos.           |
+|Frank  |1991-08-19     |Olá, Frank! Você tem 32 anos.         |
+|Grace  |1987-01-11     |Olá, Grace! Você tem 36 anos.         |
+|Heidi  |1993-11-29     |Olá, Heidi! Você tem 29 anos.         |
+|Ivan   |1989-06-05     |Olá, Ivan! Você tem 34 anos.          |
+|Judy   |1994-09-17     |Olá, Judy! Você tem 29 anos.          |
++-------+---------------+--------------------------------------+
+```
+
+**Dica:** Você pode usar bibliotecas padrão do Python dentro da UDF para auxiliar no cálculo da idade.
+
+**Observação:** Certifique-se de que todas as importações necessárias estejam presentes e que o código seja executado sem erros.
+
+
+
+
+
+-----------------------------------------
+
 #### 2.2.2. User-Defined Aggregate Functions (UDAFs)
 UDAFs permitem a criação de agregações personalizadas que podem ser aplicadas em grupos de dados. Isso é útil para cálculos complexos que não são possíveis com funções agregadas padrão.
 
