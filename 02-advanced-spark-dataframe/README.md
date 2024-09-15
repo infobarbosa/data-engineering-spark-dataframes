@@ -684,14 +684,44 @@ O pivot transforma valores únicos de uma coluna em múltiplas colunas, enquanto
 
 **Exemplo de código:**
 ```python
-# Exemplo de Pivot
+from pyspark.sql import SparkSession
+from pyspark.sql.functions import explode, col
+from pyspark.sql.types import StructType, StructField, StringType, IntegerType, ArrayType
+
+# Iniciar uma sessão Spark
+spark = SparkSession.builder.appName("DesafioPySpark").getOrCreate()
+
+from pyspark.sql.functions import explode, col
+
+# Exemplo de DataFrame com arrays e structs
+data = [
+    ("João", [{"curso": "MATEMATICA", "nota": 85}, {"curso": "HISTORIA", "nota": 90}]),
+    ("Maria", [{"curso": "MATEMATICA", "nota": 95}, {"curso": "HISTORIA", "nota": 80}])
+]
+schema = StructType([
+    StructField("nome", StringType(), True),
+    StructField("cursos", ArrayType(StructType([
+        StructField("curso", StringType(), True),
+        StructField("nota", IntegerType(), True)
+    ])), True)
+])
+df = spark.createDataFrame(data, schema)
+
+df.show( truncate=False)
+
+# Explodindo o array para linhas individuais
+df_exploded = df.withColumn("curso", explode(df["cursos"]))
+df = df_exploded.select("nome", col("curso.curso"), col("curso.nota"))
+
+df.show()
+
+print('Exemplo de Pivot')
 df_pivot = df.groupBy("nome").pivot("curso").agg({"nota": "max"})
 df_pivot.show()
 
-# Exemplo de Unpivot (Requer manipulação manual no Spark)
-from pyspark.sql import functions as F
+print('Exemplo de Unpivot (Requer manipulação manual no PySpark')
 
-unpivoted = df_pivot.selectExpr("nome", "stack(2, 'Matemática', Matemática, 'História', História) as (curso, nota)")
+unpivoted = df_pivot.selectExpr("nome", "stack(2, 'MATE', MATEMATICA, 'HIST', HISTORIA) as (curso, nota)")
 unpivoted.show()
 ```
 
