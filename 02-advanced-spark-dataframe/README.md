@@ -608,6 +608,76 @@ dados_notas.select("nome", "idade", "nota_matematica", "nota_portugues", "nota_c
 ```
 </details>
 
+<details>
+    <summary>Solução do Item 2: Explodir os Arrays de Contatos</summary>
+
+```python
+from pyspark.sql import SparkSession
+from pyspark.sql.functions import explode, col
+
+# Iniciar uma sessão Spark
+spark = SparkSession.builder.appName("DesafioPySpark").getOrCreate()
+
+# Carregar o dataset JSON
+caminho_arquivo = "dataset.json"
+dados_clientes = spark.read.json(caminho_arquivo, multiLine=True)
+
+# Mostrar o schema do DataFrame original
+dados_clientes.printSchema()
+
+# Mostrar os dados originais
+dados_clientes.show(truncate=False)
+
+# ----------------------------------------------------------------------
+# Solução do Item 2: Explodir os Arrays de Contatos
+# ----------------------------------------------------------------------
+
+# Importar as funções necessárias
+from pyspark.sql.functions import explode, col
+
+# Explodir o array de contatos em linhas individuais
+dados_contatos_explodido = dados_clientes.select(
+    "nome",
+    "idade",
+    explode("contatos").alias("contato")
+)
+
+# Extrair os campos 'tipo' e 'valor' da struct 'contato'
+dados_contatos_extracao = dados_contatos_explodido.select(
+    "nome",
+    "idade",
+    col("contato.tipo").alias("tipo_contato"),
+    col("contato.valor").alias("valor_contato")
+)
+
+# Exibir o esquema atualizado do DataFrame
+dados_contatos_extracao.printSchema()
+
+# Mostrar os dados após a explosão dos contatos
+dados_contatos_extracao.show(truncate=False)
+
+```
+
+**Resultado esperado**
+```
+root
+ |-- nome: string (nullable = true)
+ |-- idade: long (nullable = true)
+ |-- tipo_contato: string (nullable = true)
+ |-- valor_contato: string (nullable = true)
+
++-----+-----+------------+------------------+
+|nome |idade|tipo_contato|valor_contato     |
++-----+-----+------------+------------------+
+|Ana  |25   |email       |ana@example.com   |
+|Ana  |25   |telefone    |123456789         |
+|Bruno|30   |email       |bruno@example.com |
+|Carla|28   |telefone    |987654321         |
++-----+-----+------------+------------------+
+
+```
+</details>
+
 ### 2.4. Transformações Avançadas (Pivot, Unpivot, Rollups, Cubes)
 #### 2.4.1. Pivot e Unpivot
 O pivot transforma valores únicos de uma coluna em múltiplas colunas, enquanto o unpivot faz o processo inverso.
