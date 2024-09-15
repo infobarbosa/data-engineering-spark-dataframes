@@ -116,7 +116,7 @@ df.show(truncate=False)
 
 **Observação:** Certifique-se de que todas as importações necessárias estejam presentes e que o código seja executado sem erros.
 
-#### Solução do desafio
+#### Solução 1 do desafio
 <details>
   <summary>Clique aqui</summary>
 
@@ -249,7 +249,113 @@ Ou execute diretamente em um notebook ou ambiente interativo que suporte PySpark
 
 </details>
 
+#### Solução 2 do desafio
+<details>
+  <summary>Clique aqui</summary>
 
+**Solução do Desafio PySpark - Uso de UDF**
+
+Vamos implementar a UDF que calcula a idade e retorna a saudação personalizada, desta vez utilizando a anotação `@udf` do PySpark.
+
+**Código completo:**
+
+```python
+from pyspark.sql import SparkSession
+from pyspark.sql.types import StringType, IntegerType
+from pyspark.sql.functions import udf
+from datetime import datetime
+
+# Inicializando a sessão Spark
+spark = SparkSession.builder.appName("DesafioUDF").getOrCreate()
+
+# Criando um DataFrame de exemplo
+data = [
+    ("Barbosa", "1990-05-14"),
+    ("Roberto", "1985-07-23"),
+    ("Charles", "1992-12-02"),
+    ("Leandro", "1988-03-08"),
+    ("Evanildo", "1995-10-30"),
+    ("Francisco", "1991-08-19"),
+    ("Graciane", "1987-01-11"),
+    ("Heidson", "1993-11-29"),
+    ("Ivan", "1989-06-05"),
+    ("Judite", "1994-09-17")
+]
+
+columns = ["nome", "data_nascimento"]
+df = spark.createDataFrame(data, columns)
+
+# Definindo a UDF para calcular a idade e criar a saudação
+@udf(StringType())
+def saudacao_personalizada(nome, data_nascimento):
+    # Convertendo a data de nascimento para um objeto datetime
+    data_nasc = datetime.strptime(data_nascimento, "%Y-%m-%d")
+    # Obtendo a data atual
+    data_atual = datetime.now().date()
+    # Calculando a idade
+    idade = data_atual.year - data_nasc.year - ((data_atual.month, data_atual.day) < (data_nasc.month, data_nasc.day))
+    # Criando a saudação
+    saudacao = f"Olá, {nome}! Você tem {idade} anos."
+    return saudacao
+
+# Aplicando a UDF ao DataFrame
+df = df.withColumn("saudacao", saudacao_personalizada(df.nome, df.data_nascimento))
+
+# Exibindo o DataFrame resultante
+df.show(truncate=False)
+
+```
+
+</details>
+
+
+#### Solução 3 do desafio
+<details>
+  <summary>Clique aqui</summary>
+
+**Solução do Desafio PySpark - Sem uso de UDF**
+
+Vamos implementar o calculo da idade e retornar a saudação personalizada, desta vez sem qualquer uso de UDF.
+
+**Código completo:**
+
+```python
+from pyspark.sql import SparkSession
+from pyspark.sql.functions import col, expr, concat, lit
+from datetime import datetime
+
+# Inicializando a sessão Spark
+spark = SparkSession.builder.appName("DesafioUDF").getOrCreate()
+
+# Criando um DataFrame de exemplo
+data = [
+    ("Barbosa", "1990-05-14"),
+    ("Roberto", "1985-07-23"),
+    ("Charles", "1992-12-02"),
+    ("Leandro", "1988-03-08"),
+    ("Evanildo", "1995-10-30"),
+    ("Francisco", "1991-08-19"),
+    ("Graciane", "1987-01-11"),
+    ("Heidson", "1993-11-29"),
+    ("Ivan", "1989-06-05"),
+    ("Judite", "1994-09-17")
+]
+
+columns = ["nome", "data_nascimento"]
+df = spark.createDataFrame(data, columns)
+df.show(truncate=False)
+
+# Calculando a idade e criando a saudação sem UDF
+current_date = datetime.now().date()
+df = df.withColumn("idade", expr(f"floor(datediff(current_date(), to_date(data_nascimento, 'yyyy-MM-dd')) / 365)"))
+df = df.withColumn("saudacao", concat(lit("Olá, "), col("nome"), lit("! Você tem "), col("idade"), lit(" anos.")))
+
+# Exibindo o DataFrame resultante
+df.show(truncate=False)
+
+```
+
+</details>
 
 
 -----------------------------------------
