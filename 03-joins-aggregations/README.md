@@ -1,4 +1,4 @@
-### Módulo 3: Operações de Junção e Agregação
+# Módulo 3: Operações de Junção e Agregação
 
 **Author:** Prof. Barbosa  
 **Contact:** infobarbosa@gmail.com  
@@ -11,11 +11,53 @@
 
 ---
 
-### 3.1. Introdução
-Neste módulo, vamos aprofundar nosso conhecimento em operações de junção e agregação no Apache Spark, explorando tipos de joins avançados, técnicas de agregação, e o uso de funções analíticas para cálculos mais sofisticados.
+## 1. Introdução
+Neste módulo, vamos aprofundar nosso conhecimento em operações de junção e agregação no Apache Spark, explorando tipos de joins, técnicas de agregação, e o uso de funções analíticas para cálculos mais sofisticados.
 
-### 3.2. Tipos de Join Avançados
-#### 3.2.1. Broadcast Join
+## 2. Tipos de Join
+### 2.1. Shuffle Join
+O Shuffle Join é a junção padrão do Spark. Neste caso as tabelas são redistribuídas (shuffle) entre os nós para executar o join.
+
+**Exemplo:**
+```python
+from pyspark.sql import SparkSession
+from pyspark.sql.functions import broadcast
+
+# Inicializando a SparkSession
+spark = SparkSession.builder.appName("dataeng-shuffle-join").getOrCreate()
+
+# Exemplo de DataFrames para join
+df1 = spark.createDataFrame([(1, "A"), (2, "B"), (3, "C")], ["id", "valor"])
+df2 = spark.createDataFrame([(1, "X"), (2, "Y"), (4, "Z")], ["id", "desc"])
+
+# Shuffle join (join padrão, equivalente a inner join)
+df_shuffle_join = df1.join(df2, "id")
+print("Inner Join (shuffle join):")
+df_shuffle_join.show()
+
+# Left Join (ou Left Outer Join) - Mantém todos os registros do DataFrame da esquerda (df1) e adiciona os registros correspondentes do DataFrame da direita (df2)
+df_left_join = df1.join(df2, "id", "left")
+print("Left Join:")
+df_left_join.show()
+
+# Right Join (ou Right Outer Join) - Mantém todos os registros do DataFrame da direita (df2) e adiciona os registros correspondentes do DataFrame da esquerda (df1)
+df_right_join = df1.join(df2, "id", "right")
+print("Right Join:")
+df_right_join.show()
+
+# Full Join (ou Full Outer Join) - Mantém todos os registros de ambos os DataFrames (df1 e df2), preenchendo com nulls onde não há correspondência
+df_full_join = df1.join(df2, "id", "full")
+print("Full Join:")
+df_full_join.show()
+
+# Cross Join (ou Cartesian Join) - Faz o produto cartesiano entre os DataFrames, ou seja, combina cada linha de df1 com cada linha de df2
+df_cross_join = df1.crossJoin(df2)
+print("Cross Join:")
+df_cross_join.show()
+
+```
+
+### 2.2. Broadcast Join
 O Broadcast Join é uma técnica eficiente para realizar joins quando uma das tabelas é pequena o suficiente para ser copiada para todos os nós de processamento.
 
 **Exemplo de código:**
@@ -24,7 +66,7 @@ from pyspark.sql import SparkSession
 from pyspark.sql.functions import broadcast
 
 # Inicializando a SparkSession
-spark = SparkSession.builder.appName("dataeng-modulo-3").getOrCreate()
+spark = SparkSession.builder.appName("dataeng-broadcast-join").getOrCreate()
 
 # Exemplo de DataFrames para join
 df1 = spark.createDataFrame([(1, "A"), (2, "B"), (3, "C")], ["id", "valor"])
@@ -34,29 +76,73 @@ df2 = spark.createDataFrame([(1, "X"), (2, "Y")], ["id", "desc"])
 df_join = df1.join(broadcast(df2), "id")
 df_join.show()
 ```
+---
 
-#### 3.2.2. Shuffle Join
-O Shuffle Join é usado quando ambas as tabelas são grandes e precisam ser redistribuídas (shuffle) entre os nós para executar o join.
-
-**Exemplo de código:**
-```python
-# Shuffle join
-df_shuffle_join = df1.join(df2, "id")
-df_shuffle_join.show()
-```
-
-### 3.3. Técnicas de Agregação
-#### 3.3.1. groupBy
+## 3. Técnicas de Agregação
+### 3.1. groupBy
 A operação `groupBy` permite agrupar os dados com base em uma ou mais colunas e aplicar funções agregadas.
 
 **Exemplo de código:**
 ```python
-# Exemplo de groupBy
-df_grouped = df1.groupBy("valor").count()
-df_grouped.show()
+from pyspark.sql import SparkSession
+from pyspark.sql.functions import broadcast
+from pyspark.sql.functions import count, sum, avg, max, min
+
+# Inicializando a SparkSession
+spark = SparkSession.builder.appName("dataeng-aggregations").getOrCreate()
+
+# Exemplo de DataFrames para join
+df1 = spark.createDataFrame([(1, 3.0), (2, 5.0), (1, 10.0), (1, 7.0), (2, 8.0), ], ["id", "valor"])
+df2 = spark.createDataFrame([(1, "X"), (2, "Y")], ["id", "desc"])
+
+# Realizando um join entre os DataFrames
+joined_df = df1.join(df2, "id")
+
+print('Exemplo 1: Contagem de registros por descrição')
+count_by_desc = joined_df.groupBy("desc").agg(count("id").alias("count"))
+count_by_desc.show()
+
+print('Exemplo 1: Contagem de registros por descrição usando função embutida')
+count_by_desc_builtin = joined_df.groupBy("desc").count()
+count_by_desc_builtin.show()
+
+print('Exemplo 2: Soma dos valores por descrição')
+sum_by_desc = joined_df.groupBy("desc").agg(sum("valor").alias("sum_valor"))
+sum_by_desc.show()
+
+print('Exemplo 2: Soma dos valores por descrição usando função embutida')
+sum_by_desc_builtin = joined_df.groupBy("desc").sum("valor").alias("sum_valor")
+sum_by_desc_builtin.show()
+
+print('Exemplo 3: Média dos valores por descrição')
+avg_by_desc = joined_df.groupBy("desc").agg(avg("valor").alias("avg_valor"))
+avg_by_desc.show()
+
+print('Exemplo 3: Média dos valores por descrição usando função embutida')
+avg_by_desc_builtin = joined_df.groupBy("desc").avg("valor").alias("avg_valor")
+avg_by_desc_builtin.show()
+
+print('Exemplo 4: Valor máximo por descrição')
+max_by_desc = joined_df.groupBy("desc").agg(max("valor").alias("max_valor"))
+max_by_desc.show()
+
+print('Exemplo 5: Valor mínimo por descrição')
+min_by_desc = joined_df.groupBy("desc").agg(min("valor").alias("min_valor"))
+min_by_desc.show()
+
+print('Exemplo 6: Todas as agregações em um único comando')
+all_aggregations = joined_df.groupBy("desc").agg(
+    count("id").alias("count"),
+    sum("valor").alias("sum_valor"),
+    avg("valor").alias("avg_valor"),
+    max("valor").alias("max_valor"),
+    min("valor").alias("min_valor")
+)
+all_aggregations.show()
+
 ```
 
-#### 3.3.2. Window Functions
+### 3.2. Window Functions
 As Window Functions permitem a execução de cálculos complexos que envolvem particionamento e ordenação de dados.
 
 **Exemplo de código:**
@@ -72,7 +158,7 @@ df_window = df1.withColumn("row_number", row_number().over(window_spec))
 df_window.show()
 ```
 
-### 3.4. Exploração de Funções Analíticas e Agregações Complexas
+## 4. Exploração de Funções Analíticas e Agregações Complexas
 As funções analíticas permitem a execução de cálculos que envolvem operações mais sofisticadas, como rank, dense_rank, lead e lag.
 
 **Exemplo de código:**
@@ -86,7 +172,7 @@ df_analytic = df_analytic.withColumn("lag", lag("id", 1).over(window_spec))
 df_analytic.show()
 ```
 
-### 3.5. Exercício Prático Avançado
+## 5. Exercício Prático Avançado
 **Objetivo:** Implementar operações de junção e agregação utilizando técnicas avançadas de joins, funções de janela e agregações complexas.
 
 **Instruções:**
@@ -144,10 +230,10 @@ df_window.show()
 spark.stop()
 ```
 
-### 3.6. Parabéns!
+### 6. Parabéns!
 Parabéns por concluir o módulo 3! Agora você domina operações de junção e agregação avançadas no Apache Spark, incluindo o uso de funções analíticas e agregações complexas.
 
-### 3.7. Destruição dos recursos
+### 7. Destruição dos recursos
 Para evitar custos desnecessários, lembre-se de destruir os recursos criados durante este módulo:
 - Exclua quaisquer instâncias do AWS Cloud9 que não sejam mais necessárias.
 - Remova dados temporários ou resultados intermediários armazenados no S3.
