@@ -29,8 +29,8 @@ spark = SparkSession.builder \
     .getOrCreate()
 
 # Exemplo de criação de DataFrame para teste
-data = [(1, 7300), (2, 3650), (3, 1825), (4, 912), (5, 456), (6, 228)]
-columns = ["id", "idade_em_dias"]
+data = [('Barbosa', 7300), ('Roberto', 3650), ( 'Charles', 1825), ('Leandro', 912), ('Evanildo', 14056), ('Francisco', 2103)]
+columns = ["nome", "idade_em_dias"]
 df = spark.createDataFrame(data, columns)
 df.show()
 from pyspark.sql.types import IntegerType
