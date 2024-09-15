@@ -478,7 +478,7 @@ O dataset está em formato JSON com o seguinte conteúdo:
     "nome": "Bruno",
     "idade": 30,
     "notas": {
-      "matematatica": 78,
+      "matematica": 78,
       "portugues": 88,
       "ciencias": 75
     },
@@ -523,6 +523,11 @@ dados_clientes.printSchema()
 
 # Mostrar os dados
 dados_clientes.show(truncate=False)
+
+# Escreva sua logica aqui
+
+# Apresente o resultado aqui
+
 ```
 
 ---
@@ -559,10 +564,10 @@ dados_clientes.show(truncate=False)
 
 ---
 
-##### Solução do desafio
+##### Soluções dos desafios
 
 <details>
-    <summary>Clique aqui</summary>
+    <summary>Solução do Item 1: Flatten das Structs</summary>
 
 ```python
 from pyspark.sql import SparkSession
@@ -572,8 +577,8 @@ from pyspark.sql.functions import col, coalesce
 spark = SparkSession.builder.appName("DesafioPySpark").getOrCreate()
 
 # Carregar o dataset JSON
-caminho_arquivo = "caminho/para/o/dataset.json"
-dados_clientes = spark.read.json(caminho_arquivo)
+caminho_arquivo = "dataset.json"
+dados_clientes = spark.read.json(caminho_arquivo, multiLine=True)
 
 # Mostrar o schema do DataFrame original
 dados_clientes.printSchema()
@@ -585,15 +590,12 @@ dados_clientes.show(truncate=False)
 # Solução do Item 1: Flatten das Structs
 # ----------------------------------------------------------------------
 
-# Extrair as notas de cada matéria e adicioná-las como colunas separadas
-# Usando coalesce para lidar com o possível erro de digitação em "matematica"
-
 # Importar as funções necessárias
 from pyspark.sql.functions import col, coalesce
 
 # Criar um novo DataFrame com as notas extraídas
 dados_notas = dados_clientes \
-    .withColumn("nota_matematica", coalesce(col("notas.matematica"), col("notas.matematatica"))) \
+    .withColumn("nota_matematica", col("notas.matematica")) \
     .withColumn("nota_portugues", col("notas.portugues")) \
     .withColumn("nota_ciencias", col("notas.ciencias"))
 
