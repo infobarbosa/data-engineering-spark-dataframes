@@ -253,7 +253,7 @@ Ou execute diretamente em um notebook ou ambiente interativo que suporte PySpark
 <details>
   <summary>Clique aqui</summary>
 
-**Solução do Desafio PySpark - Uso de UDF**
+**Solução 2 do Desafio PySpark - Anotação `@udf`**
 
 Vamos implementar a UDF que calcula a idade e retorna a saudação personalizada, desta vez utilizando a anotação `@udf` do PySpark.
 
@@ -313,7 +313,7 @@ df.show(truncate=False)
 <details>
   <summary>Clique aqui</summary>
 
-**Solução do Desafio PySpark - Sem uso de UDF**
+**Solução 3 do Desafio PySpark - Sem uso de UDF**
 
 Vamos implementar o calculo da idade e retornar a saudação personalizada, desta vez sem qualquer uso de UDF.
 
