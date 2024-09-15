@@ -1,4 +1,4 @@
-### Módulo 1: Revisão dos Conceitos Básicos de DataFrame
+# Módulo 1: Revisão dos Conceitos Básicos de DataFrame
 
 **Author:** Prof. Barbosa  
 **Contact:** infobarbosa@gmail.com  
@@ -6,16 +6,16 @@
 
 ---
 
-#### Atenção aos custos!
+### Atenção aos custos!
 **Atenção!** Ao realizar os laboratórios deste módulo, lembre-se de que a execução na AWS pode gerar custos. A responsabilidade pela gestão desses custos é do aluno.
 
 ---
 
-### 1.1. Introdução
+## 1. Introdução
 Neste módulo, vamos revisar os conceitos fundamentais do Apache Spark relacionados ao uso de DataFrames. Esta base teórica é essencial para os próximos módulos do curso, onde abordaremos tópicos mais avançados.
 
-### 1.2. Conceitos Fundamentais de DataFrame
-#### 1.2.1. Criação de DataFrames
+## 2. Conceitos Fundamentais de DataFrame
+### 2.1. Criação de DataFrames
 Os DataFrames são estruturas de dados distribuídas, imutáveis e organizadas em colunas nomeadas. No Spark, você pode criar DataFrames de várias fontes, como arquivos CSV, JSON, Parquet, tabelas SQL, entre outros.
 
 **Exemplo de código:**
@@ -32,7 +32,7 @@ df = spark.read.csv("s3://bucket/data.csv", header=True, inferSchema=True)
 df.show()
 ```
 
-#### 1.2.2. Transformações e Ações
+### 2.2. Transformações e Ações
 As transformações no Spark são operações "lazy", ou seja, elas não são executadas até que uma ação seja chamada. Exemplos de transformações incluem `filter`, `select`, `groupBy`, enquanto ações incluem `show`, `count`, `collect`.
 
 **Exemplo de código:**
@@ -45,7 +45,7 @@ total = df_filtered.count()
 print(f"Total de pessoas com mais de 30 anos: {total}")
 ```
 
-### 1.3. Revisão dos Tipos de Dados e Esquemas
+## 3. Revisão dos Tipos de Dados e Esquemas
 No Spark, o esquema de um DataFrame define as colunas e seus tipos de dados. É possível definir o esquema manualmente ou permitir que o Spark infira automaticamente a partir dos dados.
 
 **Exemplo de código:**
@@ -66,28 +66,75 @@ df_manual = spark.read.csv("s3://bucket/data.csv", schema=schema, header=True)
 df_manual.printSchema()
 ```
 
-### 1.4. Exercício 1
+## 4. Exercício 1
 **Objetivo:** Criar um DataFrame a partir de um arquivo JSON, aplicar uma série de transformações e ações, e definir um esquema personalizado.
 
 **Instruções:**
-1. Clone o repositório do curso:
-   ```bash
-   git clone https://github.com/infobarbosa/dataeng-modulo-1.git
+1. Crie o arquivo `data.json` com o seguinte conteúdo:
+   ```json
+   [
+      { "nome": "João"     ,"idade": 25, "cidade": "São Paulo"     },
+      { "nome": "Maria"    ,"idade": 30,"cidade": "Rio de Janeiro" },
+      { "nome": "Pedro"    ,"idade": 35,"cidade": "Belo Horizonte" },
+      { "nome": "Ana"      ,"idade": 28,"cidade": "Brasília"       },
+      { "nome": "Lucas"    ,"idade": 22,"cidade": "Salvador"       },
+      { "nome": "Mariana"  ,"idade": 27,"cidade": "Porto Alegre"   },
+      { "nome": "Carlos"   ,"idade": 33,"cidade": "Fortaleza"      },
+      { "nome": "Juliana"  ,"idade": 29,"cidade": "Recife"         },
+      { "nome": "Rafael"   ,"idade": 31,"cidade": "Manaus"         },
+      { "nome": "Isabela"  ,"idade": 26,"cidade": "Curitiba"       },
+      { "nome": "Gustavo"  ,"idade": 24,"cidade": "Florianópolis"  },
+      { "nome": "Laura"    ,"idade": 32,"cidade": "Goiania"        },
+      { "nome": "Fernando" ,"idade": 23,"cidade": "Vitória"        },
+      { "nome": "Camila"   ,"idade": 34,"cidade": "Natal"          },
+      { "nome": "Diego"    ,"idade": 27,"cidade": "Cuiabá"         },
+      { "nome": "Amanda"   ,"idade": 29,"cidade": "João Pessoa"    },
+      { "nome": "Rodrigo"  ,"idade": 25,"cidade": "Aracaju"        },
+      { "nome": "Larissa"  ,"idade": 30,"cidade": "Teresina"       },
+      { "nome": "Thiago"   ,"idade": 28,"cidade": "Maceió"         },
+      { "nome": "Patrícia" ,"idade": 26,"cidade": "Macapá"         },
+      { "nome": "Henrique" ,"idade": 33,"cidade": "Boa Vista"      },
+      { "nome": "Carolina" ,"idade": 31,"cidade": "Palmas"         },
+      { "nome": "Renata"   ,"idade": 24,"cidade": "Rio Branco"     },
+      { "nome": "Bruno"    ,"idade": 32,"cidade": "Porto Velho"    },
+      { "nome": "Marina"   ,"idade": 55,"cidade": "São Luís"       },
+      { "nome": "Carlota"  ,"idade": 45,"cidade": "Belém"          },
+      { "nome": "Juliete"  ,"idade": 40,"cidade": "Boa Vista"      },
+      { "nome": "Rafaela"  ,"idade": 41,"cidade": "Palmas"         },
+      { "nome": "Isabel"   ,"idade": 46,"cidade": "Rio Branco"     },
+      { "nome": "Augusto"  ,"idade": 44,"cidade": "Porto Velho"    },
+      { "nome": "Laura"    ,"idade": 52,"cidade": "São Luís"       },
+      { "nome": "Wilson"   ,"idade": 43,"cidade": "Belém"          },
+      { "nome": "Beatriz"  ,"idade": 54,"cidade": "Macapá"         },
+      { "nome": "Diogenes" ,"idade": 47,"cidade": "Maceió"         },
+      { "nome": "Amanda"   ,"idade": 49,"cidade": "Teresina"       },
+      { "nome": "Rodrigo"  ,"idade": 45,"cidade": "Aracaju"        },
+      { "nome": "Larissa"  ,"idade": 50,"cidade": "João Pessoa"    },
+      { "nome": "Thiago"   ,"idade": 48,"cidade": "Cuiabá"         },
+      { "nome": "Patrícia" ,"idade": 46,"cidade": "Natal"          },
+      { "nome": "Marta"    ,"idade": 53,"cidade": "Vitória"        },
+      { "nome": "Emilia"   ,"idade": 51,"cidade": "Florianópolis"  },
+      { "nome": "Jucilene" ,"idade": 44,"cidade": "Goiania"        },
+      { "nome": "Marivalda","idade": 52,"cidade": "Curitiba"       }
+   ]
    ```
-2. Navegue até a pasta do módulo 1:
-   ```bash
-   cd dataeng-modulo-1
-   ```
-3. Execute o script `modulo1.py` que realiza as seguintes etapas:
-   - Carrega um arquivo JSON de exemplo.
+
+3. Crie o script `modulo1.py` que realiza as seguintes etapas:
+   - Carrega o arquivo JSON de exemplo.
    - Aplica transformações para filtrar e agrupar dados.
    - Define um esquema personalizado para o DataFrame.
    - Exibe o resultado final das transformações.
 
 **Código do laboratório:**
 ```python
+from pyspark.sql import SparkSession
+from pyspark.sql.types import StructType, StructField, StringType, IntegerType
+
+# Iniciar uma sessão Spark
+spark = SparkSession.builder.appName("dataeng-pyspark").getOrCreate()
+
 # Exemplo de script modulo1.py
-df_json = spark.read.json("s3://bucket/data.json")
+df_json = spark.read.json("data.json")
 
 # Transformações e ações
 df_result = df_json.filter(df_json["idade"] > 25).groupBy("cidade").count()
@@ -105,10 +152,10 @@ df_custom = spark.createDataFrame(df_result.rdd, schema=schema_custom)
 df_custom.printSchema()
 ```
 
-### 1.5. Parabéns!
+## 5. Parabéns!
 Parabéns por concluir o módulo! Você revisou os conceitos fundamentais de DataFrames no Apache Spark e praticou com transformações, ações e manipulação de esquemas.
 
-### 1.6. Destruição dos recursos
+## 6. Destruição dos recursos
 Para evitar custos desnecessários, lembre-se de destruir os recursos criados durante este módulo:
 - Exclua quaisquer instâncias do AWS Cloud9 que não sejam mais necessárias.
 - Remova dados temporários ou resultados intermediários armazenados no S3.
