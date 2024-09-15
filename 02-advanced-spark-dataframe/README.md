@@ -728,53 +728,118 @@ unpivoted.show()
 #### 2.4.2. Rollups e Cubes
 Rollups e cubes são usados para criar agregações hierárquicas em grupos de dados, sendo especialmente úteis para relatórios multidimensionais.
 
+##### Rollup
+
+A função `rollup` é usada para gerar uma hierarquia de agregações. Ela permite agregar dados em diferentes níveis de granularidade. O `rollup` cria uma série de subtotais e um total geral, permitindo ver a evolução dos dados em níveis agregados.
+
+**Exemplo de uso do `rollup`**:
+```python
+from pyspark.sql import SparkSession
+from pyspark.sql.functions import sum
+
+# Criação da sessão do Spark
+spark = SparkSession.builder.appName("dataeng-rollup").getOrCreate()
+
+# Criação de um DataFrame de exemplo
+data = [
+    ("2024-01-01", "A", 10),
+    ("2024-01-01", "B", 20),
+    ("2024-01-02", "A", 30),
+    ("2024-01-02", "B", 40),
+]
+df = spark.createDataFrame(data, ["data", "categoria", "valor"])
+df.show()
+
+print('Aplicação do rollup')
+result = df.rollup("data", "categoria").agg(sum("valor").alias("valor_total"))
+
+result.show()
+```
+
+Neste exemplo, o `rollup` gera subtotais por `data` e `categoria`, além de um total geral.
+
+##### Cube
+
+A função `cube` é usada para criar uma agregação em todas as combinações possíveis dos grupos especificados. Isso é útil para obter um resumo completo dos dados para todas as combinações dos grupos fornecidos.
+
+**Exemplo de uso do `cube`**:
+```python
+from pyspark.sql import SparkSession
+from pyspark.sql.functions import sum
+
+# Criação da sessão do Spark
+spark = SparkSession.builder.appName("dataeng-cube").getOrCreate()
+
+# Criação de um DataFrame de exemplo
+data = [
+    ("2024-01-01", "A", 10),
+    ("2024-01-01", "B", 20),
+    ("2024-01-02", "A", 30),
+    ("2024-01-02", "B", 40),
+]
+df = spark.createDataFrame(data, ["data", "categoria", "valor"])
+df.show()
+
+print('Aplicação do cube') 
+result = df.cube("data", "categoria").agg(sum("valor").alias("valor_total"))
+
+result.show()
+```
+
+Neste exemplo, o `cube` gera todas as combinações possíveis das colunas `data` e `category`, retornando um resumo completo das agregações.
+
+##### Resumo
+
+- **`rollup`**: Cria agregações hierárquicas e totais gerais. Útil para relatórios que exigem subtotais em diferentes níveis.
+- **`cube`**: Cria todas as combinações possíveis dos grupos, permitindo análises mais detalhadas em várias dimensões.
+
+Ambos são ferramentas poderosas para análise e sumarização de dados em PySpark.
+
 **Exemplo de código:**
 ```python
-# Exemplo de Rollup
+from pyspark.sql import SparkSession
+from pyspark.sql.functions import explode, col
+from pyspark.sql.types import StructType, StructField, StringType, IntegerType, ArrayType
+
+# Iniciar uma sessão Spark
+spark = SparkSession.builder.appName("dataeng-rollup-cube").getOrCreate()
+
+from pyspark.sql.functions import explode, col
+
+# Exemplo de DataFrame com arrays e structs
+data = [
+    ("João", [{"curso": "MATEMATICA", "nota": 85}, {"curso": "HISTORIA", "nota": 90}]),
+    ("Maria", [{"curso": "MATEMATICA", "nota": 95}, {"curso": "HISTORIA", "nota": 80}])
+]
+schema = StructType([
+    StructField("nome", StringType(), True),
+    StructField("cursos", ArrayType(StructType([
+        StructField("curso", StringType(), True),
+        StructField("nota", IntegerType(), True)
+    ])), True)
+])
+df = spark.createDataFrame(data, schema)
+
+df.show( truncate=False)
+
+# Explodindo o array para linhas individuais
+df_exploded = df.withColumn("curso", explode(df["cursos"]))
+df = df_exploded.select("nome", col("curso.curso"), col("curso.nota"))
+
+df.show()
+
+print('Exemplo de Rollup')
 df_rollup = df.rollup("nome", "curso").agg({"nota": "avg"}).orderBy("nome", "curso")
 df_rollup.show()
 
-# Exemplo de Cube
+print('Exemplo de Cube')
 df_cube = df.cube("nome", "curso").agg({"nota": "avg"}).orderBy("nome", "curso")
 df_cube.show()
-```
 
-### 2.5. Exercício Prático Avançado
-**Objetivo:** Aplicar transformações complexas em um DataFrame contendo estruturas aninhadas, usar UDFs para cálculos personalizados e realizar operações de pivot, unpivot, rollup e cube.
-
-**Instruções:**
-1. Clone o repositório do curso:
-   ```bash
-   git clone https://github.com/infobarbosa/dataeng-modulo-2.git
-   ```
-2. Navegue até a pasta do módulo 2:
-   ```bash
-   cd dataeng-modulo-2
-   ```
-3. Execute o script `modulo2.py` que realiza as seguintes etapas:
-   - Criação de UDFs e UDAFs.
-   - Manipulação de DataFrames com arrays e structs.
-   - Aplicação de transformações avançadas como pivot, unpivot, rollups e cubes.
-
-**Código do laboratório:**
-```python
-# Exemplo de script modulo2.py
-
-# Definindo e aplicando uma UDF
-@udf(IntegerType())
-def calcular_bonus(nota):
-    return nota + 5
-
-df_bonus = df_exploded.withColumn("nota_bonus", calcular_bonus(df_exploded["nota"]))
-df_bonus.show()
-
-# Aplicando transformações avançadas
-df_pivot_bonus = df_bonus.groupBy("nome").pivot("curso").agg({"nota_bonus": "max"})
-df_pivot_bonus.show()
 ```
 
 ### 2.6. Parabéns!
-Parabéns por concluir o módulo 2! Você aprendeu técnicas avançadas de manipulação de DataFrames no Apache Spark, aplicando UDFs, UDAFs e explorando transformações complexas.
+Parabéns por concluir o módulo! Você aprendeu técnicas avançadas de manipulação de DataFrames no Apache Spark, aplicando UDFs, UDAFs e explorando transformações complexas.
 
 ### 2.7. Destruição dos recursos
 Para evitar custos desnecessários, lembre-se de destruir os recursos criados durante este módulo:
