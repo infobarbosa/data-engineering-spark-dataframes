@@ -20,7 +20,19 @@ UDFs permitem a aplicação de funções personalizadas em colunas de um DataFra
 
 **Exemplo de código:**
 ```python
+from pyspark.sql import SparkSession
 from pyspark.sql.functions import udf
+
+# Criando uma sessão do Spark
+spark = SparkSession.builder \
+    .appName("DataFrames Lab") \
+    .getOrCreate()
+
+# Exemplo de criação de DataFrame para teste
+data = [(1, 7300), (2, 3650), (3, 1825), (4, 912), (5, 456), (6, 228)]
+columns = ["id", "idade_em_dias"]
+df = spark.createDataFrame(data, columns)
+df.show()
 from pyspark.sql.types import IntegerType
 
 # Definindo uma UDF para calcular a idade em anos
@@ -31,6 +43,7 @@ def calcular_idade_em_anos(idade_em_dias):
 # Aplicando a UDF em uma coluna do DataFrame
 df = df.withColumn("idade_em_anos", calcular_idade_em_anos(df["idade_em_dias"]))
 df.show()
+
 ```
 
 #### 2.2.2. Desafio
