@@ -417,9 +417,15 @@ DataFrames no Spark podem conter estruturas de dados complexas como arrays e str
 
 **Exemplo de código:**
 ```python
+### 1. Importe as bibliotecas necessárias:
+from pyspark.sql import SparkSession
 from pyspark.sql.functions import explode, col
+from pyspark.sql.types import StringType, IntegerType, StructType, StructField, ArrayType
 
-# Exemplo de DataFrame com arrays e structs
+### 2. Inicialize o SparkSession:
+spark = SparkSession.builder.appName("Exemplo UDAF").getOrCreate()
+
+### 3. Crie um DataFrame de exemplo:
 data = [
     ("João", [{"curso": "Matemática", "nota": 85}, {"curso": "História", "nota": 90}]),
     ("Maria", [{"curso": "Matemática", "nota": 95}, {"curso": "História", "nota": 80}])
