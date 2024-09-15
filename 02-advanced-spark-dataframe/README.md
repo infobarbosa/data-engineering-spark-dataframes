@@ -319,6 +319,168 @@ df_exploded = df.withColumn("curso", explode(df["cursos"]))
 df_exploded.select("nome", col("curso.curso"), col("curso.nota")).show()
 ```
 
+**Desafio**
+
+---
+
+**Descrição do Desafio:**
+
+Você recebeu um dataset contendo informações de clientes de uma empresa. O dataset possui estruturas de dados complexas, como arrays e structs. Seu objetivo é manipular esse dataset usando PySpark para extrair insights específicos.
+
+---
+
+**Dataset de Exemplo:**
+
+O dataset está em formato JSON com o seguinte conteúdo:
+
+```json
+[
+  {
+    "nome": "Ana",
+    "idade": 25,
+    "notas": {
+      "matematica": 90,
+      "portugues": 85,
+      "ciencias": 92
+    },
+    "contatos": [
+      {"tipo": "email", "valor": "ana@example.com"},
+      {"tipo": "telefone", "valor": "123456789"}
+    ],
+    "interesses": ["música", "esportes", "leitura"]
+  },
+  {
+    "nome": "Bruno",
+    "idade": 30,
+    "notas": {
+      "matematatica": 78,
+      "portugues": 88,
+      "ciencias": 75
+    },
+    "contatos": [
+      {"tipo": "email", "valor": "bruno@example.com"}
+    ],
+    "interesses": ["cinema", "viagens"]
+  },
+  {
+    "nome": "Carla",
+    "idade": 28,
+    "notas": {
+      "matematica": 85,
+      "portugues": 80,
+      "ciencias": 88
+    },
+    "contatos": [
+      {"tipo": "telefone", "valor": "987654321"}
+    ],
+    "interesses": ["arte", "leitura", "viagens"]
+  }
+]
+```
+
+---
+
+**Código Inicial:**
+
+```python
+from pyspark.sql import SparkSession
+from pyspark.sql.functions import explode, col
+
+# Iniciar uma sessão Spark
+spark = SparkSession.builder.appName("DesafioPySpark").getOrCreate()
+
+# Carregar o dataset JSON
+caminho_arquivo = "caminho/para/o/dataset.json"
+dados_clientes = spark.read.json(caminho_arquivo)
+
+# Mostrar o schema do DataFrame
+dados_clientes.printSchema()
+
+# Mostrar os dados
+dados_clientes.show(truncate=False)
+```
+
+---
+
+**Desafios a serem realizados:**
+
+1. **Flatten das Structs:**
+
+   - Extraia as notas de cada matéria (`matematica`, `portugues`, `ciencias`) e adicione como colunas separadas no DataFrame.
+
+2. **Explodir os Arrays de Contatos:**
+
+   - Transforme o array de contatos em linhas individuais, de forma que cada contato (email ou telefone) fique em uma linha separada, mantendo o nome da pessoa associado.
+
+3. **Explodir os Interesses:**
+
+   - Faça o mesmo para o array de interesses, criando uma linha para cada interesse por pessoa.
+
+4. **Contagem de Interesses:**
+
+   - Calcule quantas pessoas têm cada interesse, listando o interesse e a contagem correspondente.
+
+5. **Média das Notas de Matemática:**
+
+   - Calcule a média das notas de matemática de todos os clientes.
+
+6. **Filtrar por Idade:**
+
+   - Filtre o DataFrame para mostrar apenas os clientes com idade superior a 25 anos.
+
+7. **Agrupar e Agregar:**
+
+   - Agrupe os clientes por idade e calcule a média das notas de ciências para cada grupo de idade.
+
+---
+
+##### Solução do desafio
+
+<details>
+    <summary>Clique aqui</summary>
+
+```python
+from pyspark.sql import SparkSession
+from pyspark.sql.functions import col, coalesce
+
+# Iniciar uma sessão Spark
+spark = SparkSession.builder.appName("DesafioPySpark").getOrCreate()
+
+# Carregar o dataset JSON
+caminho_arquivo = "caminho/para/o/dataset.json"
+dados_clientes = spark.read.json(caminho_arquivo)
+
+# Mostrar o schema do DataFrame original
+dados_clientes.printSchema()
+
+# Mostrar os dados originais
+dados_clientes.show(truncate=False)
+
+# ----------------------------------------------------------------------
+# Solução do Item 1: Flatten das Structs
+# ----------------------------------------------------------------------
+
+# Extrair as notas de cada matéria e adicioná-las como colunas separadas
+# Usando coalesce para lidar com o possível erro de digitação em "matematica"
+
+# Importar as funções necessárias
+from pyspark.sql.functions import col, coalesce
+
+# Criar um novo DataFrame com as notas extraídas
+dados_notas = dados_clientes \
+    .withColumn("nota_matematica", coalesce(col("notas.matematica"), col("notas.matematatica"))) \
+    .withColumn("nota_portugues", col("notas.portugues")) \
+    .withColumn("nota_ciencias", col("notas.ciencias"))
+
+# Exibir o esquema atualizado do DataFrame
+dados_notas.printSchema()
+
+# Mostrar os dados com as novas colunas de notas
+dados_notas.select("nome", "idade", "nota_matematica", "nota_portugues", "nota_ciencias").show()
+
+```
+</details>
+
 ### 2.4. Transformações Avançadas (Pivot, Unpivot, Rollups, Cubes)
 #### 2.4.1. Pivot e Unpivot
 O pivot transforma valores únicos de uma coluna em múltiplas colunas, enquanto o unpivot faz o processo inverso.
