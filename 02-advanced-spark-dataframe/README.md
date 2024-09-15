@@ -1,4 +1,4 @@
-### Módulo 2: Manipulação Avançada de DataFrame
+# Módulo 2: Manipulação Avançada de DataFrame
 
 **Author:** Prof. Barbosa  
 **Contact:** infobarbosa@gmail.com  
@@ -11,11 +11,11 @@
 
 ---
 
-### 2.1. Introdução
+## 1. Introdução
 Neste módulo, exploraremos técnicas avançadas de manipulação de DataFrames no Apache Spark. Abordaremos a aplicação de funções definidas pelo usuário (UDFs e UDAFs), manipulação de DataFrames com estruturas de dados aninhadas e transformações complexas como pivot, unpivot, rollups e cubes.
 
-### 2.2. Aplicação de Funções Complexas (UDFs, UDAFs)
-#### 2.2.1. User-Defined Functions (UDFs)
+## 2. Aplicação de Funções Complexas (UDFs, UDAFs)
+### 2.1. User-Defined Functions (UDFs)
 UDFs permitem a aplicação de funções personalizadas em colunas de um DataFrame. Elas são úteis para operações complexas que não são diretamente suportadas pelas funções nativas do Spark.
 
 **Exemplo de código:**
@@ -46,7 +46,7 @@ df.show()
 
 ```
 
-#### 2.2.2. Desafio
+### 2.2. Desafio
 
 **Desafio PySpark - Uso de UDF (User Defined Function)**
 
@@ -360,7 +360,7 @@ df.show(truncate=False)
 
 -----------------------------------------
 
-#### 2.2.3. User-Defined Aggregate Functions (UDAFs)
+### 2.3. User-Defined Aggregate Functions (UDAFs)
 UDAFs permitem a criação de agregações personalizadas que podem ser aplicadas em grupos de dados. Isso é útil para cálculos complexos que não são possíveis com funções agregadas padrão.
 
 **Exemplo de código:**
@@ -372,7 +372,7 @@ from pyspark.sql import SparkSession
 from pyspark.sql.functions import pandas_udf, PandasUDFType
 import pandas as pd
 
-### 2. Inicialize o SparkSession:
+###  Inicialize o SparkSession:
 spark = SparkSession.builder.appName("Exemplo UDAF").getOrCreate()
 
 ### 3. Crie um DataFrame de exemplo:
@@ -412,7 +412,7 @@ resultado_df.show()
 - **agg(...)**: Aplica a função agregada definida ao grupo.
 
 
-### 2.3. Manipulação de DataFrames Aninhados (Arrays, Structs)
+## 3. Manipulação de DataFrames Aninhados (Arrays, Structs)
 DataFrames no Spark podem conter estruturas de dados complexas como arrays e structs. Manipular esses tipos de dados requer técnicas específicas.
 
 **Exemplo de código:**
@@ -422,7 +422,7 @@ from pyspark.sql import SparkSession
 from pyspark.sql.functions import explode, col
 from pyspark.sql.types import StringType, IntegerType, StructType, StructField, ArrayType
 
-### 2. Inicialize o SparkSession:
+###  Inicialize o SparkSession:
 spark = SparkSession.builder.appName("Exemplo UDAF").getOrCreate()
 
 ### 3. Crie um DataFrame de exemplo:
@@ -678,8 +678,8 @@ root
 ```
 </details>
 
-### 2.4. Transformações Avançadas (Pivot, Unpivot, Rollups, Cubes)
-#### 2.4.1. Pivot e Unpivot
+## 4. Transformações Avançadas (Pivot, Unpivot, Rollups, Cubes)
+### 4.1. Pivot e Unpivot
 O pivot transforma valores únicos de uma coluna em múltiplas colunas, enquanto o unpivot faz o processo inverso.
 
 **Exemplo de código:**
@@ -725,10 +725,10 @@ unpivoted = df_pivot.selectExpr("nome", "stack(2, 'MATE', MATEMATICA, 'HIST', HI
 unpivoted.show()
 ```
 
-#### 2.4.2. Rollups e Cubes
+### 4.2. Rollups e Cubes
 Rollups e cubes são usados para criar agregações hierárquicas em grupos de dados, sendo especialmente úteis para relatórios multidimensionais.
 
-##### Rollup
+#### Rollup
 
 A função `rollup` é usada para gerar uma hierarquia de agregações. Ela permite agregar dados em diferentes níveis de granularidade. O `rollup` cria uma série de subtotais e um total geral, permitindo ver a evolução dos dados em níveis agregados.
 
@@ -758,7 +758,7 @@ result.show()
 
 Neste exemplo, o `rollup` gera subtotais por `data` e `categoria`, além de um total geral.
 
-##### Cube
+#### Cube
 
 A função `cube` é usada para criar uma agregação em todas as combinações possíveis dos grupos especificados. Isso é útil para obter um resumo completo dos dados para todas as combinações dos grupos fornecidos.
 
@@ -788,7 +788,7 @@ result.show()
 
 Neste exemplo, o `cube` gera todas as combinações possíveis das colunas `data` e `category`, retornando um resumo completo das agregações.
 
-##### Resumo
+#### Resumo
 
 - **`rollup`**: Cria agregações hierárquicas e totais gerais. Útil para relatórios que exigem subtotais em diferentes níveis.
 - **`cube`**: Cria todas as combinações possíveis dos grupos, permitindo análises mais detalhadas em várias dimensões.
@@ -838,21 +838,11 @@ df_cube.show()
 
 ```
 
-### 2.6. Parabéns!
+## 5. Parabéns!
 Parabéns por concluir o módulo! Você aprendeu técnicas avançadas de manipulação de DataFrames no Apache Spark, aplicando UDFs, UDAFs e explorando transformações complexas.
 
-### 2.7. Destruição dos recursos
+## 6. Destruição dos recursos
 Para evitar custos desnecessários, lembre-se de destruir os recursos criados durante este módulo:
 - Exclua quaisquer instâncias do AWS Cloud9 que não sejam mais necessárias.
 - Remova dados temporários ou resultados intermediários armazenados no S3.
-
----
-
-**Estrutura do Repositório no GitHub:**
-```
-dataeng-modulo-2/
-│
-├── README.md
-├── modulo2.py
-```
 
