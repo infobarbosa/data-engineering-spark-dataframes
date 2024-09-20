@@ -152,10 +152,80 @@ df_custom = spark.createDataFrame(df_result.rdd, schema=schema_custom)
 df_custom.printSchema()
 ```
 
-## 5. Parabéns!
+## 5. Desafio
+
+Faça o clone do dataset `clientes.csv.gz`
+```sh
+git clone https://github.com/infobarbosa/datasets-csv-clientes
+```
+
+Dado o arquivo clientes.csv.gz com o seguinte leiaute
+
+- Separador: ";"
+- Header: True
+- Compressão: gzip
+
+### Atributos
+| Atributo        | Tipo      | Obs                                               |
+| ---             | ---       | ---                                               |
+| ID              | long      | O identificador da pessoa                         |
+| NOME            | string    | O nome da pessoa                                  |
+| DATA_NASC       | date      | A data de nascimento da pessoa                    |
+| CPF             | string    | O CPF da pessoa                                   |
+| EMAIL           | string    | O email da pessoa                                 |
+
+### Amostra
+
+id;nome;data_nasc;cpf;email
+1;Isabelly Barbosa;1963-08-15;137.064.289-03;isabelly.barbosa@example.com<br>
+2;Larissa Fogaça;1933-09-29;703.685.294-10;larissa.fogaca@example.com<br>
+3;João Gabriel Silveira;1958-05-27;520.179.643-52;joao.gabriel.silveira@example.com<br>
+4;Pedro Lucas Nascimento;1950-08-23;274.351.896-00;pedro.lucas.nascimento@example.com<br>
+5;Felipe Azevedo;1986-12-31;759.061.842-01;felipe.azevedo@example.com<br>
+6;Ana Laura Lopes;1963-04-27;165.284.390-60;ana.laura.lopes@example.com<br>
+7;Ana Beatriz Aragão;1958-04-21;672.135.804-26;ana.beatriz.aragao@example.com<br>
+8;Murilo da Rosa;1944-07-13;783.640.251-71;murilo.da.rosa@example.com<br>
+9;Alícia Souza;1960-08-26;784.563.029-29;alicia.souza@example.com<br>
+
+Elabore o script pyspark para abrir esse arquivo e filtrar todos os clientes com mais de 50 anos agrupando por ano de nascimento.
+
+### Dica 1
+Para resolver o desafio, você pode utilizar a função `year` do pacote `pyspark.sql.functions` para extrair o ano de nascimento dos clientes. <br>
+Exemplo:
+
+```python
+# Filtrar clientes com mais de 25 anos
+df_filtrado = df_clientes.filter(year("data_nasc") <= 1996)
+```
+
+### Dica 2
+Para resolver o desafio, você pode adicionar uma coluna `IDADE` ao DataFrame para facilitar o filtro dos clientes com mais de 50 anos. <br>
+A função `withColumn` serve para adicionar novas colunas ao DataFrame.
+
+Exemplo:
+
+```python
+# Adicionar coluna IDADE
+df_clientes = df_clientes.withColumn("IDADE", 2023 - year(col("data_nasc")))
+```
+
+### Dica 3
+Para calcular a idade com base na data atual, você pode utilizar as funções `current_date` e `datediff` do pacote `pyspark.sql.functions`. <br>
+Exemplo:
+
+```python
+from pyspark.sql.functions import current_date, datediff
+
+# Adicionar coluna IDADE calculada com base na data atual
+df_clientes = df_clientes.withColumn("IDADE", (datediff(current_date(), col("data_nasc")) / 365.25).cast("int"))
+```
+
+Neste exemplo, a função `year` é usada para extrair o ano da coluna `data_nasc`, permitindo que você agrupe os dados por ano de nascimento.
+
+## 6. Parabéns!
 Parabéns por concluir o módulo! Você revisou os conceitos fundamentais de DataFrames no Apache Spark e praticou com transformações, ações e manipulação de esquemas.
 
-## 6. Destruição dos recursos
+## 7. Destruição dos recursos
 Para evitar custos desnecessários, lembre-se de destruir os recursos criados durante este módulo:
 - Exclua quaisquer instâncias do AWS Cloud9 que não sejam mais necessárias.
 - Remova dados temporários ou resultados intermediários armazenados no S3.
