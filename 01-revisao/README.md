@@ -177,6 +177,7 @@ Dado o arquivo clientes.csv.gz com o seguinte leiaute
 
 ### Amostra
 
+```
 id;nome;data_nasc;cpf;email
 1;Isabelly Barbosa;1963-08-15;137.064.289-03;isabelly.barbosa@example.com<br>
 2;Larissa Fogaça;1933-09-29;703.685.294-10;larissa.fogaca@example.com<br>
@@ -187,6 +188,7 @@ id;nome;data_nasc;cpf;email
 7;Ana Beatriz Aragão;1958-04-21;672.135.804-26;ana.beatriz.aragao@example.com<br>
 8;Murilo da Rosa;1944-07-13;783.640.251-71;murilo.da.rosa@example.com<br>
 9;Alícia Souza;1960-08-26;784.563.029-29;alicia.souza@example.com<br>
+```
 
 Elabore o script pyspark para abrir esse arquivo e filtrar todos os clientes com mais de 50 anos agrupando por ano de nascimento.
 
