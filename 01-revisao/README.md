@@ -33,7 +33,8 @@ df.show()
 ```
 
 ### 2.2. Transformações e Ações
-As transformações no Spark são operações "lazy", ou seja, elas não são executadas até que uma ação seja chamada. Exemplos de transformações incluem `filter`, `select`, `groupBy`, enquanto ações incluem `show`, `count`, `collect`.
+As transformações no Spark são operações "lazy", ou seja, elas não são executadas até que uma ação seja chamada. <br>
+Exemplos de transformações incluem `filter`, `select`, `groupBy`, enquanto ações incluem `show`, `count`, `collect`.
 
 **Exemplo de código:**
 ```python
