@@ -68,7 +68,7 @@ df_manual.printSchema()
 ```
 
 ## 4. Exercício 1
-**Objetivo:** Criar um DataFrame a partir de um arquivo JSON, aplicar uma série de transformações e ações, e definir um esquema personalizado.
+**Objetivo:** Definir um esquema personalizado, criar um DataFrame a partir de um arquivo JSON e aplicar uma algumas transformações e ações.
 
 **Instruções:**
 1. Instale o `pyspark`:
@@ -140,8 +140,15 @@ df_manual.printSchema()
    # Iniciar uma sessão Spark
    spark = SparkSession.builder.appName("dataeng-pyspark").getOrCreate()
 
-   # Exemplo de script modulo1.py
-   df_json = spark.read.json("data.json")
+   # Esquema personalizado
+   schema_custom = StructType([
+      StructField("nome", StringType(), True),
+      StructField("idade", IntegerType(), True),
+      StructField("cidade", StringType(), True)
+   ])
+
+   df_json = spark.read.json("data.json", schema=schema_custom)
+   df_json.show()
 
    # Transformações e ações
    df_result = df_json.filter(df_json["idade"] > 25).groupBy("cidade").count()
@@ -149,14 +156,7 @@ df_manual.printSchema()
    # Mostrando o resultado
    df_result.show()
 
-   # Esquema personalizado
-   schema_custom = StructType([
-      StructField("cidade", StringType(), True),
-      StructField("total", IntegerType(), True)
-   ])
-
-   df_custom = spark.createDataFrame(df_result.rdd, schema=schema_custom)
-   df_custom.printSchema()
+   df_result.printSchema()
    ```
 
 4. Execute o script `modulo1.py`:
