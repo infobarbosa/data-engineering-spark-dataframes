@@ -205,6 +205,17 @@ id;nome;data_nasc;cpf;email
 Elabore o script pyspark para abrir esse arquivo e filtrar todos os clientes com mais de 50 anos agrupando por ano de nascimento.
 
 ### Dica 1
+O arquivo é do tipo `csv` então utilize:
+- o método `read.csv` para abrir o arquivo;
+- o parâmetro `sep` para especificar o separador ponto-e-vírgula;
+- o parâmetro `header` como **True** ou **False** caso o arquivo possua cabeçalho.
+
+Exemplo:
+```python
+df_clientes = spark.read.csv("nome_do_arquivo.csv", sep=";", header=True, ...outros parâmetros...)
+```
+
+### Dica 2
 Para resolver o desafio, você pode utilizar a função `year` do pacote `pyspark.sql.functions` para extrair o ano de nascimento dos clientes. <br>
 Exemplo:
 
@@ -213,7 +224,7 @@ Exemplo:
 df_filtrado = df_clientes.filter(year("data_nasc") <= 1996)
 ```
 
-### Dica 2
+### Dica 3
 Para resolver o desafio, você pode adicionar uma coluna `IDADE` ao DataFrame para facilitar o filtro dos clientes com mais de 50 anos. <br>
 A função `withColumn` serve para adicionar novas colunas ao DataFrame.
 
@@ -224,7 +235,7 @@ Exemplo:
 df_clientes = df_clientes.withColumn("IDADE", 2023 - year(col("data_nasc")))
 ```
 
-### Dica 3
+### Dica 4
 Para calcular a idade com base na data atual, você pode utilizar as funções `current_date` e `datediff` do pacote `pyspark.sql.functions`. <br>
 Exemplo:
 
@@ -236,6 +247,7 @@ df_clientes = df_clientes.withColumn("IDADE", (datediff(current_date(), col("dat
 ```
 
 Neste exemplo, a função `year` é usada para extrair o ano da coluna `data_nasc`, permitindo que você agrupe os dados por ano de nascimento.
+
 
 ## 6. Parabéns!
 Parabéns por concluir o módulo! Você revisou os conceitos fundamentais de DataFrames no Apache Spark e praticou com transformações, ações e manipulação de esquemas.
