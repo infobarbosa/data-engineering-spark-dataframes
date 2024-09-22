@@ -444,7 +444,7 @@ df_exploded = df.withColumn("curso", explode(df["cursos"]))
 df_exploded.select("nome", col("curso.curso"), col("curso.nota")).show()
 ```
 
-**Desafio**
+### 3.1 Desafio (Arrays, Structs)
 
 ---
 
