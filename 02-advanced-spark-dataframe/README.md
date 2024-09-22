@@ -454,6 +454,38 @@ Você recebeu um dataset contendo informações de clientes de uma empresa. O da
 
 ---
 
+**Tarefas do desafio:**
+
+1. **Flatten das Structs:**
+
+   - Extraia as notas de cada matéria (`matematica`, `portugues`, `ciencias`) e adicione como colunas separadas no DataFrame.
+
+2. **Explodir os Arrays de Contatos:**
+
+   - Transforme o array de contatos em linhas individuais, de forma que cada contato (email ou telefone) fique em uma linha separada, mantendo o nome da pessoa associado.
+
+3. **Explodir os Interesses:**
+
+   - Faça o mesmo para o array de interesses, criando uma linha para cada interesse por pessoa.
+
+4. **Contagem de Interesses:**
+
+   - Calcule quantas pessoas têm cada interesse, listando o interesse e a contagem correspondente.
+
+5. **Média das Notas de Matemática:**
+
+   - Calcule a média das notas de matemática de todos os clientes.
+
+6. **Filtrar por Idade:**
+
+   - Filtre o DataFrame para mostrar apenas os clientes com idade superior a 25 anos.
+
+7. **Agrupar e Agregar:**
+
+   - Agrupe os clientes por idade e calcule a média das notas de ciências para cada grupo de idade.
+
+---
+
 **Dataset de Exemplo:**
 
 O dataset está em formato JSON com o seguinte conteúdo:
@@ -530,39 +562,7 @@ dados_clientes.show(truncate=False)
 
 ```
 
----
 
-**Desafios a serem realizados:**
-
-1. **Flatten das Structs:**
-
-   - Extraia as notas de cada matéria (`matematica`, `portugues`, `ciencias`) e adicione como colunas separadas no DataFrame.
-
-2. **Explodir os Arrays de Contatos:**
-
-   - Transforme o array de contatos em linhas individuais, de forma que cada contato (email ou telefone) fique em uma linha separada, mantendo o nome da pessoa associado.
-
-3. **Explodir os Interesses:**
-
-   - Faça o mesmo para o array de interesses, criando uma linha para cada interesse por pessoa.
-
-4. **Contagem de Interesses:**
-
-   - Calcule quantas pessoas têm cada interesse, listando o interesse e a contagem correspondente.
-
-5. **Média das Notas de Matemática:**
-
-   - Calcule a média das notas de matemática de todos os clientes.
-
-6. **Filtrar por Idade:**
-
-   - Filtre o DataFrame para mostrar apenas os clientes com idade superior a 25 anos.
-
-7. **Agrupar e Agregar:**
-
-   - Agrupe os clientes por idade e calcule a média das notas de ciências para cada grupo de idade.
-
----
 
 ##### Soluções dos desafios
 
