@@ -147,7 +147,7 @@ df_manual.printSchema()
       StructField("cidade", StringType(), True)
    ])
 
-   df_json = spark.read.json("data.json", schema=schema_custom)
+   df_json = spark.read.json("data.json", schema=schema_custom, multiLine=True)
    df_json.show()
 
    # Transformações e ações
