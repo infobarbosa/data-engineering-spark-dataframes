@@ -71,7 +71,13 @@ df_manual.printSchema()
 **Objetivo:** Criar um DataFrame a partir de um arquivo JSON, aplicar uma série de transformações e ações, e definir um esquema personalizado.
 
 **Instruções:**
-1. Crie o arquivo `data.json` com o seguinte conteúdo:
+1. Instale o `pyspark`:
+   ```sh
+   pip install pyspark
+
+   ```
+
+2. Crie o arquivo `data.json` com o seguinte conteúdo:
    ```json
    [
       { "nome": "João"     ,"idade": 25, "cidade": "São Paulo"     },
@@ -126,32 +132,38 @@ df_manual.printSchema()
    - Define um esquema personalizado para o DataFrame.
    - Exibe o resultado final das transformações.
 
-**Código do laboratório:**
-```python
-from pyspark.sql import SparkSession
-from pyspark.sql.types import StructType, StructField, StringType, IntegerType
+   **Código do laboratório:**
+   ```python
+   from pyspark.sql import SparkSession
+   from pyspark.sql.types import StructType, StructField, StringType, IntegerType
 
-# Iniciar uma sessão Spark
-spark = SparkSession.builder.appName("dataeng-pyspark").getOrCreate()
+   # Iniciar uma sessão Spark
+   spark = SparkSession.builder.appName("dataeng-pyspark").getOrCreate()
 
-# Exemplo de script modulo1.py
-df_json = spark.read.json("data.json")
+   # Exemplo de script modulo1.py
+   df_json = spark.read.json("data.json")
 
-# Transformações e ações
-df_result = df_json.filter(df_json["idade"] > 25).groupBy("cidade").count()
+   # Transformações e ações
+   df_result = df_json.filter(df_json["idade"] > 25).groupBy("cidade").count()
 
-# Mostrando o resultado
-df_result.show()
+   # Mostrando o resultado
+   df_result.show()
 
-# Esquema personalizado
-schema_custom = StructType([
-    StructField("cidade", StringType(), True),
-    StructField("total", IntegerType(), True)
-])
+   # Esquema personalizado
+   schema_custom = StructType([
+      StructField("cidade", StringType(), True),
+      StructField("total", IntegerType(), True)
+   ])
 
-df_custom = spark.createDataFrame(df_result.rdd, schema=schema_custom)
-df_custom.printSchema()
-```
+   df_custom = spark.createDataFrame(df_result.rdd, schema=schema_custom)
+   df_custom.printSchema()
+   ```
+
+4. Execute o script `modulo1.py`:
+   ```sh
+   python modulo1.py 
+
+   ```
 
 ## 5. Desafio
 
