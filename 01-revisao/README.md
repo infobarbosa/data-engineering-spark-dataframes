@@ -167,18 +167,25 @@ df_manual.printSchema()
 
 ## 5. Desafio
 
+Elabore o script pyspark para:
+- abrir o arquivo `clientes.csv.gz`;
+- filtrar todos os clientes com mais de 50 anos; 
+- agrupar por ano de nascimento;
+- apresentar em ordem decrescente de quantidade por ano.
+
+#### A base de dados
 Faça o clone do dataset `clientes.csv.gz`
 ```sh
 git clone https://github.com/infobarbosa/datasets-csv-clientes
 ```
 
-Dado o arquivo clientes.csv.gz com o seguinte leiaute
+#### O leiaute 
 
 - Separador: ";"
 - Header: True
 - Compressão: gzip
 
-### Atributos
+#### Os atributos
 | Atributo        | Tipo      | Obs                                               |
 | ---             | ---       | ---                                               |
 | ID              | long      | O identificador da pessoa                         |
@@ -187,7 +194,7 @@ Dado o arquivo clientes.csv.gz com o seguinte leiaute
 | CPF             | string    | O CPF da pessoa                                   |
 | EMAIL           | string    | O email da pessoa                                 |
 
-### Amostra
+#### Amostra
 
 ```
 id;nome;data_nasc;cpf;email
@@ -202,9 +209,7 @@ id;nome;data_nasc;cpf;email
 9;Alícia Souza;1960-08-26;784.563.029-29;alicia.souza@example.com<br>
 ```
 
-Elabore o script pyspark para abrir esse arquivo e filtrar todos os clientes com mais de 50 anos agrupando por ano de nascimento.
-
-### Dica 1
+#### Dica 1
 O arquivo é do tipo `csv` então utilize:
 - o método `read.csv` para abrir o arquivo;
 - o parâmetro `sep` para especificar o separador ponto-e-vírgula;
@@ -215,7 +220,7 @@ Exemplo:
 df_clientes = spark.read.csv("nome_do_arquivo.csv", sep=";", header=True, ...outros parâmetros...)
 ```
 
-### Dica 2
+#### Dica 2
 Para resolver o desafio, você pode utilizar a função `year` do pacote `pyspark.sql.functions` para extrair o ano de nascimento dos clientes. <br>
 Exemplo:
 
@@ -224,7 +229,7 @@ Exemplo:
 df_filtrado = df_clientes.filter(year("data_nasc") <= 1996)
 ```
 
-### Dica 3
+#### Dica 3
 Para resolver o desafio, você pode adicionar uma coluna `IDADE` ao DataFrame para facilitar o filtro dos clientes com mais de 50 anos. <br>
 A função `withColumn` serve para adicionar novas colunas ao DataFrame.
 
@@ -235,7 +240,7 @@ Exemplo:
 df_clientes = df_clientes.withColumn("IDADE", 2023 - year(col("data_nasc")))
 ```
 
-### Dica 4
+#### Dica 4
 Para calcular a idade com base na data atual, você pode utilizar as funções `current_date` e `datediff` do pacote `pyspark.sql.functions`. <br>
 Exemplo:
 
