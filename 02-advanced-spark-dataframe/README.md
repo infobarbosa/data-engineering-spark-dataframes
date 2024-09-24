@@ -682,6 +682,8 @@ root
 ### 4.1. Pivot e Unpivot
 O pivot transforma valores únicos de uma coluna em múltiplas colunas, enquanto o unpivot faz o processo inverso.
 
+![pivot](pivot-unpivot.png)
+
 **Exemplo de código:**
 ```python
 from pyspark.sql import SparkSession
