@@ -237,7 +237,7 @@ git clone https://github.com/infobarbosa/datasets-csv-pedidos
 Examine o script a seguir e faça as alterações necessárias onde requisitado
 ```python
 from pyspark.sql import SparkSession
-from pyspark.sql.functions import col, sum, date_trunc
+from pyspark.sql.functions import col, sum, hour
 
 # Inicializando a Spark Session
 spark = SparkSession.builder \
@@ -260,15 +260,15 @@ df_rollup = df.groupBy(_______) \
 # Mostrando os resultados parciais do rollup
 df_rollup.show(truncate=False)
 
-# Desafio CUBE: Agrupe pelos campos DATA_CRIACAO e UF e calcule a soma do valor total dos pedidos
+# Desafio CUBE: Agrupe pela HORA e UF do pedido e calcule a soma do valor total dos pedidos
 # Atenção! 
 # 1. O dataset nao possui valor total do pedido, apenas quantidade e valor unitario dos produtos. Sera necessario criar uma nova coluna de valor total calculado.
-# 2. A data possui hora entao sera preciso criar uma nova coluna para considerar apenas o dia. Utilize a funcao date_trunc do pacote pyspark.sql.functions.
+# 2. A coluna DATA_CRIACAO possui hora. Utilize a funcao "hour" do pacote pyspark.sql.functions.
 # 3. Filtre apenas os estados SP, RJ e MG.
 
 # Incluindo a nova coluna de data
 df = df.withColumn("VALOR_TOTAL_PEDIDO", _______)
-df = df.withColumn("DATA_PEDIDO", _______)
+df = df.withColumn("HORA_PEDIDO", _______)
 
 df_cube = df.filter( (_______) | (_______) | (_______)) \
             .groupBy(_______) \
