@@ -250,8 +250,7 @@ df = spark.read.csv("./datasets-csv-pedidos/pedidos-2024-01-01.csv.gz", sep=";",
 # Mostrando o schema para verificar o carregamento correto dos dados
 df.printSchema()
 
-# Desafio ROLLUP: Complete a operação de rollup agrupando pelos campos UF e PRODUTO,
-# e calcule a soma das QUANTIDADES dos produtos nos pedidos
+# Desafio ROLLUP: Agrupando pelos campos UF e PRODUTO, calcule a soma das QUANTIDADES dos produtos nos pedidos
 df_rollup = df.groupBy(_______) \
                 .agg(sum(_______).alias(_______)) \
                 .rollup(_______) \
@@ -261,17 +260,18 @@ df_rollup = df.groupBy(_______) \
 # Mostrando os resultados parciais do rollup
 df_rollup.show(truncate=False)
 
-# Desafio CUBE: Complete a operação de cube agrupando pelos campos DATA_CRIACAO e UF,
-# e calcule a soma do valor total dos pedidos
+# Desafio CUBE: Agrupe pelos campos DATA_CRIACAO e UF e calcule a soma do valor total dos pedidos
 # Atenção! 
-# 1. Os dados nao possuem valor total do pedido, apenas quantidade e valor unitario dos produtos. Sera necessario criar uma nova coluna calculando o valor total.
-# 2. A data possui hora entao sera preciso criar uma nova coluna para considerar apenas o dia.
+# 1. O dataset nao possui valor total do pedido, apenas quantidade e valor unitario dos produtos. Sera necessario criar uma nova coluna de valor total calculado.
+# 2. A data possui hora entao sera preciso criar uma nova coluna para considerar apenas o dia. Utilize a funcao date_trunc do pacote pyspark.sql.functions.
+# 3. Filtre apenas os estados SP, RJ e MG.
 
 # Incluindo a nova coluna de data
 df = df.withColumn("VALOR_TOTAL_PEDIDO", _______)
 df = df.withColumn("DATA_PEDIDO", _______)
 
-df_cube = df.groupBy(_______) \
+df_cube = df.filter( (_______) | (_______) | (_______)) \
+            .groupBy(_______) \
             .agg(sum("_______").alias("_______")) \
             .cube("_______", "_______") \
             .sum("_______") \
