@@ -1,4 +1,4 @@
-# Rolloups e Cubes
+# Manipulação Avançada de DataFrame - Rolloups e Cubes
 
 **Author:** Prof. Barbosa  
 **Contact:** infobarbosa@gmail.com  
