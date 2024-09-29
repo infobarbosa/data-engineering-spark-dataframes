@@ -80,7 +80,7 @@ df_manual.printSchema()
 2. Crie o arquivo `data.json` com o seguinte conteúdo:
    ```json
    [
-      { "nome": "João"     ,"idade": 25, "cidade": "São Paulo"     },
+      { "nome": "João"     ,"idade": 25,"cidade": "São Paulo"     },
       { "nome": "Maria"    ,"idade": 30,"cidade": "Rio de Janeiro" },
       { "nome": "Pedro"    ,"idade": 35,"cidade": "Belo Horizonte" },
       { "nome": "Ana"      ,"idade": 28,"cidade": "Brasília"       },
@@ -166,6 +166,7 @@ df_manual.printSchema()
    ```
 
 ## 5. Desafio
+Contagem da quantidade de clientes nascidos por ano.
 
 Elabore o script pyspark para:
 - abrir o arquivo `clientes.csv.gz`;
