@@ -1,4 +1,4 @@
-# Módulo 1: Revisão dos Conceitos Básicos de DataFrame
+# Revisão dos Conceitos Básicos de DataFrame
 
 **Author:** Prof. Barbosa  
 **Contact:** infobarbosa@gmail.com  
