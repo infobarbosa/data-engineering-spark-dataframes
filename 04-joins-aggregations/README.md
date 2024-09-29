@@ -410,6 +410,7 @@ df_agg2 = df.groupBy(_______) \
 
 print("Resultado do desafio de agregacao 2")
 df_agg2.show(truncate=False)
+
 ```
 
 #### Desafio 3
