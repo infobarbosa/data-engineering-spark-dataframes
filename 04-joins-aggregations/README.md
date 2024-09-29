@@ -421,7 +421,7 @@ Agrupe pela DATA DO PEDIDO, calcule a soma do valor total dos pedidos
 # Atenção! 
 #   O dataset nao possui valor total do pedido, apenas quantidade e valor unitario dos produtos. 
 #   Dessa forma, sera necessario criar uma nova coluna de valor total calculado.
-#   O atributo DATA_CRIACAO possui hora, minuto e segundo. Utilize a funcao datatrunc para truncar o valor.
+#   O atributo DATA_CRIACAO possui hora, minuto e segundo. Utilize a funcao date_trunc para truncar o valor.
 
 # Incluindo a nova coluna de data truncada
 df = df.withColumn("DATA_PEDIDO", _______)
