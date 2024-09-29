@@ -406,7 +406,8 @@ Agrupe pelo atributo PRODUTO, calcule a soma do valor total dos pedidos
 df = df.withColumn("VALOR_TOTAL_PEDIDO", _______)
 
 df_agg2 = df.groupBy(_______) \
-            .agg(sum("_______").alias("_______")) 
+            .agg(sum("_______").alias("_______")) \
+            .orderBy(______).desc()
 
 print("Resultado do desafio de agregacao 2")
 df_agg2.show(truncate=False)
@@ -430,7 +431,8 @@ df = df.withColumn("DATA_PEDIDO", _______)
 df = df.withColumn("VALOR_TOTAL_PEDIDO", _______)
 
 df_agg3 = df.groupBy(_______) \
-            .agg(sum("_______").alias("_______")) 
+            .agg(sum("_______").alias("_______")) \
+            .orderBy(col("_______").desc()) 
 
 print("Resultado do desafio de agregacao 3")
 df_agg3.show(truncate=False)
