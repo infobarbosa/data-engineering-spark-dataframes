@@ -357,7 +357,7 @@ Faça o clone do repositório abaixo:
 git clone https://github.com/infobarbosa/datasets-csv-pedidos
 ```
 
-Examine o script a seguir e faça as alterações necessárias onde requisitado
+Examine os scripts a seguir e faça as alterações necessárias onde requisitado
 ```python
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import count, sum, avg, max, min
@@ -367,25 +367,42 @@ spark = SparkSession.builder \
     .appName("dataeng-desafio-aggregations") \
     .getOrCreate()
 
-# Carregando o dataset pedidos-2024-01-01.csv.gz
-df = spark.read.csv("./datasets-csv-pedidos/pedidos-2024-01-01.csv.gz", sep=";", header=True, inferSchema=True)
+# Carregando o dataset de pedidos
+df = spark.read \
+    .format("csv") \
+    .option("compression", "gzip") \
+    .option("header", True) \
+    .option("sep", ";") \
+    .load("./datasets-csv-pedidos/*.csv.gz", inferSchema=True)
 
 # Mostrando o schema para verificar o carregamento correto dos dados
 df.printSchema()
+```
 
-# Desafio AGREGAÇAO 1: Agrupando pelos campo UF, calcule a soma das QUANTIDADES dos produtos nos pedidos
+#### Desafio 1 
+Agrupando pelos campo UF, calcule a soma das QUANTIDADES dos produtos nos pedidos
+
+```python
+# Desafio AGREGAÇAO 1: 
+#   Agrupando pelos campo UF, calcule a soma das QUANTIDADES dos produtos nos pedidos
 df_agg1 = df.groupBy(_______) \
             .agg(sum(_______).alias(_______)) 
 
 print("Resultado do desafio de agregacao 1")
 df_agg1.show(truncate=False)
+```
 
-# Desafio AGREGAÇAO 2: Agrupe pelo atributo PRODUTO, calcule a soma do valor total dos pedidos
-# Atenção! 
-#    O dataset nao possui valor total do pedido, apenas quantidade e valor unitario dos produtos. 
-#    Dessa forma, sera necessario criar uma nova coluna de valor total calculado.
+#### Desafio 2
+Agrupe pelo atributo PRODUTO, calcule a soma do valor total dos pedidos
 
-# Incluindo a nova coluna de data
+```python
+# Desafio AGREGAÇAO 2: 
+#   Agrupe pelo atributo PRODUTO, calcule a soma do valor total dos pedidos
+#   Atenção! 
+#   O dataset nao possui valor total do pedido, apenas quantidade e valor unitario dos produtos. 
+#   Dessa forma, sera necessario criar uma nova coluna de valor total calculado.
+
+# Incluindo a nova coluna de valor total do pedido
 df = df.withColumn("VALOR_TOTAL_PEDIDO", _______)
 
 df_agg2 = df.groupBy(_______) \
@@ -393,6 +410,29 @@ df_agg2 = df.groupBy(_______) \
 
 print("Resultado do desafio de agregacao 2")
 df_agg2.show(truncate=False)
+```
+
+#### Desafio 3
+Agrupe pela DATA DO PEDIDO, calcule a soma do valor total dos pedidos
+
+```python
+# Desafio AGREGAÇAO 3: Agrupe pela DATA DO PEDIDO e calcule a soma do valor total dos pedidos
+# Atenção! 
+#   O dataset nao possui valor total do pedido, apenas quantidade e valor unitario dos produtos. 
+#   Dessa forma, sera necessario criar uma nova coluna de valor total calculado.
+#   O atributo DATA_CRIACAO possui hora, minuto e segundo. Utilize a funcao datatrunc para truncar o valor.
+
+# Incluindo a nova coluna de data truncada
+df = df.withColumn("DATA_PEDIDO", _______)
+
+# Incluindo a nova coluna de valor total do pedido
+df = df.withColumn("VALOR_TOTAL_PEDIDO", _______)
+
+df_agg3 = df.groupBy(_______) \
+            .agg(sum("_______").alias("_______")) 
+
+print("Resultado do desafio de agregacao 3")
+df_agg3.show(truncate=False)
 
 # Parar a Spark Session
 spark.stop()
