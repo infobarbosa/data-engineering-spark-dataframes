@@ -407,7 +407,7 @@ df = df.withColumn("VALOR_TOTAL_PEDIDO", _______)
 
 df_agg2 = df.groupBy(_______) \
             .agg(sum("_______").alias("_______")) \
-            .orderBy(______).desc()
+            .orderBy(col("______").desc())
 
 print("Resultado do desafio de agregacao 2")
 df_agg2.show(truncate=False)
