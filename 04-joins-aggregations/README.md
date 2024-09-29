@@ -348,12 +348,62 @@ all_aggregations = df_pedido.groupBy("departamento_produto").agg(
 all_aggregations.show()
 
 ```
+---
+
+## 5. Desafio
+
+Faça o clone do repositório abaixo:
+```sh
+git clone https://github.com/infobarbosa/datasets-csv-pedidos
+```
+
+Examine o script a seguir e faça as alterações necessárias onde requisitado
+```python
+from pyspark.sql import SparkSession
+from pyspark.sql.functions import count, sum, avg, max, min
+
+# Inicializando a Spark Session
+spark = SparkSession.builder \
+    .appName("dataeng-desafio-aggregations") \
+    .getOrCreate()
+
+# Carregando o dataset pedidos-2024-01-01.csv.gz
+df = spark.read.csv("./datasets-csv-pedidos/pedidos-2024-01-01.csv.gz", sep=";", header=True, inferSchema=True)
+
+# Mostrando o schema para verificar o carregamento correto dos dados
+df.printSchema()
+
+# Desafio AGREGAÇAO 1: Agrupando pelos campo UF, calcule a soma das QUANTIDADES dos produtos nos pedidos
+df_agg1 = df.groupBy(_______) \
+            .agg(sum(_______).alias(_______)) 
+
+print("Resultado do desafio de agregacao 1")
+df_agg1.show(truncate=False)
+
+# Desafio AGREGAÇAO 2: Agrupe pelo atributo PRODUTO, calcule a soma do valor total dos pedidos
+# Atenção! 
+#    O dataset nao possui valor total do pedido, apenas quantidade e valor unitario dos produtos. 
+#    Dessa forma, sera necessario criar uma nova coluna de valor total calculado.
+
+# Incluindo a nova coluna de data
+df = df.withColumn("VALOR_TOTAL_PEDIDO", _______)
+
+df_agg2 = df.groupBy(_______) \
+            .agg(sum("_______").alias("_______")) 
+
+print("Resultado do desafio de agregacao 2")
+df_agg2.show(truncate=False)
+
+# Parar a Spark Session
+spark.stop()
+
+```
 
 ---
-## 5. Parabéns!
+## 6. Parabéns!
 Parabéns por concluir o módulo! Agora você domina as operações de junção e agregação mais básicas no Apache Spark.
 
-## 6. Destruição dos recursos
+## 7. Destruição dos recursos
 Para evitar custos desnecessários, lembre-se de destruir os recursos criados durante este módulo:
 - Exclua quaisquer instâncias do AWS Cloud9 que não sejam mais necessárias.
 - Remova dados temporários ou resultados intermediários armazenados no S3.
