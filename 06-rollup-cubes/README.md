@@ -244,8 +244,13 @@ spark = SparkSession.builder \
     .appName("dataeng-desafio-rollup-cube") \
     .getOrCreate()
 
-# Carregando o dataset pedidos-2024-01-01.csv.gz
-df = spark.read.csv("./datasets-csv-pedidos/pedidos-2024-01-01.csv.gz", sep=";", header=True, inferSchema=True)
+# Carregando o dataset pedidos
+df = spark.read \
+    .format("csv") \
+    .option("compression", "gzip") \
+    .option("header", True) \
+    .option("sep", ";") \
+    .load("./datasets-csv-pedidos/*.csv.gz", inferSchema=True)
 
 # Mostrando o schema para verificar o carregamento correto dos dados
 df.printSchema()
