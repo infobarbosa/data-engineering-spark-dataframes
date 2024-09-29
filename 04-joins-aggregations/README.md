@@ -1,4 +1,4 @@
-# Módulo 3: Operações de Junção e Agregação
+# Operações de Junção e Agregação
 
 **Author:** Prof. Barbosa  
 **Contact:** infobarbosa@gmail.com  
