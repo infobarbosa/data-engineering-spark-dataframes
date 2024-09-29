@@ -1,4 +1,4 @@
-# Manipulação Avançada de DataFrame
+# Manipulação Avançada de DataFrame - Pivot e Unpivot
 
 **Author:** Prof. Barbosa  
 **Contact:** infobarbosa@gmail.com  
