@@ -421,14 +421,6 @@ df_pedidos_risco_alto.show()
 
 ```
 
-### Critérios de Avaliação:
-- O aluno deve ser capaz de criar e registrar uma UDF personalizada.
-- O aluno deve aplicar a UDF para adicionar a nova coluna corretamente ao DataFrame.
-- A solução deve filtrar corretamente os pedidos de alto risco e exibir os resultados esperados.
-
-### Dataset:
-Forneça o arquivo JSON com os 1000 registros para que os alunos possam utilizá-lo no desafio.
-
 ---
 
 ## 5. Parabéns!
