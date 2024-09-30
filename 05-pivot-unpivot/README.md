@@ -214,10 +214,10 @@ df_unpivot.show()
 
 ```
 
-## 4. Parabéns!
+## 5. Parabéns!
 Parabéns por concluir o módulo! Você aprendeu técnicas de manipulação de DataFrames no Apache Spark, aplicando as operações **pivot** e **unpivot**.
 
-## 5. Destruição dos recursos
+## 6. Destruição dos recursos
 Para evitar custos desnecessários, lembre-se de destruir os recursos criados durante este módulo:
 - Exclua quaisquer instâncias do AWS Cloud9 que não sejam mais necessárias.
 - Remova dados temporários ou resultados intermediários armazenados no S3.
