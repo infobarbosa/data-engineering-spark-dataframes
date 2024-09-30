@@ -22,7 +22,7 @@ from pyspark.sql.functions import explode, col
 from pyspark.sql.types import StringType, IntegerType, StructType, StructField, ArrayType
 
 ###  Inicialize o SparkSession:
-spark = SparkSession.builder.appName("Exemplo UDAF").getOrCreate()
+spark = SparkSession.builder.appName("dataeng-complex-structures").getOrCreate()
 
 ### 3. Crie um DataFrame de exemplo:
 data = [
@@ -41,6 +41,7 @@ df = spark.createDataFrame(data, schema)
 # Explodindo o array para linhas individuais
 df_exploded = df.withColumn("curso", explode(df["cursos"]))
 df_exploded.select("nome", col("curso.curso"), col("curso.nota")).show()
+
 ```
 
 ## 2. Desafio (Arrays, Structs)
