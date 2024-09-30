@@ -68,22 +68,6 @@ Você recebeu um dataset contendo informações de clientes de uma empresa. O da
 
    - Faça o mesmo para o array de interesses, criando uma linha para cada interesse por pessoa.
 
-4. **Contagem de Interesses:**
-
-   - Calcule quantas pessoas têm cada interesse, listando o interesse e a contagem correspondente.
-
-5. **Média das Notas de Matemática:**
-
-   - Calcule a média das notas de matemática de todos os clientes.
-
-6. **Filtrar por Idade:**
-
-   - Filtre o DataFrame para mostrar apenas os clientes com idade superior a 25 anos.
-
-7. **Agrupar e Agregar:**
-
-   - Agrupe os clientes por idade e calcule a média das notas de ciências para cada grupo de idade.
-
 ---
 
 **Dataset de Exemplo:**
