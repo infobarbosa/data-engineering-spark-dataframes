@@ -392,15 +392,19 @@ git clone https://github.com/infobarbosa/dataset-json-pagamentos
 Aqui está um exemplo básico de como criar e usar uma UDF:
 
 ```python
-from pyspark.sql.functions import udf
+from pyspark.sql import SparkSession
+from pyspark.sql.functions import udf, col
 from pyspark.sql.types import BooleanType
 
 # Defina a função de alto risco
-def pedido_alto_risco(PARAMETROS1, PARAMETRO2, ...):
+def pedido_alto_risco(LISTA_DE_PARAMETROS...):
     ADICIONE_SUA_LOGICA_AQUI
 
 # Registre a função como UDF
 pedido_alto_risco_udf = REGISTRE_A_UDF_AQUI
+
+# Inicializando a sessão Spark
+spark = SparkSession.builder.appName("DesafioUDF").getOrCreate()
 
 # Carregar o JSON em um DataFrame
 df = spark.read.json("./dataset-json-pagamentos/pagamentos.json")
@@ -414,6 +418,7 @@ df_pedidos_risco_alto = df_com_risco.filter( ACRESCENTE_AQUI_A_LOGICA_DE_FILTRO 
 
 # Exibir os resultados
 df_pedidos_risco_alto.show()
+
 ```
 
 ### Critérios de Avaliação:
