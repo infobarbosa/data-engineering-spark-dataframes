@@ -43,7 +43,7 @@ df.show()
 
 ```
 
-## 3. Desafio
+## 3. Desafio 1
 
 **Desafio PySpark - Uso de UDF (User Defined Function)**
 
@@ -355,13 +355,82 @@ df.show(truncate=False)
 </details>
 
 
------------------------------------------
+---
+## 4. Desafio 2: Analisando Transações com Potencial de Fraude
 
-## 4. Parabéns!
+Você recebeu um conjunto de dados de pedidos de uma plataforma de e-commerce que contém informações sobre cada pedido, incluindo seu status e se foi marcado como fraude ou não.
+
+Cada registro no conjunto de dados é representado pelo seguinte formato JSON:
+```json
+[
+    {"id_pedido": "89b90ce1-c12b-440e-a7db-ca43a4dd87ba", "status": true, "fraude": false},
+    {"id_pedido": "aa18591a-e54d-4f84-bc20-ebbb653e016d", "status": false, "fraude": false},
+    ...
+]
+```
+
+### Objetivo:
+O desafio é implementar uma UDF (User Defined Function) que verificará se um pedido é considerado de **alto risco**. Um pedido é considerado de alto risco se:
+- O status for `false` (indicando que o pedido não foi processado corretamente).
+- A flag de fraude for `true` (indicando que o pedido foi marcado como potencialmente fraudulento).
+
+### Passos:
+1. **Carregar os dados JSON no PySpark**: Carregue o conjunto de dados JSON fornecido utilizando a API de DataFrame do PySpark. Faça o clone do seguinte repositório:
+```sh
+git clone https://github.com/infobarbosa/dataset-json-pagamentos
+```
+
+2. **Criar a UDF**: Implemente uma função que será usada como UDF para identificar se um pedido é de alto risco.
+3. **Aplicar a UDF no DataFrame**: Utilize a UDF para criar uma nova coluna no DataFrame chamada `risco_alto`, que será `True` se o pedido for de alto risco e `False` caso contrário.
+4. **Filtrar pedidos de alto risco**: Filtre e exiba apenas os pedidos que são considerados de alto risco.
+
+### Dicas:
+- Você pode usar o método `.withColumn()` para adicionar uma nova coluna ao DataFrame.
+
+### Exemplo de UDF:
+
+Aqui está um exemplo básico de como criar e usar uma UDF:
+
+```python
+from pyspark.sql.functions import udf
+from pyspark.sql.types import BooleanType
+
+# Defina a função de alto risco
+def pedido_alto_risco(PARAMETROS1, PARAMETRO2, ...):
+    ADICIONE_SUA_LOGICA_AQUI
+
+# Registre a função como UDF
+pedido_alto_risco_udf = REGISTRE_A_UDF_AQUI
+
+# Carregar o JSON em um DataFrame
+df = spark.read.json("./dataset-json-pagamentos/pagamentos.json")
+df.show(truncate=False)
+
+# Aplicar a UDF para criar uma nova coluna 'risco_alto'
+df_com_risco = df.withColumn("risco_alto", APLIQUE_A_UDF_AQUI)
+
+# Filtrar os pedidos de alto risco
+df_pedidos_risco_alto = df_com_risco.filter( ACRESCENTE_AQUI_A_LOGICA_DE_FILTRO )
+
+# Exibir os resultados
+df_pedidos_risco_alto.show()
+```
+
+### Critérios de Avaliação:
+- O aluno deve ser capaz de criar e registrar uma UDF personalizada.
+- O aluno deve aplicar a UDF para adicionar a nova coluna corretamente ao DataFrame.
+- A solução deve filtrar corretamente os pedidos de alto risco e exibir os resultados esperados.
+
+### Dataset:
+Forneça o arquivo JSON com os 1000 registros para que os alunos possam utilizá-lo no desafio.
+
+---
+
+## 5. Parabéns!
 Parabéns! Nesse módulo você aprendeu sobre UDFs e como aplicar esse conhecimento em desafios práticos. <br> 
 Continue assim e bons estudos!
 
-## 5. Destruição dos recursos
+## 6. Destruição dos recursos
 Para evitar custos desnecessários, lembre-se de destruir os recursos criados durante este módulo:
 - Exclua quaisquer instâncias do AWS Cloud9 que não sejam mais necessárias.
 - Remova dados temporários ou resultados intermediários armazenados no S3.
