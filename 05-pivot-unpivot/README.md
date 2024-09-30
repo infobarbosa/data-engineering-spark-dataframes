@@ -19,7 +19,6 @@ O pivot transforma valores únicos de uma coluna em múltiplas colunas, enquanto
 
 ![pivot](pivot-unpivot.png)
 
-**Exemplo de código:**
 ```python
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import explode, col
@@ -61,7 +60,79 @@ unpivoted = df_pivot.selectExpr("nome", "stack(2, 'Matematica', MATEMATICA, 'His
 unpivoted.show()
 ```
 
-## 3. Desafio
+---
+
+## 3. Desafio 1
+Examine o dataset a seguir:
+```
++-----------------+----+------+                                                 
+|categoria_produto|ano |vendas|
++-----------------+----+------+
+|Eletrônicos      |2022|1000  |
+|Eletrônicos      |2023|1500  |
+|Eletrônicos      |2024|400   |
+|Móveis           |2022|700   |
+|Móveis           |2023|800   |
+|Móveis           |2024|200   |
+|Vestuário        |2022|500   |
+|Vestuário        |2023|600   |
+|Vestuário        |2024|300   |
++-----------------+----+------+
+```
+
+Utilizando a função `pivot`, faça a transposição dos dados e obtenha a `soma` das vendas por `ano` agrupando pelo atributo `categoria_produto`.
+
+Output esperado:
+```
++-----------------+----+----+----+                                              
+|categoria_produto|2022|2023|2024|
++-----------------+----+----+----+
+|           Móveis| 700| 800| 200|
+|      Eletrônicos|1000|1500| 400|
+|        Vestuário| 500| 600| 300|
++-----------------+----+----+----+
+
+```
+
+**Código inicial**
+
+```python
+from pyspark.sql import SparkSession
+from pyspark.sql.functions import sum
+
+# Inicializando a sessão do Spark
+spark = SparkSession.builder.appName("dataeng-pivot").getOrCreate()
+
+data = [
+    ("Eletrônicos", 2022, 1000),
+    ("Eletrônicos", 2023, 1500),
+    ("Eletrônicos", 2024, 400),
+    ("Móveis", 2022, 700),
+    ("Móveis", 2023, 800),
+    ("Móveis", 2024, 200),
+    ("Vestuário", 2022, 500),
+    ("Vestuário", 2023, 600),
+    ("Vestuário", 2024, 300)
+]
+
+# Definir as colunas do DataFrame
+columns = ["categoria_produto", "ano", "vendas"]
+
+# Criando o DataFrame com os dados fornecidos
+df = spark.createDataFrame(data, columns)
+
+# Utilizando a função `pivot`, faça a transposição dos dados e 
+# obtenha a `soma` das vendas por `ano` agrupando pelo atributo `categoria_produto`.
+df_pivot = ESCREVA SUA LOGICA AQUI 
+
+# Mostrar o resultado
+df_pivot.show()
+
+```
+
+---
+
+## 4. Desafio 2
 
 Você recebeu um dataset contendo 5 colunas:
 - Produto
