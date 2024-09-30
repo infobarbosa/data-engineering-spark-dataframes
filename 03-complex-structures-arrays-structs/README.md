@@ -146,8 +146,6 @@ dados_clientes.show(truncate=False)
 
 ```
 
-
-
 ##### Soluções dos desafios
 
 <details>
