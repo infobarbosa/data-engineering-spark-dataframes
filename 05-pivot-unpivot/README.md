@@ -71,6 +71,7 @@ Você recebeu um dataset contendo 5 colunas:
 - Vendas no 4o trimestre
 
 DataFrame Original:
+```
 +----------+---+---+---+---+                                                    
 |   Produto| Q1| Q2| Q3| Q4|
 +----------+---+---+---+---+
@@ -78,6 +79,7 @@ DataFrame Original:
 | TELEVISAO|400|500|600|400|
 |COMPUTADOR|700|800|900|950|
 +----------+---+---+---+---+
+```
 
 Dado o script a seguir, elabore a expressão `unpivot_expr` de forma que um novo dataframe contendo as colunas:
 - Produto
@@ -85,6 +87,7 @@ Dado o script a seguir, elabore a expressão `unpivot_expr` de forma que um novo
 - Vendas
 
 Resultado esperado:
+```
 +----------+---------+------+
 |   Produto|Trimestre|Vendas|
 +----------+---------+------+
@@ -101,6 +104,7 @@ Resultado esperado:
 |COMPUTADOR|       Q3|   900|
 |COMPUTADOR|       Q4|   950|
 +----------+---------+------+
+```
 
 ```python
 from pyspark.sql import SparkSession
