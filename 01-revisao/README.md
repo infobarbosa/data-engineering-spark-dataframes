@@ -18,7 +18,15 @@ Neste módulo, vamos revisar os conceitos fundamentais do Apache Spark relaciona
 ### 2.1. Criação de DataFrames
 Os DataFrames são estruturas de dados distribuídas, imutáveis e organizadas em colunas nomeadas. No Spark, você pode criar DataFrames de várias fontes, como arquivos CSV, JSON, Parquet, tabelas SQL, entre outros.
 
-**Exemplo de código:**
+**Exemplo**
+
+Faça o clone do repositório a seguir:
+```sh
+git clone https://github.com/infobarbosa/datasets-csv-clientes
+```
+
+A seguir vamos criar um script que carrega o arquivo `clientes.csv.gz`.
+
 ```python
 from pyspark.sql import SparkSession
 
