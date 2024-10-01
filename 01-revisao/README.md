@@ -23,20 +23,109 @@ Os DataFrames são estruturas de dados distribuídas, imutáveis e organizadas e
 from pyspark.sql import SparkSession
 
 # Inicializando a SparkSession
-spark = SparkSession.builder.appName("dataeng-modulo-1").getOrCreate()
+spark = SparkSession.builder.appName("dataeng-revisao-dataframe").getOrCreate()
 
 # Criando um DataFrame a partir de um arquivo CSV
-df = spark.read.csv("s3://bucket/data.csv", header=True, inferSchema=True)
+df = spark.read \
+      .format("csv") \
+      .option("compression", "gzip") \
+      .option("sep", ";") \
+      .load("./datasets-csv-clientes/clientes.csv.gz", header=True, inferSchema=True)
+
+# Mostrando o schema
+df.printSchema()
 
 # Mostrando as primeiras linhas do DataFrame
 df.show()
+
 ```
 
-### 2.2. Transformações e Ações
+### 2.2. Seleção de Colunas com `select`
+A operação `select` no Spark permite selecionar colunas específicas de um DataFrame. Isso é útil quando você deseja trabalhar apenas com um subconjunto dos dados.
+
+**Exemplo de código:**
+```python
+from pyspark.sql import SparkSession
+
+# Inicializando a SparkSession
+spark = SparkSession.builder.appName("dataeng-select").getOrCreate()
+
+# Carregando o DataFrame a partir de um arquivo CSV
+df = spark.read \
+   .format("csv") \
+   .option("sep", ";") \
+   .option("header", True) \
+   .load("./datasets-csv-clientes/clientes.csv.gz")
+
+# Selecionando colunas específicas
+df_selected = df.select("id", "nome", "email")
+
+# Mostrando as primeiras linhas do DataFrame selecionado
+df_selected.show(5, truncate=False)
+
+```
+
+**Saída esperada:**
+```
++---+----------------------+----------------------------------+
+|id |nome                  |email                             |
++---+----------------------+----------------------------------+
+|1  |Isabelly Barbosa      |isabelly.barbosa@example.com      |
+|2  |Larissa Fogaça        |larissa.fogaca@example.com        |
+|3  |João Gabriel Silveira |joao.gabriel.silveira@example.com |
+|4  |Pedro Lucas Nascimento|pedro.lucas.nascimento@example.com|
+|5  |Felipe Azevedo        |felipe.azevedo@example.com        |
++---+----------------------+----------------------------------+
+```
+
+Neste exemplo, utilizamos a função `select` para escolher apenas as colunas `id`, `nome` e `email` do DataFrame original. Isso pode ser útil para reduzir a quantidade de dados processados ou para focar em informações específicas.
+
+
+### 2.3. Filtragem com `filter`
+A operação `filter` no Spark permite filtrar linhas de um DataFrame com base em uma condição específica. Isso é útil para trabalhar apenas com um subconjunto de dados que atende a determinados critérios.
+
+**Exemplo de código:**
+```python
+from pyspark.sql import SparkSession
+from pyspark.sql.functions import col
+
+# Inicializando a SparkSession
+spark = SparkSession.builder.appName("dataeng-filter").getOrCreate()
+
+# Carregando o DataFrame a partir de um arquivo CSV
+df = spark.read \
+   .format("csv") \
+   .option("sep", ";") \
+   .option("header", True) \
+   .load("./datasets-csv-clientes/clientes.csv.gz")
+
+# Filtrando linhas onde a idade é maior que 50 anos
+df_filtrado = df.filter(col("data_nasc") <= "1973-01-01")
+
+# Mostrando as primeiras linhas do DataFrame filtrado
+df_filtrado.show(5, truncate=False)
+
+```
+
+**Saída esperada:**
+```
++---+----------------------+----------+--------------+----------------------------------+
+|id |nome                  |data_nasc |cpf           |email                             |
++---+----------------------+----------+--------------+----------------------------------+
+|1  |Isabelly Barbosa      |1963-08-15|137.064.289-03|isabelly.barbosa@example.com      |
+|2  |Larissa Fogaça        |1933-09-29|703.685.294-10|larissa.fogaca@example.com        |
+|3  |João Gabriel Silveira |1958-05-27|520.179.643-52|joao.gabriel.silveira@example.com |
+|4  |Pedro Lucas Nascimento|1950-08-23|274.351.896-00|pedro.lucas.nascimento@example.com|
+|6  |Ana Laura Lopes       |1963-04-27|165.284.390-60|ana.laura.lopes@example.com       |
++---+----------------------+----------+--------------+----------------------------------+
+```
+
+Neste exemplo, utilizamos a função `filter` para selecionar apenas as linhas onde a data de nascimento é anterior a 1973-01-01, ou seja, pessoas com mais de 50 anos. Isso pode ser útil para análises específicas de grupos etários.
+
+### 2.4. Transformações e Ações
 As transformações no Spark são operações "lazy", ou seja, elas não são executadas até que uma ação seja chamada. <br>
 Exemplos de transformações incluem `filter`, `select`, `groupBy`, enquanto ações incluem `show`, `count`, `collect`.
 
-**Exemplo de código:**
 ```python
 # Transformação: Filtrando linhas onde a coluna 'idade' é maior que 30
 df_filtered = df.filter(df["idade"] > 30)
@@ -46,25 +135,60 @@ total = df_filtered.count()
 print(f"Total de pessoas com mais de 30 anos: {total}")
 ```
 
+---
+
 ## 3. Revisão dos Tipos de Dados e Esquemas
 No Spark, o esquema de um DataFrame define as colunas e seus tipos de dados. É possível definir o esquema manualmente ou permitir que o Spark infira automaticamente a partir dos dados.
 
-**Exemplo de código:**
-```python
-from pyspark.sql.types import StructType, StructField, StringType, IntegerType
+### 3.1. Tipos de Dados no Spark
 
-# Definindo o esquema manualmente
+O Spark SQL suporta vários tipos de dados que podem ser usados para definir o esquema de um DataFrame. Aqui estão alguns dos tipos de dados mais comuns:
+
+   1. **StringType**: Representa uma string.
+   2. **IntegerType**: Representa um número inteiro.
+   3. **LongType**: Representa um número inteiro longo.
+   4. **FloatType**: Representa um número de ponto flutuante de precisão simples.
+   5. **DoubleType**: Representa um número de ponto flutuante de precisão dupla.
+   6. **BooleanType**: Representa um valor booleano (True ou False).
+   7. **DateType**: Representa uma data (sem hora).
+   8. **TimestampType**: Representa uma data e hora.
+   9. **ArrayType**: Representa uma lista de elementos de um tipo específico.
+   10. **StructType**: Representa um esquema que contém uma lista de campos (StructField).
+   11. **MapType**: Representa um mapa de chaves e valores de tipos específicos.
+
+Esses tipos de dados são definidos no módulo `pyspark.sql.types` e são usados para especificar o esquema de um DataFrame.
+
+**Exemplo de uso:**
+```python
+from pyspark.sql import SparkSession
+from pyspark.sql.types import StructType, StructField, StringType, LongType, DateType
+
+# Inicializando a SparkSession
+spark = SparkSession.builder.appName("dataeng-revisao-dataframe").getOrCreate()
+
+# Definindo o schema
 schema = StructType([
-    StructField("nome", StringType(), True),
-    StructField("idade", IntegerType(), True),
-    StructField("cidade", StringType(), True)
+   StructField("ID", LongType(), True),
+   StructField("NOME", StringType(), True),
+   StructField("DATA_NASC", DateType(), True),
+   StructField("CPF", StringType(), True),
+   StructField("EMAIL", StringType(), True)
 ])
 
-# Criando um DataFrame com o esquema definido
-df_manual = spark.read.csv("s3://bucket/data.csv", schema=schema, header=True)
+# Criando o dataframe utilizando o schema definido acima
+df = spark.read \
+      .format("csv") \
+      .option("compression", "gzip") \
+      .option("sep", ";") \
+      .option("header", True) \
+      .load("./datasets-csv-clientes/clientes.csv.gz", schema=schema)
 
-# Mostrando o esquema do DataFrame
-df_manual.printSchema()
+# Mostrando o schema
+df.printSchema()
+
+# Mostrando as primeiras linhas do DataFrame
+df.show()
+
 ```
 
 ## 4. Exercício 1
