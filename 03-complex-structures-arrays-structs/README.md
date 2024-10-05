@@ -58,16 +58,54 @@ Você recebeu um dataset contendo informações de clientes de uma empresa. O da
 
 1. **Flatten das Structs:**
 
-   - Extraia as notas de cada matéria (`matematica`, `portugues`, `ciencias`) e adicione como colunas separadas no DataFrame.
+  - Extraia as notas de cada matéria (`matematica`, `portugues`, `ciencias`) e adicione como colunas separadas no DataFrame.
+
+  Output esperado:
+  ```
+  +-----+-----+----------+---------+--------+
+  |nome |idade|matematica|portugues|ciencias|
+  +-----+-----+----------+---------+--------+
+  |Ana  |25   |90        |85       |92      |
+  |Bruno|30   |78        |88       |75      |
+  |Carla|28   |85        |80       |88      |
+  +-----+-----+----------+---------+--------+
+  ```
 
 2. **Explodir os Arrays de Contatos:**
 
-   - Transforme o array de contatos em linhas individuais, de forma que cada contato (email ou telefone) fique em uma linha separada, mantendo o nome da pessoa associado.
+  - Transforme o array de contatos em linhas individuais, de forma que cada contato (email ou telefone) fique em uma linha separada, mantendo o nome da pessoa associado.
+
+  Output esperado:
+  ```
+  +-----+-----+--------+-----------------+
+  |nome |idade|tipo    |valor            |
+  +-----+-----+--------+-----------------+
+  |Ana  |25   |email   |ana@example.com  |
+  |Ana  |25   |telefone|123456789        |
+  |Bruno|30   |email   |bruno@example.com|
+  |Carla|28   |telefone|987654321        |
+  +-----+-----+--------+-----------------+
+  ```
 
 3. **Explodir os Interesses:**
 
-   - Faça o mesmo para o array de interesses, criando uma linha para cada interesse por pessoa.
+  - Faça o mesmo para o array de interesses, criando uma linha para cada interesse por pessoa.
 
+  Output esperado:
+  ```
+  +-----+-----+---------+
+  | nome|idade|interesse|
+  +-----+-----+---------+
+  |  Ana|   25|   música|
+  |  Ana|   25| esportes|
+  |  Ana|   25|  leitura|
+  |Bruno|   30|   cinema|
+  |Bruno|   30|  viagens|
+  |Carla|   28|     arte|
+  |Carla|   28|  leitura|
+  |Carla|   28|  viagens|
+  +-----+-----+---------+
+  ```  
 ---
 
 **Dataset de Exemplo:**
