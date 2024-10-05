@@ -46,22 +46,32 @@ df_exploded.select("nome", col("curso.curso"), col("curso.nota")).show()
 
 Ao trabalhar com arquivos JSON no PySpark, a lógica de leitura segue alguns passos fundamentais que você precisa considerar para garantir uma leitura eficiente e correta. Aqui estão os principais pontos:
 
+---
+
 ## 2. **Formato do Arquivo**
   - **Simples vs. Multilinha**: Um arquivo JSON pode ser escrito em um formato de linha única, onde cada linha é um objeto JSON separado, ou em um formato multilinha, onde um objeto JSON pode se estender por várias linhas. PySpark trata essas variações de maneira diferente.
   - **Formato padrão** (linhas únicas): Cada linha deve conter um objeto JSON completo.
-  - **Formato multilinha** (`multiline=true`): O arquivo pode ter um objeto JSON distribuído em várias linhas.
+  - **Formato multilinha** (`multiLine=True`): O arquivo pode ter um objeto JSON distribuído em várias linhas.
+
+---
 
 ## 3. **Estrutura do JSON**
   - **Estrutura plana**: Se o JSON contém uma estrutura simples, onde os dados estão diretamente no nível superior (campos de chave-valor simples), a leitura será direta.
   - **Estrutura aninhada**: Se o JSON contém campos complexos (como listas, dicionários aninhados), PySpark pode lidar com isso, mas você pode precisar "explodir" esses campos ou usar funções específicas para manipular esses dados complexos.
+
+---
 
 ## 4. **Schema Inference (Inferência de Esquema)**
   - Por padrão, PySpark tenta inferir automaticamente o esquema do JSON. No entanto, isso pode não ser a abordagem mais eficiente ou precisa, especialmente para arquivos grandes ou complexos. Para evitar isso:
   - **Esquema explícito**: Você pode definir manualmente o esquema ao ler o arquivo para melhorar o desempenho e a precisão.
   - **Inferência de esquema automática**: Usar `inferSchema=True` é uma opção para JSONs simples, mas pode ser mais lento em arquivos muito grandes.
 
+---
+
 ## 5. **Manuseio de Dados Complexos**
   - **Array e objetos aninhados**: JSONs frequentemente contêm arrays ou objetos aninhados. Para manipular esses dados, você pode precisar usar funções como `explode()` para quebrar arrays ou acessar campos internos com `dot notation` (ex.: `dataframe.select("campo.objeto_interno")`).
+
+---
 
 ## 6. **Leitura de Arquivos**
    O código básico para ler um arquivo JSON em PySpark é:
@@ -79,19 +89,23 @@ Ao trabalhar com arquivos JSON no PySpark, a lógica de leitura segue alguns pas
    df.show()
    ```
 
-   Se o arquivo JSON for multilinha, você deve especificar o parâmetro `multiline=True`:
+   Se o arquivo JSON for multilinha, você deve especificar o parâmetro `multiLine=True`:
 
    ```python
-   df = spark.read.option("multiline", "true").json("caminho_do_arquivo.json")
+   df = spark.read.option("multiLine", True).json("caminho_do_arquivo.json")
    ```
+
+---
 
 ## 7. **Considerações de Desempenho**
   - **Particionamento**: Se o JSON for muito grande, considere o particionamento adequado para otimizar o processamento distribuído no PySpark.
   - **Compressão**: Se o arquivo JSON estiver compactado (como `.gz` ou `.bz2`), PySpark pode ler diretamente esses arquivos sem descompactá-los manualmente.
   - **Schema pré-definido**: Sempre que possível, defina o esquema explicitamente para evitar inferências demoradas em grandes volumes de dados.
 
-## 8. **Exemplo Completo**
-  Aqui está um exemplo completo com inferência de esquema e tratamento de um arquivo multilinha:
+---
+
+## 8. **Outro exemplo**
+  Aqui está mais um exemplo completo com inferência de esquema e tratamento de um arquivo multilinha:
 
    ```python
    from pyspark.sql import SparkSession
@@ -114,6 +128,8 @@ Ao trabalhar com arquivos JSON no PySpark, a lógica de leitura segue alguns pas
    # Mostrar os dados
    df.show()
    ```
+
+---
 
 ## 9. Considerações adicionais
   - **Tipo de dados**: Certifique-se de que os tipos de dados no esquema estão alinhados com os valores no JSON, especialmente em arquivos grandes.
