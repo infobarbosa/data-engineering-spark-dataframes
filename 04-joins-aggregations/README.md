@@ -360,7 +360,7 @@ git clone https://github.com/infobarbosa/datasets-csv-pedidos
 Examine os scripts a seguir e faça as alterações necessárias onde requisitado
 ```python
 from pyspark.sql import SparkSession
-from pyspark.sql.functions import count, sum, avg, max, min
+from pyspark.sql.functions import col, count, sum, avg, max, min
 
 # Inicializando a Spark Session
 spark = SparkSession.builder \
