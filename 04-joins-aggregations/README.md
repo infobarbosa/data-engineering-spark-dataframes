@@ -185,7 +185,7 @@ A operação `groupBy` permite agrupar os dados com base em uma ou mais colunas 
 ```python
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import broadcast
-from pyspark.sql.functions import count, sum, avg, max, min
+from pyspark.sql.functions import count, sum, avg, max, min, variance, stddev
 
 # Inicializando a SparkSession
 spark = SparkSession.builder.appName("dataeng-aggregations").getOrCreate()
