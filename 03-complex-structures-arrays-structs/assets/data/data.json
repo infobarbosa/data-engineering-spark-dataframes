@@ -1,0 +1,554 @@
+{
+    "pedidos": [
+      {
+        "id_pedido": 1,
+        "data_criacao": "2024-10-01",
+        "nome_comprador": "João Silva",
+        "cpf_comprador": "123.456.789-09",
+        "itens": [
+          {
+            "nome": "Smartphone XYZ",
+            "departamento": "Eletrônicos",
+            "quantidade": 1,
+            "valor_unitario": 1999.99,
+            "caracteristicas": [
+              { "marca": "MarcaX" },
+              { "modelo": "XYZ" },
+              { "cor": "Preto" },
+              { "dimensoes": "15 x 7 x 0.8 cm" }
+            ]
+          },
+          {
+            "nome": "Capa Protetora",
+            "departamento": "Acessórios",
+            "quantidade": 1,
+            "valor_unitario": 49.99,
+            "caracteristicas": [
+              { "marca": "MarcaY" },
+              { "cor": "Transparente" },
+              { "compatibilidade": "Smartphone XYZ" }
+            ]
+          }
+        ],
+        "endereco_entrega": {
+          "nome_pessoa": "João Silva",
+          "rua": "Rua das Flores",
+          "complemento": "Apto 101",
+          "bairro": "Centro",
+          "cidade": "São Paulo",
+          "uf": "SP",
+          "cep": "01000-000"
+        },
+        "endereco_cobranca": {
+          "nome_pessoa": "João Silva",
+          "rua": "Rua das Flores",
+          "complemento": "Apto 101",
+          "bairro": "Centro",
+          "cidade": "São Paulo",
+          "uf": "SP",
+          "cep": "01000-000"
+        },
+        "pagamento": {
+          "tipo": "cartao",
+          "data_pagamento": "2024-10-02",
+          "situacao": "APROVADO"
+        },
+        "analise_fraude": {
+          "probabilidade_fraude": 0.15,
+          "data_analise": "2024-10-01"
+        },
+        "entrega": {
+          "status": "EM_ANDAMENTO",
+          "data_prevista_entrega": "2024-10-05",
+          "data_conclusao_entrega": null
+        }
+      },
+      {
+        "id_pedido": 2,
+        "data_criacao": "2024-10-01",
+        "nome_comprador": "Maria Fernandes",
+        "cpf_comprador": "987.654.321-00",
+        "itens": [
+          {
+            "nome": "Notebook ABC",
+            "departamento": "Informática",
+            "quantidade": 1,
+            "valor_unitario": 3499.90,
+            "caracteristicas": [
+              { "marca": "MarcaA" },
+              { "modelo": "ABC" },
+              { "cor": "Prata" },
+              { "dimensoes": "35 x 24 x 2 cm" }
+            ]
+          }
+        ],
+        "endereco_entrega": {
+          "nome_pessoa": "Maria Fernandes",
+          "rua": "Avenida Paulista",
+          "complemento": "Sala 501",
+          "bairro": "Bela Vista",
+          "cidade": "São Paulo",
+          "uf": "SP",
+          "cep": "01310-000"
+        },
+        "endereco_cobranca": {
+          "nome_pessoa": "Maria Fernandes",
+          "rua": "Avenida Paulista",
+          "complemento": "Sala 501",
+          "bairro": "Bela Vista",
+          "cidade": "São Paulo",
+          "uf": "SP",
+          "cep": "01310-000"
+        },
+        "pagamento": {
+          "tipo": "cartao",
+          "data_pagamento": "2024-10-02",
+          "situacao": "APROVADO"
+        },
+        "analise_fraude": {
+          "probabilidade_fraude": 0.20,
+          "data_analise": "2024-10-01"
+        },
+        "entrega": {
+          "status": "EM_ANDAMENTO",
+          "data_prevista_entrega": "2024-10-06",
+          "data_conclusao_entrega": null
+        }
+      },
+      {
+        "id_pedido": 3,
+        "data_criacao": "2024-10-02",
+        "nome_comprador": "Carlos Souza",
+        "cpf_comprador": "159.753.486-22",
+        "itens": [
+          {
+            "nome": "Geladeira Frost Free",
+            "departamento": "Eletrodomésticos",
+            "quantidade": 1,
+            "valor_unitario": 2499.00,
+            "caracteristicas": [
+              { "marca": "MarcaB" },
+              { "modelo": "FrostFree 300L" },
+              { "cor": "Branco" },
+              { "dimensoes": "60 x 70 x 170 cm" }
+            ]
+          }
+        ],
+        "endereco_entrega": {
+          "nome_pessoa": "Carlos Souza",
+          "rua": "Rua das Palmeiras",
+          "complemento": "Casa",
+          "bairro": "Jardim das Flores",
+          "cidade": "Rio de Janeiro",
+          "uf": "RJ",
+          "cep": "20000-000"
+        },
+        "endereco_cobranca": {
+          "nome_pessoa": "Carlos Souza",
+          "rua": "Rua das Palmeiras",
+          "complemento": "Casa",
+          "bairro": "Jardim das Flores",
+          "cidade": "Rio de Janeiro",
+          "uf": "RJ",
+          "cep": "20000-000"
+        },
+        "pagamento": {
+          "tipo": "cartao",
+          "data_pagamento": "2024-10-03",
+          "situacao": "APROVADO"
+        },
+        "analise_fraude": {
+          "probabilidade_fraude": 0.10,
+          "data_analise": "2024-10-02"
+        },
+        "entrega": {
+          "status": "EM_ANDAMENTO",
+          "data_prevista_entrega": "2024-10-07",
+          "data_conclusao_entrega": null
+        }
+      },
+      {
+        "id_pedido": 4,
+        "data_criacao": "2024-10-02",
+        "nome_comprador": "Ana Lima",
+        "cpf_comprador": "321.654.987-11",
+        "itens": [
+          {
+            "nome": "Tênis Esportivo",
+            "departamento": "Calçados",
+            "quantidade": 2,
+            "valor_unitario": 299.99,
+            "caracteristicas": [
+              { "marca": "MarcaC" },
+              { "modelo": "Running Pro" },
+              { "cor": "Azul" },
+              { "tamanho": "38" }
+            ]
+          },
+          {
+            "nome": "Meias",
+            "departamento": "Vestuário",
+            "quantidade": 5,
+            "valor_unitario": 19.99,
+            "caracteristicas": [
+              { "material": "Algodão" },
+              { "cor": "Branco" }
+            ]
+          }
+        ],
+        "endereco_entrega": {
+          "nome_pessoa": "Ana Lima",
+          "rua": "Rua do Sol",
+          "complemento": "Bloco B, Apto 202",
+          "bairro": "Centro",
+          "cidade": "Belo Horizonte",
+          "uf": "MG",
+          "cep": "30000-000"
+        },
+        "endereco_cobranca": {
+          "nome_pessoa": "Ana Lima",
+          "rua": "Rua do Sol",
+          "complemento": "Bloco B, Apto 202",
+          "bairro": "Centro",
+          "cidade": "Belo Horizonte",
+          "uf": "MG",
+          "cep": "30000-000"
+        },
+        "pagamento": {
+          "tipo": "cartao",
+          "data_pagamento": "2024-10-03",
+          "situacao": "APROVADO"
+        },
+        "analise_fraude": {
+          "probabilidade_fraude": 0.05,
+          "data_analise": "2024-10-02"
+        },
+        "entrega": {
+          "status": "EM_ANDAMENTO",
+          "data_prevista_entrega": "2024-10-08",
+          "data_conclusao_entrega": null
+        }
+      },
+      {
+        "id_pedido": 5,
+        "data_criacao": "2024-10-03",
+        "nome_comprador": "Luiz Almeida",
+        "cpf_comprador": "456.789.123-44",
+        "itens": [
+          {
+            "nome": "Televisão 50 Polegadas",
+            "departamento": "Eletrônicos",
+            "quantidade": 1,
+            "valor_unitario": 2999.90,
+            "caracteristicas": [
+              { "marca": "MarcaD" },
+              { "modelo": "SmartTV 4K" },
+              { "cor": "Preto" },
+              { "dimensoes": "112 x 65 x 8 cm" }
+            ]
+          }
+        ],
+        "endereco_entrega": {
+          "nome_pessoa": "Luiz Almeida",
+          "rua": "Avenida das Américas",
+          "complemento": "Casa 5",
+          "bairro": "Barra da Tijuca",
+          "cidade": "Rio de Janeiro",
+          "uf": "RJ",
+          "cep": "22700-000"
+        },
+        "endereco_cobranca": {
+          "nome_pessoa": "Luiz Almeida",
+          "rua": "Avenida das Américas",
+          "complemento": "Casa 5",
+          "bairro": "Barra da Tijuca",
+          "cidade": "Rio de Janeiro",
+          "uf": "RJ",
+          "cep": "22700-000"
+        },
+        "pagamento": {
+          "tipo": "cartao",
+          "data_pagamento": "2024-10-04",
+          "situacao": "APROVADO"
+        },
+        "analise_fraude": {
+          "probabilidade_fraude": 0.80,
+          "data_analise": "2024-10-03"
+        },
+        "entrega": {
+          "status": "REALIZADA",
+          "data_prevista_entrega": "2024-10-09",
+          "data_conclusao_entrega": "2024-10-09"
+        }
+      },
+      {
+        "id_pedido": 6,
+        "data_criacao": "2024-10-03",
+        "nome_comprador": "Paula Mendes",
+        "cpf_comprador": "567.890.234-55",
+        "itens": [
+          {
+            "nome": "Cafeteira Elétrica",
+            "departamento": "Eletrodomésticos",
+            "quantidade": 1,
+            "valor_unitario": 199.90,
+            "caracteristicas": [
+              { "marca": "MarcaE" },
+              { "modelo": "CoffeePlus" },
+              { "cor": "Vermelho" }
+            ]
+          }
+        ],
+        "endereco_entrega": {
+          "nome_pessoa": "Paula Mendes",
+          "rua": "Rua dos Pinheiros",
+          "complemento": "Apto 303",
+          "bairro": "Pinheiros",
+          "cidade": "São Paulo",
+          "uf": "SP",
+          "cep": "05400-000"
+        },
+        "endereco_cobranca": {
+          "nome_pessoa": "Paula Mendes",
+          "rua": "Rua dos Pinheiros",
+          "complemento": "Apto 303",
+          "bairro": "Pinheiros",
+          "cidade": "São Paulo",
+          "uf": "SP",
+          "cep": "05400-000"
+        },
+        "pagamento": {
+          "tipo": "cartao",
+          "data_pagamento": "2024-10-04",
+          "situacao": "RECUSADO"
+        },
+        "analise_fraude": {
+          "probabilidade_fraude": 0.30,
+          "data_analise": "2024-10-03"
+        },
+        "entrega": {
+          "status": "EM_ANDAMENTO",
+          "data_prevista_entrega": "2024-10-10",
+          "data_conclusao_entrega": null
+        }
+      },
+      {
+        "id_pedido": 7,
+        "data_criacao": "2024-10-04",
+        "nome_comprador": "Renato Pereira",
+        "cpf_comprador": "678.901.345-66",
+        "itens": [
+          {
+            "nome": "Bicicleta Mountain Bike",
+            "departamento": "Esportes",
+            "quantidade": 1,
+            "valor_unitario": 1299.99,
+            "caracteristicas": [
+              { "marca": "MarcaF" },
+              { "modelo": "MTB 29" },
+              { "cor": "Verde" },
+              { "tamanho": "19" }
+            ]
+          }
+        ],
+        "endereco_entrega": {
+          "nome_pessoa": "Renato Pereira",
+          "rua": "Rua das Acácias",
+          "complemento": "Casa",
+          "bairro": "Jardim Botânico",
+          "cidade": "Curitiba",
+          "uf": "PR",
+          "cep": "80000-000"
+        },
+        "endereco_cobranca": {
+          "nome_pessoa": "Renato Pereira",
+          "rua": "Rua das Acácias",
+          "complemento": "Casa",
+          "bairro": "Jardim Botânico",
+          "cidade": "Curitiba",
+          "uf": "PR",
+          "cep": "80000-000"
+        },
+        "pagamento": {
+          "tipo": "cartao",
+          "data_pagamento": "2024-10-05",
+          "situacao": "RECUSADO"
+        },
+        "analise_fraude": {
+          "probabilidade_fraude": 0.25,
+          "data_analise": "2024-10-04"
+        },
+        "entrega": {
+          "status": "EM_ANDAMENTO",
+          "data_prevista_entrega": "2024-10-11",
+          "data_conclusao_entrega": null
+        }
+      },
+      {
+        "id_pedido": 8,
+        "data_criacao": "2024-10-04",
+        "nome_comprador": "Clara Azevedo",
+        "cpf_comprador": "000.000.000-00",
+        "itens": [
+          {
+            "nome": "Micro-ondas",
+            "departamento": "Eletrodomésticos",
+            "quantidade": 1,
+            "valor_unitario": 499.90,
+            "caracteristicas": [
+              { "marca": "MarcaG" },
+              { "modelo": "QuickHeat" },
+              { "cor": "Branco" }
+            ]
+          }
+        ],
+        "endereco_entrega": {
+          "nome_pessoa": "Clara Azevedo",
+          "rua": "Rua das Laranjeiras",
+          "complemento": "Apto 404",
+          "bairro": "Laranjeiras",
+          "cidade": "Rio de Janeiro",
+          "uf": "RJ",
+          "cep": "22240-000"
+        },
+        "endereco_cobranca": {
+          "nome_pessoa": "Clara Azevedo",
+          "rua": "Avenida Atlântica",
+          "complemento": "Apto 1501",
+          "bairro": "Copacabana",
+          "cidade": "Rio de Janeiro",
+          "uf": "RJ",
+          "cep": "22070-000"
+        },
+        "pagamento": {
+          "tipo": "boleto",
+          "data_pagamento": "2024-10-05",
+          "situacao": "PAGO"
+        },
+        "analise_fraude": {
+          "probabilidade_fraude": 0.65,
+          "data_analise": "2024-10-04"
+        },
+        "entrega": {
+          "status": "EM_ANDAMENTO",
+          "data_prevista_entrega": "2024-10-12",
+          "data_conclusao_entrega": null
+        }
+      },
+      {
+        "id_pedido": 9,
+        "data_criacao": "2024-10-05",
+        "nome_comprador": "Fernando Gomes",
+        "cpf_comprador": "111.111.111-11",
+        "itens": [
+          {
+            "nome": "Máquina de Lavar",
+            "departamento": "Eletrodomésticos",
+            "quantidade": 1,
+            "valor_unitario": 2199.00,
+            "caracteristicas": [
+              { "marca": "MarcaH" },
+              { "modelo": "WashPro" },
+              { "capacidade": "10kg" },
+              { "cor": "Inox" }
+            ]
+          }
+        ],
+        "endereco_entrega": {
+          "nome_pessoa": "Fernando Gomes",
+          "rua": "Rua do Comércio",
+          "complemento": "Loja 12",
+          "bairro": "Centro",
+          "cidade": "Salvador",
+          "uf": "BA",
+          "cep": "40000-000"
+        },
+        "endereco_cobranca": {
+          "nome_pessoa": "Fernando Gomes",
+          "rua": "Avenida Sete de Setembro",
+          "complemento": "Apto 1201",
+          "bairro": "Centro",
+          "cidade": "Salvador",
+          "uf": "BA",
+          "cep": "40015-000"
+        },
+        "pagamento": {
+          "tipo": "boleto",
+          "data_pagamento": "2024-10-06",
+          "situacao": "PAGO"
+        },
+        "analise_fraude": {
+          "probabilidade_fraude": 0.70,
+          "data_analise": "2024-10-05"
+        },
+        "entrega": {
+          "status": "EM_ANDAMENTO",
+          "data_prevista_entrega": "2024-10-13",
+          "data_conclusao_entrega": null
+        }
+      },
+      {
+        "id_pedido": 10,
+        "data_criacao": "2024-10-05",
+        "nome_comprador": "Sofia Martins",
+        "cpf_comprador": "789.012.345-67",
+        "itens": [
+          {
+            "nome": "Livro 'Aprendendo Python'",
+            "departamento": "Livros",
+            "quantidade": 1,
+            "valor_unitario": 89.90,
+            "caracteristicas": [
+              { "autor": "AutorX" },
+              { "editora": "EditoraY" },
+              { "idioma": "Português" }
+            ]
+          },
+          {
+            "nome": "Kindle",
+            "departamento": "Eletrônicos",
+            "quantidade": 1,
+            "valor_unitario": 349.90,
+            "caracteristicas": [
+              { "marca": "MarcaI" },
+              { "modelo": "Paperwhite" },
+              { "cor": "Preto" }
+            ]
+          }
+        ],
+        "endereco_entrega": {
+          "nome_pessoa": "Sofia Martins",
+          "rua": "Avenida Brasil",
+          "complemento": "Apto 1001",
+          "bairro": "Centro",
+          "cidade": "Porto Alegre",
+          "uf": "RS",
+          "cep": "90000-000"
+        },
+        "endereco_cobranca": {
+          "nome_pessoa": "Sofia Martins",
+          "rua": "Avenida Brasil",
+          "complemento": "Apto 1001",
+          "bairro": "Centro",
+          "cidade": "Porto Alegre",
+          "uf": "RS",
+          "cep": "90000-000"
+        },
+        "pagamento": {
+          "tipo": "boleto",
+          "data_pagamento": null,
+          "situacao": "VENCIDO"
+        },
+        "analise_fraude": {
+          "probabilidade_fraude": 0.18,
+          "data_analise": "2024-10-05"
+        },
+        "entrega": {
+          "status": "EM_ANDAMENTO",
+          "data_prevista_entrega": "2024-10-14",
+          "data_conclusao_entrega": null
+        }
+      }
+    ]
+  }
+  
