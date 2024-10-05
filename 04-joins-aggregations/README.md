@@ -360,7 +360,7 @@ git clone https://github.com/infobarbosa/datasets-csv-pedidos
 Examine os scripts a seguir e faça as alterações necessárias onde requisitado
 ```python
 from pyspark.sql import SparkSession
-from pyspark.sql.functions import col, count, sum, avg, max, min
+from pyspark.sql.functions import col, count, sum, avg, max, min, date_trunc
 
 # Inicializando a Spark Session
 spark = SparkSession.builder \
@@ -392,6 +392,34 @@ print("Resultado do desafio de agregacao 1")
 df_agg1.show(truncate=False)
 ```
 
+Output esperado:
+```
++---+----+
+|UF |qtt |
++---+----+
+|SC |2287|
+|RO |2246|
+|PI |2306|
+|AM |2316|
+|RR |2295|
+|GO |2357|
+|TO |2320|
+|MT |2348|
+|SP |2157|
+|PB |2174|
+|ES |2376|
+|RS |2252|
+|MS |2227|
+|AL |2267|
+|MG |2226|
+|PA |2414|
+|BA |2287|
+|SE |2301|
+|PE |2384|
+|CE |2383|
++---+----+
+```
+
 #### Desafio 2
 Agrupe pelo atributo PRODUTO, calcule a soma do valor total dos pedidos
 
@@ -414,6 +442,23 @@ df_agg2.show(truncate=False)
 
 ```
 
+Output esperado:
+```
++-----------+--------+
+|produto    |total   |
++-----------+--------+
+|TV         |17475000|
+|GELADEIRA  |13532000|
+|NOTEBOOK   |10557000|
+|TABLET     |7719800 |
+|CELULAR    |7080000 |
+|SOUNDBAR   |5878800 |
+|COMPUTADOR |4831400 |
+|MONITOR    |4109400 |
+|HOMETHEATER|3392000 |
++-----------+--------+
+```
+
 #### Desafio 3
 Agrupe pela DATA DO PEDIDO, calcule a soma do valor total dos pedidos
 
@@ -432,7 +477,7 @@ df = df.withColumn("VALOR_TOTAL_PEDIDO", _______)
 
 df_agg3 = df.groupBy(_______) \
             .agg(sum("_______").alias("_______")) \
-            .orderBy(col("_______").desc()) 
+            .orderBy(col("_______").asc()) 
 
 print("Resultado do desafio de agregacao 3")
 df_agg3.show(truncate=False)
@@ -440,6 +485,45 @@ df_agg3.show(truncate=False)
 # Parar a Spark Session
 spark.stop()
 
+```
+
+Output esperado:
+```
++-------------------+-------+
+|data_pedido        |total  |
++-------------------+-------+
+|2024-01-01 00:00:00|2367100|
+|2024-01-02 00:00:00|2437000|
+|2024-01-03 00:00:00|2356600|
+|2024-01-04 00:00:00|2374200|
+|2024-01-05 00:00:00|2338400|
+|2024-01-06 00:00:00|2391400|
+|2024-01-07 00:00:00|2404800|
+|2024-01-08 00:00:00|2370200|
+|2024-01-09 00:00:00|2417000|
+|2024-01-10 00:00:00|2416700|
+|2024-01-11 00:00:00|2429000|
+|2024-01-12 00:00:00|2424500|
+|2024-01-13 00:00:00|2381100|
+|2024-01-14 00:00:00|2438000|
+|2024-01-15 00:00:00|2465400|
+|2024-01-16 00:00:00|2361300|
+|2024-01-17 00:00:00|2447200|
+|2024-01-18 00:00:00|2398700|
+|2024-01-19 00:00:00|2434800|
+|2024-01-20 00:00:00|2512200|
+|2024-01-21 00:00:00|2435300|
+|2024-01-22 00:00:00|2439800|
+|2024-01-23 00:00:00|2314600|
+|2024-01-24 00:00:00|2356500|
+|2024-01-25 00:00:00|2341800|
+|2024-01-26 00:00:00|2332500|
+|2024-01-27 00:00:00|2435700|
+|2024-01-28 00:00:00|2435600|
+|2024-01-29 00:00:00|2463400|
+|2024-01-30 00:00:00|2484300|
+|2024-01-31 00:00:00|2370300|
++-------------------+-------+
 ```
 
 ---
