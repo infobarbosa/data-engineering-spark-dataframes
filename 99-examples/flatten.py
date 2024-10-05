@@ -85,3 +85,16 @@ df5.printSchema()
 df5.show(truncate=False)
 
 
+print("Explodindo INTERESSES")
+schema6 = StructType([
+			StructField("nome", StringType()),
+            StructField("idade", IntegerType()),
+            StructField("interesses", ArrayType(StringType()))
+])
+
+df6 = spark.read.json("./data.json", multiLine=True, schema=schema6)
+df6.printSchema()
+df6.show()
+
+df_exploded = df6.select(col("nome"), col("idade"), explode(col("interesses")).alias("interesse"))
+df_exploded.show()
