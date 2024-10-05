@@ -233,14 +233,14 @@ df_pedido.show(truncate=False)
 A função `count` é utilizada para contar o número de elementos em um DataFrame ou RDD no Apache Spark. Ela retorna um valor inteiro que representa a quantidade total de registros presentes na estrutura de dados. Esta função é frequentemente usada em operações de agregação para obter o tamanho de um conjunto de dados.
 
 ```python
-print('Exemplo 1: Contagem de registros por departamento')
+print('Exemplo 4.2: Contagem de registros por departamento')
 count_by_desc = df_pedido.groupBy("departamento_produto").agg(count("id_cliente").alias("count"))
 count_by_desc.show()
 
 ```
 
 ```python
-print('Exemplo 1: Contagem de registros por departamento usando função embutida')
+print('Exemplo 4.2: Contagem de registros por departamento usando função embutida')
 count_by_desc_builtin = df_pedido.groupBy("departamento_produto").count()
 count_by_desc_builtin.show()
 
@@ -254,14 +254,14 @@ A função `sum` é utilizada para calcular a soma dos valores de uma coluna esp
 
 
 ```python
-print('Exemplo 2: Soma dos valores por departamento')
+print('Exemplo 4.3: Soma dos valores por departamento')
 sum_by_desc = df_pedido.groupBy("departamento_produto").agg(sum("valor_total_pedido").alias("sum_valor"))
 sum_by_desc.show()
 
 ```
 
 ```python
-print('Exemplo 2: Soma dos valores por departamento usando função embutida')
+print('Exemplo 4.3: Soma dos valores por departamento usando função embutida')
 sum_by_desc_builtin = df_pedido.groupBy("departamento_produto").sum("valor_total_pedido").alias("sum_valor")
 sum_by_desc_builtin.show()
 
@@ -274,7 +274,7 @@ A função `avg` é utilizada para calcular a média dos valores de uma coluna e
 **Exemplo de uso:**
 
 ```python
-print('Exemplo 3: Média dos valores por departamento')
+print('Exemplo 4.4: Média dos valores por departamento')
 avg_by_depart = df_pedido.groupBy("departamento_produto").agg(avg("valor_total_pedido").alias("avg_valor"))
 avg_by_depart.show()
 ```
@@ -286,16 +286,9 @@ A função `max` é utilizada para encontrar o valor máximo de uma coluna espec
 **Exemplo de uso:**
 
 ```python
-print('Exemplo 4: Valor máximo por departamento')
+print('Exemplo 4.5: Valor máximo por departamento')
 max_by_depart = df_pedido.groupBy("departamento_produto").agg(max("valor_total_pedido").alias("max_valor"))
 max_by_depart.show()
-```
-
-```python
-print('Exemplo 4: Valor máximo por departamento')
-max_by_depart = df_pedido.groupBy("departamento_produto").agg(max("valor_total_pedido").alias("max_valor"))
-max_by_depart.show()
-
 ```
 
 ### 4.6. `min()`
@@ -305,7 +298,7 @@ A função `min` é utilizada para encontrar o valor mínimo de uma coluna espec
 **Exemplo de uso:**
 
 ```python
-print('Exemplo 5: Valor mínimo por departamento')
+print('Exemplo 4.6: Valor mínimo por departamento')
 min_by_depart = df_pedido.groupBy("departamento_produto").agg(min("valor_total_pedido").alias("min_valor"))
 min_by_depart.show()
 ```
@@ -318,7 +311,7 @@ A função `stddev` é utilizada para calcular o desvio padrão dos valores de u
 **Exemplo de uso:**
 
 ```python
-print('Exemplo 6: Desvio padrão dos valores por departamento')
+print('Exemplo 4.7: Desvio padrão dos valores por departamento')
 stddev_by_depart = df_pedido.groupBy("departamento_produto").agg(stddev("valor_total_pedido").alias("stddev_valor"))
 stddev_by_depart.show()
 ```
@@ -330,24 +323,29 @@ A função `variance` é utilizada para calcular a variância dos valores de uma
 **Exemplo de uso:**
 
 ```python
-print('Exemplo 7: Variância dos valores por departamento')
+print('Exemplo 4.8: Variância dos valores por departamento')
 variance_by_depart = df_pedido.groupBy("departamento_produto").agg(variance("valor_total_pedido").alias("variance_valor"))
 variance_by_depart.show()
 ```
 
+### 4.9. Agrupando múltiplas agregações
+
+É possível realizar múltiplas agregações em um único comando no Apache Spark. Isso é útil quando você precisa calcular várias estatísticas de uma vez, como contagem, soma, média, valor máximo e valor mínimo, agrupadas por uma ou mais colunas. O exemplo a seguir mostra como agrupar os dados pelo campo `departamento_produto` e aplicar todas essas funções de agregação em uma única operação.
 
 ```python
-print('Exemplo 6: Todas as agregações em um único comando')
+print('Exemplo 4.9: Todas as agregações em um único comando')
 all_aggregations = df_pedido.groupBy("departamento_produto").agg(
     count("id_cliente").alias("count"),
     sum("valor_total_pedido").alias("sum_valor"),
     avg("valor_total_pedido").alias("avg_valor"),
     max("valor_total_pedido").alias("max_valor"),
-    min("valor_total_pedido").alias("min_valor")
+    min("valor_total_pedido").alias("min_valor"),
+    variance("valor_total_pedido").alias("var_valor"),
+    stddev("valor_total_pedido").alias("stdev_valor")
 )
 all_aggregations.show()
-
 ```
+
 ---
 
 ## 5. Desafio
