@@ -53,9 +53,9 @@ df_clientes.createOrReplaceTempView("clientes")
 
 print("DataFrame de pedidos")
 
-# Definindo o schema dos dados de pedidos
 schema_pedidos = StructType([
     StructField("id_cliente", StringType(), True),
+    StructField("id_pedido", IntegerType(), True),
     StructField("quantidade", IntegerType(), True),
     StructField("descricao_produto", StringType(), True),
     StructField("valor_produto", FloatType(), True),
@@ -65,16 +65,16 @@ schema_pedidos = StructType([
 
 # Criando o DataFrame de pedidos com o schema definido
 dados_pedidos = [
-    ('2b162060', 2, 'Celular', 1500.00, 3000.00, '2024-09-01'),
-    ('2b162060', 1, 'Notebook', 3500.00, 3500.00, '2024-09-05'),
-    ('2b16242a', 1, 'Geladeira', 2000.00, 2000.00, '2024-09-03'),
-    ('2b16396a', 1, 'Smart TV', 2500.00, 2500.00, '2024-09-08'),
-    ('2b16353c', 10, 'Teclado', 150.00, 1500.00, '2024-09-10'),
-    ('2b16256a', 1, 'Fogão', 1200.00, 1200.00, '2024-09-02'),
-    ('2b16256a', 1, 'Microondas', 800.00, 800.00, '2024-09-04'),
-    ('2b16256a', 1, 'Máquina de Lavar', 1800.00, 1800.00, '2024-09-06'),
-    ('2b16256a', 1, 'Ventilador', 200.00, 200.00, '2024-09-09'),
-    ('2b16256a', 1, 'Aspirador de Pó', 600.00, 600.00, '2024-09-11')
+    ('2b162060', 10, 2, 'Celular', 1500.00, 3000.00, '2024-09-01'),
+    ('2b162060', 20, 1, 'Notebook', 3500.00, 3500.00, '2024-09-05'),
+    ('2b16242a', 30, 1, 'Geladeira', 2000.00, 2000.00, '2024-09-03'),
+    ('2b16396a', 40, 1, 'Smart TV', 2500.00, 2500.00, '2024-09-08'),
+    ('2b16353c', 50, 10, 'Teclado', 150.00, 1500.00, '2024-09-10'),
+    ('2b16256a', 60, 1, 'Fogão', 1200.00, 1200.00, '2024-09-02'),
+    ('2b16256a', 70, 1, 'Microondas', 800.00, 800.00, '2024-09-04'),
+    ('2b16256a', 80, 1, 'Máquina de Lavar', 1800.00, 1800.00, '2024-09-06'),
+    ('2b16256a', 90, 1, 'Ventilador', 200.00, 200.00, '2024-09-09'),
+    ('2b16256a', 99, 1, 'Aspirador de Pó', 600.00, 600.00, '2024-09-11')
 ]
 
 df_pedidos = spark.createDataFrame(dados_pedidos, schema=schema_pedidos)
