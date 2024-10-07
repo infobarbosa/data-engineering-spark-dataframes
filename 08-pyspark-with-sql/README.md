@@ -210,7 +210,7 @@ A operação de cube é uma generalização do rollup que permite calcular subto
 #### 5.2.1 Exemplo de Cube
 
 ```python
-# Exemplo de cube para calcular vendas por combinação de cliente, ano, trimestre e mês
+# Exemplo de cube para calcular vendas por combinação de ano, trimestre e mês
 cube_vendas = spark.sql("""
     SELECT YEAR(data_pedido) as ano, 
            QUARTER(data_pedido) as trimestre, 
@@ -223,7 +223,7 @@ cube_vendas = spark.sql("""
 cube_vendas.show()
 ```
 
-### 5.3 Considerações Finais
+### 5.3 Considerações
 
 Rollups e cubes são poderosas ferramentas para análise de dados, permitindo que você obtenha insights detalhados e resumidos de grandes volumes de dados. No PySpark, essas operações são realizadas de maneira eficiente, aproveitando o poder de processamento distribuído do Spark.
 
