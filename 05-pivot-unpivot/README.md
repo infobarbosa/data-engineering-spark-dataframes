@@ -15,9 +15,11 @@
 Neste módulo, exploraremos técnicas avançadas de manipulação de DataFrames no Apache Spark. Abordaremos transformações complexas como pivot e unpivot.
 O pivot transforma valores únicos de uma coluna em múltiplas colunas, enquanto o unpivot faz o processo inverso.
 
-## 2. Exemplo
+## 2. Pivot
 
 ![pivot](pivot-unpivot.png)
+
+
 
 ```python
 from pyspark.sql import SparkSession
@@ -55,14 +57,70 @@ print('Exemplo de Pivot')
 df_pivot = df.groupBy("nome").pivot("curso").agg({"nota": "max"})
 df_pivot.show()
 
-print('Exemplo de Unpivot (Requer manipulação manual no PySpark')
-unpivoted = df_pivot.selectExpr("nome", "stack(2, 'Matematica', MATEMATICA, 'Historia', HISTORIA) as (curso, nota)")
-unpivoted.show()
+
+```
+
+**Dataframe original:**
+```
++-----+----------+----+
+| nome|     curso|nota|
++-----+----------+----+
+| João|MATEMATICA|  85|
+| João|  HISTORIA|  90|
+|Maria|MATEMATICA|  95|
+|Maria|  HISTORIA|  80|
++-----+----------+----+
+```
+
+Output esperado após o pivot:
+```
++-----+--------+----------+
+| nome|HISTORIA|MATEMATICA|
++-----+--------+----------+
+| João|      90|        85|
+|Maria|      80|        95|
++-----+--------+----------+
 ```
 
 ---
 
-## 3. Desafio 1
+## 3. Unpivot
+
+O processo de unpivot é utilizado para transformar colunas em linhas, o que pode ser útil para normalizar dados ou prepará-los para análises específicas. No PySpark, essa operação pode ser realizada utilizando a função `selectExpr` com a expressão `stack`.
+
+**Exemplo de código:**
+
+Considere o seguinte DataFrame:
+
+```python
+print('Exemplo de Unpivot (Requer manipulação manual no PySpark')
+unpivoted = df_pivot.selectExpr("nome", "stack(2, 'Matematica', MATEMATICA, 'Historia', HISTORIA) as (curso, nota)")
+unpivoted.show()
+
+```
+
+Output:
+```
+
+```
+
+Para realizar o unpivot e transformar os trimestres em linhas, utilizamos a expressão `stack`. <br>
+A sintaxe da função stack é:
+```
+stack(n, coluna1, valor1, coluna2, valor2, ..., colunaN, valorN)
+```
+
+- `n` é o número de colunas que você deseja empilhar.
+- Cada par subsequente representa o nome que será atribuído na nova coluna e o valor correspondente.
+
+Exemplo:
+```
+unpivot_expr = "stack(3, 'produto_A', produto_A, 'produto_B', produto_B, 'produto_C', produto_C) as (produto, valor)"
+```
+
+---
+
+## 4. Desafio 1 - Pivot
 Examine o dataset a seguir:
 ```
 +-----------------+----+------+                                                 
@@ -132,7 +190,7 @@ df_pivot.show()
 
 ---
 
-## 4. Desafio 2
+## 5. Desafio 2 - Unpivot
 
 Você recebeu um dataset contendo 5 colunas:
 - Produto
@@ -214,10 +272,10 @@ df_unpivot.show()
 
 ```
 
-## 5. Parabéns!
+## 6. Parabéns!
 Parabéns por concluir o módulo! Você aprendeu técnicas de manipulação de DataFrames no Apache Spark, aplicando as operações **pivot** e **unpivot**.
 
-## 6. Destruição dos recursos
+## 7. Destruição dos recursos
 Para evitar custos desnecessários, lembre-se de destruir os recursos criados durante este módulo:
 - Exclua quaisquer instâncias do AWS Cloud9 que não sejam mais necessárias.
 - Remova dados temporários ou resultados intermediários armazenados no S3.
