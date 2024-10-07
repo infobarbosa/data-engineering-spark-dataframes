@@ -11,6 +11,8 @@
 
 Este módulo demonstra a integração da linguagem SQL com o PySpark, utilizando os datasets de clientes, pedidos e pagamentos como exemplos. O foco é apresentar os conceitos fundamentais dessa integração, e não oferecer um curso completo de SQL.
 
+---
+
 ## 2. Visualizações temporárias
 
 No PySpark, você pode criar visualizações temporárias a partir de DataFrames usando o método `createOrReplaceTempView`. Essas visualizações permitem que você execute consultas SQL diretamente nos dados carregados. A seguir, um exemplo de como criar uma visualização temporária para um dataset de clientes:
@@ -96,6 +98,7 @@ clientes_df.show()
 
 **Nota:** As visualizações temporárias são específicas para a sessão Spark em que foram criadas e não persistem após o término da sessão.
 
+---
 
 ## 3. Junções
 
@@ -107,6 +110,7 @@ spark.sql("""
     """).show()
 ```
 
+---
 
 ## 4. Agregações 
 
@@ -179,6 +183,8 @@ soma_valor_pedidos_condicional = spark.sql("""
 soma_valor_pedidos_condicional.show()
 ```
 
+---
+
 ## 5. Rollups e Cubes
 
 Rollups e cubes são técnicas avançadas de agregação que permitem sumarizar dados em múltiplos níveis de granularidade. Essas operações são extremamente úteis para análises multidimensionais, como relatórios de vendas por diferentes combinações de dimensões (por exemplo, por produto, por região, por período).
@@ -227,6 +233,7 @@ cube_vendas.show()
 
 Rollups e cubes são poderosas ferramentas para análise de dados, permitindo que você obtenha insights detalhados e resumidos de grandes volumes de dados. No PySpark, essas operações são realizadas de maneira eficiente, aproveitando o poder de processamento distribuído do Spark.
 
+---
 
 ## 6. Desafio
 Faça o clone dos datasets a seguir:
@@ -245,6 +252,8 @@ git clone https://github.com/infobarbosa/dataset-json-pagamentos
 Utilizando os datasets acima e os conhecimentos adquiridos ao longo do curso, elabore os scripts PySpark que respondam às seguintes questões:
 1. Qual o valor total de pedidos para o estado de São Paulo?
 2. Apresente o valor total de pedidos com status de fraude igual a verdadeiro. Agrupe por UF e inclua o total geral considerando todos os estados.
+
+---
 
 ## 7. Parabéns!
 Você concluiu com sucesso o módulo de PySpark com SQL! Agora você está apto a integrar consultas SQL com DataFrames no PySpark, realizar junções, agregações e utilizar técnicas avançadas como rollups e cubes. Continue praticando e explorando novas funcionalidades para se tornar ainda mais proficiente em análise de dados com PySpark.
