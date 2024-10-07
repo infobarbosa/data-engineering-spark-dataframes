@@ -93,15 +93,53 @@ O processo de unpivot é utilizado para transformar colunas em linhas, o que pod
 Considere o seguinte DataFrame:
 
 ```python
+from pyspark.sql import SparkSession
+from pyspark.sql.types import StructType, StructField, StringType, IntegerType
+
+# Iniciar uma sessão Spark
+spark = SparkSession.builder.appName("DesafioPySpark").getOrCreate()
+
+# O dataset:
+#  +-----+--------+----------+
+#  | nome|HISTORIA|MATEMATICA|
+#  +-----+--------+----------+
+#  | João|      90|        85|
+#  |Maria|      80|        95|
+#  +-----+--------+----------+
+
+data = [
+    ("João", 85, 90),
+    ("Maria", 95, 80)
+]
+
+schema = StructType([
+    StructField("nome", StringType(), True),
+    StructField("matematica", IntegerType(), True),
+    StructField("historia", IntegerType(), True)
+])
+df = spark.createDataFrame(data, schema)
+
+print("O dataframe original: ")
+df.show( truncate=False)
+
+unpivot_expression = "stack(2, 'Mat', MATEMATICA, 'Hist', HISTORIA) as (curso, nota)"
+
 print('Exemplo de Unpivot (Requer manipulação manual no PySpark')
-unpivoted = df_pivot.selectExpr("nome", "stack(2, 'Matematica', MATEMATICA, 'Historia', HISTORIA) as (curso, nota)")
+unpivoted = df.selectExpr("nome", unpivot_expression)
 unpivoted.show()
 
 ```
 
 Output:
 ```
-
++-----+-----+----+
+| nome|curso|nota|
++-----+-----+----+
+| João|  Mat|  85|
+| João| Hist|  90|
+|Maria|  Mat|  95|
+|Maria| Hist|  80|
++-----+-----+----+
 ```
 
 Para realizar o unpivot e transformar os trimestres em linhas, utilizamos a expressão `stack`. <br>
@@ -273,7 +311,7 @@ df_unpivot.show()
 ```
 
 ## 6. Parabéns!
-Parabéns por concluir o módulo! Você aprendeu técnicas de manipulação de DataFrames no Apache Spark, aplicando as operações **pivot** e **unpivot**.
+Parabéns por concluir o módulo! Você aprendeu técnicas de manipulação de DataFrames no Apache Spark, aplicando as operações **Pivot** e **Unpivot**.
 
 ## 7. Destruição dos recursos
 Para evitar custos desnecessários, lembre-se de destruir os recursos criados durante este módulo:
