@@ -78,10 +78,40 @@ window_spec_cliente = Window.partitionBy("id_cliente").orderBy("data_pedido")
 df_pedido_window_cliente = df_pedido.withColumn("numero_pedido", row_number().over(window_spec_cliente))
 
 print("Dataframe df_pedido_window_cliente: ")
-df_pedido_window_cliente.show()
-
+df_pedido_window_cliente \
+    .select("id_cliente", "numero_pedido", "data_pedido") \
+    .orderBy("id_cliente", "numero_pedido").show()
 
 ```
+
+Output esperado:
+```
++----------+-------------+-----------+
+|id_cliente|numero_pedido|data_pedido|
++----------+-------------+-----------+
+|  2b162060|            1| 2024-09-01|
+|  2b162060|            2| 2024-09-05|
+|  2b162345|            1| 2024-09-12|
+|  2b162346|            1| 2024-09-13|
+|  2b162347|            1| 2024-09-14|
+|  2b162348|            1| 2024-09-15|
+|  2b162349|            1| 2024-09-16|
+|  2b162350|            1| 2024-09-17|
+|  2b162351|            1| 2024-09-18|
+|  2b162352|            1| 2024-09-19|
+|  2b162353|            1| 2024-09-20|
+|  2b162354|            1| 2024-09-21|
+|  2b16242a|            1| 2024-09-03|
+|  2b16256a|            1| 2024-09-02|
+|  2b16256a|            2| 2024-09-04|
+|  2b16256a|            3| 2024-09-06|
+|  2b16256a|            4| 2024-09-09|
+|  2b16256a|            5| 2024-09-11|
+|  2b16353c|            1| 2024-09-10|
+|  2b16396a|            1| 2024-09-08|
++----------+-------------+-----------+
+```
+
 ## 2. Exemplo 2 com `row_number()`
 
 ```python
