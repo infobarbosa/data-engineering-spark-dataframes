@@ -431,6 +431,8 @@ Observe que para cada produto, a coluna `vendas_dia_anterior` mostra as vendas d
 
 A função `lag` é extremamente útil para análises que requerem a comparação de valores entre linhas consecutivas. Ela permite calcular variações, taxas de crescimento e outras métricas que dependem de valores sequenciais.
 
+---
+
 ## 6. Desafio
 
 Faça o clone do repositório abaixo:
