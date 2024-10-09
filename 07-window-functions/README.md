@@ -156,6 +156,18 @@ Output esperado:
 +--------------------+-------------+-----------+
 ```
 
+O mesmo pode ser feito sem uso de `withColumn`:
+```python
+print("Diretamente no select, sem criar a nova coluna")
+df_pedido \
+    .select("departamento_produto", \
+            "data_pedido", \
+            row_number().over(window_spec_departamento).alias("posicao")) \
+    .orderBy("departamento_produto", "posicao") \
+    .show()
+
+```
+
 ## 3. Exemplo com `rank()`
 
 A função `rank()` é uma função de janela que atribui uma classificação a cada linha dentro de uma partição, com base na ordenação especificada. Em caso de empates, as linhas recebem a mesma classificação, e a próxima classificação é pulada.
@@ -214,9 +226,7 @@ spark.stop()
 3. **Aplicação da Função `rank`**: Adicionamos uma nova coluna `rank` ao DataFrame, que contém a classificação dos salários dentro de cada departamento.
 4. **Exibição do Resultado**: Mostramos o DataFrame resultante, que inclui a classificação de cada funcionário dentro de seu departamento.
 
-### Resultado Esperado
-
-Ao executar o código, o output será semelhante a:
+Output esperado:
 
 ```
 +--------+------------+-------+----+
@@ -307,9 +317,7 @@ spark.stop()
 3. **Aplicação da Função `dense_rank`**: Adicionamos uma nova coluna `dense_rank` ao DataFrame, que contém a classificação dos salários dentro de cada departamento.
 4. **Exibição do Resultado**: Mostramos o DataFrame resultante, que inclui a classificação de cada funcionário dentro de seu departamento.
 
-### Resultado Esperado
-
-Ao executar o código, o output será semelhante a:
+Output esperado:
 
 ```
 +--------+------------+-------+----------+
@@ -402,9 +410,7 @@ spark.stop()
 4. **Aplicação da Função `lag`**: Usamos `lag("vendas", 1).over(janela)` para obter o valor das vendas na linha anterior dentro da mesma partição.
 5. **Cálculo da Diferença de Vendas**: Calculamos a diferença entre as vendas atuais e as vendas do dia anterior.
 
-### Resultado Esperado
-
-Ao executar o código, o output será semelhante a:
+Ouput esperado:
 
 ```
 +----------+---------+------+-------------------+----------+
@@ -427,13 +433,11 @@ Observe que para cada produto, a coluna `vendas_dia_anterior` mostra as vendas d
 
 A função `lag` é extremamente útil para análises que requerem a comparação de valores entre linhas consecutivas. Ela permite calcular variações, taxas de crescimento e outras métricas que dependem de valores sequenciais.
 
-
----
-
-
 ---
 ## 7. Parabéns!
-Parabéns por concluir o módulo! Agora você domina operações de junção e agregação avançadas no Apache Spark, incluindo o uso de funções analíticas e agregações complexas.
+Você concluiu com sucesso o módulo sobre funções de janela no Spark! Esperamos que você tenha aprendido como utilizar as funções `row_number`, `rank`, `dense_rank` e `lag` para realizar análises avançadas em seus dados. Continue praticando e explorando novas possibilidades com o Spark para aprimorar suas habilidades em engenharia de dados. Bom trabalho e até a próxima!
+
+---
 
 ## 8. Destruição dos recursos
 Para evitar custos desnecessários, lembre-se de destruir os recursos criados durante este módulo:
