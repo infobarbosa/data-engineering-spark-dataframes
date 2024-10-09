@@ -122,9 +122,40 @@ window_spec_departamento = Window.partitionBy("departamento_produto").orderBy("d
 df_pedido_window_departamento = df_pedido.withColumn("numero_pedido", row_number().over(window_spec_departamento))
 
 print("Dataframe df_pedido_window_departamento: ")
-df_pedido_window_departamento.show()
+df_pedido_window_departamento \
+    .select("departamento_produto", "numero_pedido", "data_pedido") \
+    .orderBy("departamento_produto", "numero_pedido").show()
 
 ```
+
+Output esperado:
+```
++--------------------+-------------+-----------+
+|departamento_produto|numero_pedido|data_pedido|
++--------------------+-------------+-----------+
+|   CASA E CONSTRUCAO|            1| 2024-09-16|
+|    ELETRODOMESTICOS|            1| 2024-09-02|
+|    ELETRODOMESTICOS|            2| 2024-09-03|
+|    ELETRODOMESTICOS|            3| 2024-09-04|
+|    ELETRODOMESTICOS|            4| 2024-09-06|
+|    ELETRODOMESTICOS|            5| 2024-09-09|
+|    ELETRODOMESTICOS|            6| 2024-09-11|
+|    ELETRODOMESTICOS|            7| 2024-09-12|
+|    ELETRODOMESTICOS|            8| 2024-09-21|
+|         ELETRONICOS|            1| 2024-09-01|
+|         ELETRONICOS|            2| 2024-09-05|
+|         ELETRONICOS|            3| 2024-09-08|
+|         ELETRONICOS|            4| 2024-09-19|
+|             ESPORTE|            1| 2024-09-15|
+|         INFORMATICA|            1| 2024-09-10|
+|         INFORMATICA|            2| 2024-09-13|
+|         INFORMATICA|            3| 2024-09-14|
+|              MOVEIS|            1| 2024-09-17|
+|              MOVEIS|            2| 2024-09-18|
+|           PAPELARIA|            1| 2024-09-20|
++--------------------+-------------+-----------+
+```
+
 ## 3. Exemplo com `rank()`
 
 A função `rank()` é uma função de janela que atribui uma classificação a cada linha dentro de uma partição, com base na ordenação especificada. Em caso de empates, as linhas recebem a mesma classificação, e a próxima classificação é pulada.
