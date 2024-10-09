@@ -253,6 +253,45 @@ Utilizando os datasets acima e os conhecimentos adquiridos ao longo do curso, el
 1. Qual o valor total de pedidos para o estado de São Paulo?
 2. Apresente o valor total de pedidos com status de fraude igual a verdadeiro. Agrupe por UF e inclua o total geral considerando todos os estados.
 
+Código inicial:
+```python
+from pyspark.sql import SparkSession
+
+# Inicializando a Spark Session
+spark = SparkSession.builder \
+    .appName("dataeng-desafio-desafio-sql") \
+    .getOrCreate()
+
+# Carregando o dataset pedidos
+df_ped = spark.read \
+    .format("csv") \
+    .option("compression", "gzip") \
+    .option("header", True) \
+    .option("sep", ";") \
+    .load("./datasets-csv-pedidos/*.csv.gz", inferSchema=True)
+
+# Carregando o dataset clientes
+df_cli = spark.read \
+    .format("csv") \
+    .option("compression", "gzip") \
+    .option("header", True) \
+    .option("sep", ";") \
+    .load("./datasets-csv-clientes/*.csv.gz", inferSchema=True)
+
+# Carregando o dataset pagamentos
+df_pag = spark.read \
+    .format("json") \
+    .option("multiLine", True) \
+    .load("./dataset-json-pagamentos/*.json", inferSchema=True)
+
+# Mostrando o schema para verificar o carregamento correto dos dados
+df_ped.printSchema()
+df_cli.printSchema()
+df_pag.printSchema()
+
+# DESENVOLVA SUA LOGICA AQUI
+
+```
 ---
 
 ## 7. Parabéns!
