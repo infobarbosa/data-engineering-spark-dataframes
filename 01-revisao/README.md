@@ -104,6 +104,7 @@ A operação `select` no Spark permite selecionar colunas específicas de um Dat
 
    ```
 
+   **Código**
    ```python
    from pyspark.sql import SparkSession
 
@@ -125,19 +126,6 @@ A operação `select` no Spark permite selecionar colunas específicas de um Dat
 
    ```
 
-**Saída esperada:**
-   ```
-   +---+----------------------+----------------------------------+
-   |id |nome                  |email                             |
-   +---+----------------------+----------------------------------+
-   |1  |Isabelly Barbosa      |isabelly.barbosa@example.com      |
-   |2  |Larissa Fogaça        |larissa.fogaca@example.com        |
-   |3  |João Gabriel Silveira |joao.gabriel.silveira@example.com |
-   |4  |Pedro Lucas Nascimento|pedro.lucas.nascimento@example.com|
-   |5  |Felipe Azevedo        |felipe.azevedo@example.com        |
-   +---+----------------------+----------------------------------+
-   ```
-
 Neste exemplo, utilizamos a função `select` para escolher apenas as colunas `id`, `nome` e `email` do DataFrame original. Isso pode ser útil para reduzir a quantidade de dados processados ou para focar em informações específicas.
 
 
@@ -150,6 +138,7 @@ A operação `filter` no Spark permite filtrar linhas de um DataFrame com base e
 
    ```
 
+   **Código**
    ```python
    from pyspark.sql import SparkSession
    from pyspark.sql.functions import col
@@ -178,6 +167,7 @@ A operação `filter` no Spark permite filtrar linhas de um DataFrame com base e
 
    ```
 
+   **Código**
    ```python
    from pyspark.sql import SparkSession
    from pyspark.sql.functions import col
@@ -228,6 +218,7 @@ Os operadores lógicos no PySpark são usados para combinar ou inverter condiç�
 
    ```
 
+   **Código**
    ```python
    from pyspark.sql import SparkSession
    from pyspark.sql.functions import col
@@ -253,7 +244,40 @@ Os operadores lógicos no PySpark são usados para combinar ou inverter condiç�
 
    ```
 
+### 2.5. Enriquecimento com `withColumn`
 
+   ```sh
+   touch revisao-2.5.withColumn.py
+
+   ```
+
+   **Código**
+   ```python
+   from pyspark.sql import SparkSession
+   from pyspark.sql.functions import col, split, year, to_date
+
+   # Inicializando a SparkSession
+   spark = SparkSession.builder.appName("dataeng-novas-colunas").getOrCreate()
+
+   # Carregando o DataFrame a partir de um arquivo CSV
+   df = spark.read \
+      .format("csv") \
+      .option("sep", ";") \
+      .option("header", True) \
+      .load("./datasets-csv-clientes/clientes.csv.gz")
+
+   # Convertendo 'data_nasc' para tipo Date
+   df = df.withColumn("data_nasc", to_date(col("data_nasc"), "yyyy-MM-dd"))
+
+   # Criando as novas colunas: ano_nasc e primeiro_nome
+   df_enriquecido = df \
+      .withColumn("ano_nasc", year(col("data_nasc"))) \
+      .withColumn("primeiro_nome", split(col("nome"), " ")[0])
+
+   # Mostrando as primeiras linhas do DataFrame enriquecido
+   df_enriquecido.select("nome", "data_nasc", "ano_nasc", "primeiro_nome").show(5, truncate=False)
+
+   ```
 ### 2.5. Transformações e Ações
 As transformações no Spark são operações "lazy", ou seja, elas não são executadas até que uma ação seja chamada. <br>
 Exemplos de transformações incluem `filter`, `select`, `groupBy`, enquanto ações incluem `show`, `count`, `collect`.
@@ -291,6 +315,12 @@ O Spark SQL suporta vários tipos de dados que podem ser usados para definir o e
 Esses tipos de dados são definidos no módulo `pyspark.sql.types` e são usados para especificar o esquema de um DataFrame.
 
 **Exemplo**
+   ```sh
+   touch revisao-3.1.data-types.py
+
+   ```
+
+   **Código**
    ```python
    from pyspark.sql import SparkSession
    from pyspark.sql.types import StructType, StructField, StringType, LongType, DateType
