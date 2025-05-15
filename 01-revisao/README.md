@@ -67,7 +67,12 @@ Os DataFrames são estruturas de dados distribuídas, imutáveis e organizadas e
 
    ```
 
-3. A seguir vamos criar um script que carrega o arquivo `clientes.csv.gz`.
+3. A seguir vamos criar um script `revisao-2.1.py` que carrega o arquivo `clientes.csv.gz`.
+
+   ```sh
+   touch revisao-2.1.py
+
+   ```
 
    ```python
    from pyspark.sql import SparkSession
@@ -93,40 +98,45 @@ Os DataFrames são estruturas de dados distribuídas, imutáveis e organizadas e
 ### 2.2. Seleção de Colunas com `select`
 A operação `select` no Spark permite selecionar colunas específicas de um DataFrame. Isso é útil quando você deseja trabalhar apenas com um subconjunto dos dados.
 
-**Exemplo de código:**
-```python
-from pyspark.sql import SparkSession
+**Exemplo**
+   ```sh
+   touch revisao-2.2.py
 
-# Inicializando a SparkSession
-spark = SparkSession.builder.appName("dataeng-select").getOrCreate()
+   ```
 
-# Carregando o DataFrame a partir de um arquivo CSV
-df = spark.read \
-   .format("csv") \
-   .option("sep", ";") \
-   .option("header", True) \
-   .load("./datasets-csv-clientes/clientes.csv.gz")
+   ```python
+   from pyspark.sql import SparkSession
 
-# Selecionando colunas específicas
-df_selected = df.select("id", "nome", "email")
+   # Inicializando a SparkSession
+   spark = SparkSession.builder.appName("dataeng-select").getOrCreate()
 
-# Mostrando as primeiras linhas do DataFrame selecionado
-df_selected.show(5, truncate=False)
+   # Carregando o DataFrame a partir de um arquivo CSV
+   df = spark.read \
+      .format("csv") \
+      .option("sep", ";") \
+      .option("header", True) \
+      .load("./datasets-csv-clientes/clientes.csv.gz")
 
-```
+   # Selecionando colunas específicas
+   df_selected = df.select("id", "nome", "email")
+
+   # Mostrando as primeiras linhas do DataFrame selecionado
+   df_selected.show(5, truncate=False)
+
+   ```
 
 **Saída esperada:**
-```
-+---+----------------------+----------------------------------+
-|id |nome                  |email                             |
-+---+----------------------+----------------------------------+
-|1  |Isabelly Barbosa      |isabelly.barbosa@example.com      |
-|2  |Larissa Fogaça        |larissa.fogaca@example.com        |
-|3  |João Gabriel Silveira |joao.gabriel.silveira@example.com |
-|4  |Pedro Lucas Nascimento|pedro.lucas.nascimento@example.com|
-|5  |Felipe Azevedo        |felipe.azevedo@example.com        |
-+---+----------------------+----------------------------------+
-```
+   ```
+   +---+----------------------+----------------------------------+
+   |id |nome                  |email                             |
+   +---+----------------------+----------------------------------+
+   |1  |Isabelly Barbosa      |isabelly.barbosa@example.com      |
+   |2  |Larissa Fogaça        |larissa.fogaca@example.com        |
+   |3  |João Gabriel Silveira |joao.gabriel.silveira@example.com |
+   |4  |Pedro Lucas Nascimento|pedro.lucas.nascimento@example.com|
+   |5  |Felipe Azevedo        |felipe.azevedo@example.com        |
+   +---+----------------------+----------------------------------+
+   ```
 
 Neste exemplo, utilizamos a função `select` para escolher apenas as colunas `id`, `nome` e `email` do DataFrame original. Isso pode ser útil para reduzir a quantidade de dados processados ou para focar em informações específicas.
 
@@ -134,45 +144,117 @@ Neste exemplo, utilizamos a função `select` para escolher apenas as colunas `i
 ### 2.3. Filtragem com `filter`
 A operação `filter` no Spark permite filtrar linhas de um DataFrame com base em uma condição específica. Isso é útil para trabalhar apenas com um subconjunto de dados que atende a determinados critérios.
 
-**Exemplo de código:**
-```python
-from pyspark.sql import SparkSession
-from pyspark.sql.functions import col
+**Exemplo 1**
+   ```sh
+   touch revisao-2.3.filtro-simples.py
 
-# Inicializando a SparkSession
-spark = SparkSession.builder.appName("dataeng-filter").getOrCreate()
+   ```
 
-# Carregando o DataFrame a partir de um arquivo CSV
-df = spark.read \
-   .format("csv") \
-   .option("sep", ";") \
-   .option("header", True) \
-   .load("./datasets-csv-clientes/clientes.csv.gz")
+   ```python
+   from pyspark.sql import SparkSession
+   from pyspark.sql.functions import col
 
-# Filtrando linhas onde a idade é maior que 50 anos
-df_filtrado = df.filter(col("data_nasc") <= "1973-01-01")
+   # Inicializando a SparkSession
+   spark = SparkSession.builder.appName("dataeng-filter").getOrCreate()
 
-# Mostrando as primeiras linhas do DataFrame filtrado
-df_filtrado.show(5, truncate=False)
+   # Carregando o DataFrame a partir de um arquivo CSV
+   df = spark.read \
+      .format("csv") \
+      .option("sep", ";") \
+      .option("header", True) \
+      .load("./datasets-csv-clientes/clientes.csv.gz")
 
-```
+   # Filtrando linhas onde a idade é maior que 50 anos
+   df_filtrado = df.filter(col("data_nasc") <= "1973-01-01")
 
-**Saída esperada:**
-```
-+---+----------------------+----------+--------------+----------------------------------+
-|id |nome                  |data_nasc |cpf           |email                             |
-+---+----------------------+----------+--------------+----------------------------------+
-|1  |Isabelly Barbosa      |1963-08-15|137.064.289-03|isabelly.barbosa@example.com      |
-|2  |Larissa Fogaça        |1933-09-29|703.685.294-10|larissa.fogaca@example.com        |
-|3  |João Gabriel Silveira |1958-05-27|520.179.643-52|joao.gabriel.silveira@example.com |
-|4  |Pedro Lucas Nascimento|1950-08-23|274.351.896-00|pedro.lucas.nascimento@example.com|
-|6  |Ana Laura Lopes       |1963-04-27|165.284.390-60|ana.laura.lopes@example.com       |
-+---+----------------------+----------+--------------+----------------------------------+
-```
+   # Mostrando as primeiras linhas do DataFrame filtrado
+   df_filtrado.show(5, truncate=False)
 
-Neste exemplo, utilizamos a função `filter` para selecionar apenas as linhas onde a data de nascimento é anterior a 1973-01-01, ou seja, pessoas com mais de 50 anos. Isso pode ser útil para análises específicas de grupos etários.
+   ```
 
-### 2.4. Transformações e Ações
+**Exemplo 2 (between)**
+   ```sh
+   touch revisao-2.3.filtro-between.py
+
+   ```
+
+   ```python
+   from pyspark.sql import SparkSession
+   from pyspark.sql.functions import col
+
+   # Inicializando a SparkSession
+   spark = SparkSession.builder.appName("dataeng-filter").getOrCreate()
+
+   # Carregando o DataFrame a partir de um arquivo CSV
+   df = spark.read \
+      .format("csv") \
+      .option("sep", ";") \
+      .option("header", True) \
+      .load("./datasets-csv-clientes/clientes.csv.gz")
+
+   # Filtrando pessoas que nasceram entre 1975 e 1980
+   df_filtrado = df.filter(col("data_nasc").between("1975-01-01", "1980-12-31"))
+
+   # Mostrando as primeiras linhas do DataFrame filtrado
+   df_filtrado.show(5, truncate=False)
+
+   ```
+### 2.4. Operadores lógicos
+Os operadores lógicos no PySpark são usados para combinar ou inverter condições ao filtrar ou manipular dados em DataFrames. Eles permitem criar expressões complexas para selecionar ou transformar dados com base em múltiplos critérios. Os operadores mais comuns incluem `&` (AND), `|` (OR), e `~` (NOT). Esses operadores são aplicados em conjunto com funções como `col` ou expressões de coluna.
+
+**Exemplos de operadores lógicos:**
+
+1. **AND (`&`)**  
+   Filtra linhas que atendem a todas as condições especificadas.  
+   ```python
+   df.filter((col("idade") > 30) & (col("cidade") == "São Paulo")).show()
+   ```
+
+2. **OR (`|`)**  
+   Filtra linhas que atendem a pelo menos uma das condições especificadas.  
+   ```python
+   df.filter((col("idade") > 30) | (col("cidade") == "São Paulo")).show()
+   ```
+
+3. **NOT (`~`)**  
+   Filtra linhas que não atendem a uma condição específica.  
+   ```python
+   df.filter(~(col("cidade") == "São Paulo")).show()
+   ```
+
+**Exemplo 1 (filtro composto )**
+   ```sh
+   touch revisao-2.4.filtro-composto.py
+
+   ```
+
+   ```python
+   from pyspark.sql import SparkSession
+   from pyspark.sql.functions import col
+
+   # Inicializando a SparkSession
+   spark = SparkSession.builder.appName("dataeng-filter").getOrCreate()
+
+   # Carregando o DataFrame a partir de um arquivo CSV
+   df = spark.read \
+      .format("csv") \
+      .option("sep", ";") \
+      .option("header", True) \
+      .load("./datasets-csv-clientes/clientes.csv.gz")
+
+   # Filtrando pessoas com nome iniciando por Pedro e nascimento entre 1975 e 1980
+   df_filtrado = df.filter(
+      (col("data_nasc").between("1975-01-01", "1980-12-31")) &
+      (split(col("nome"), " ")[0] == "Pedro")
+   )
+   
+   # Mostrando as primeiras linhas do DataFrame filtrado
+   df_filtrado.show(5, truncate=False)
+
+   ```
+
+
+### 2.5. Transformações e Ações
 As transformações no Spark são operações "lazy", ou seja, elas não são executadas até que uma ação seja chamada. <br>
 Exemplos de transformações incluem `filter`, `select`, `groupBy`, enquanto ações incluem `show`, `count`, `collect`.
 
@@ -187,7 +269,7 @@ print(f"Total de pessoas com mais de 30 anos: {total}")
 
 ---
 
-## 3. Revisão dos Tipos de Dados e Esquemas
+## 3. Tipos de Dados e Esquemas
 No Spark, o esquema de um DataFrame define as colunas e seus tipos de dados. É possível definir o esquema manualmente ou permitir que o Spark infira automaticamente a partir dos dados.
 
 ### 3.1. Tipos de Dados no Spark
@@ -208,50 +290,43 @@ O Spark SQL suporta vários tipos de dados que podem ser usados para definir o e
 
 Esses tipos de dados são definidos no módulo `pyspark.sql.types` e são usados para especificar o esquema de um DataFrame.
 
-**Exemplo de uso:**
-```python
-from pyspark.sql import SparkSession
-from pyspark.sql.types import StructType, StructField, StringType, LongType, DateType
+**Exemplo**
+   ```python
+   from pyspark.sql import SparkSession
+   from pyspark.sql.types import StructType, StructField, StringType, LongType, DateType
 
-# Inicializando a SparkSession
-spark = SparkSession.builder.appName("dataeng-revisao-dataframe").getOrCreate()
+   # Inicializando a SparkSession
+   spark = SparkSession.builder.appName("dataeng-revisao-dataframe").getOrCreate()
 
-# Definindo o schema
-schema = StructType([
-   StructField("ID", LongType(), True),
-   StructField("NOME", StringType(), True),
-   StructField("DATA_NASC", DateType(), True),
-   StructField("CPF", StringType(), True),
-   StructField("EMAIL", StringType(), True)
-])
+   # Definindo o schema
+   schema = StructType([
+      StructField("ID", LongType(), True),
+      StructField("NOME", StringType(), True),
+      StructField("DATA_NASC", DateType(), True),
+      StructField("CPF", StringType(), True),
+      StructField("EMAIL", StringType(), True)
+   ])
 
-# Criando o dataframe utilizando o schema definido acima
-df = spark.read \
-      .format("csv") \
-      .option("compression", "gzip") \
-      .option("sep", ";") \
-      .option("header", True) \
-      .load("./datasets-csv-clientes/clientes.csv.gz", schema=schema)
+   # Criando o dataframe utilizando o schema definido acima
+   df = spark.read \
+         .format("csv") \
+         .option("compression", "gzip") \
+         .option("sep", ";") \
+         .option("header", True) \
+         .load("./datasets-csv-clientes/clientes.csv.gz", schema=schema)
 
-# Mostrando o schema
-df.printSchema()
+   # Mostrando o schema
+   df.printSchema()
 
-# Mostrando as primeiras linhas do DataFrame
-df.show()
+   # Mostrando as primeiras linhas do DataFrame
+   df.show()
 
-```
+   ```
 
 ## 4. Exercício 1
 **Objetivo:** Definir um esquema personalizado, criar um DataFrame a partir de um arquivo JSON e aplicar uma algumas transformações e ações.
 
-**Instruções:**
-1. Instale o `pyspark`:
-   ```sh
-   pip install pyspark
-
-   ```
-
-2. Crie o arquivo `data.json` com o seguinte conteúdo:
+1. Crie o arquivo `data.json` com o seguinte conteúdo:
    ```json
    [
       { "nome": "João"     ,"idade": 25,"cidade": "São Paulo"     },
@@ -300,7 +375,7 @@ df.show()
    ]
    ```
 
-3. Crie o script `modulo1.py` que realiza as seguintes etapas:
+2. Crie o script `modulo1.py` que realiza as seguintes etapas:
    - Carrega o arquivo JSON de exemplo.
    - Aplica transformações para filtrar e agrupar dados.
    - Define um esquema personalizado para o DataFrame.
@@ -331,9 +406,10 @@ df.show()
    df_result.show()
 
    df_result.printSchema()
+
    ```
 
-4. Execute o script `modulo1.py`:
+3. Execute o script `modulo1.py`:
    ```sh
    python modulo1.py 
 
