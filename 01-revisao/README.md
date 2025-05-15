@@ -45,7 +45,7 @@ Crédito: https://spark.apache.org/docs/latest/cluster-overview.html
 
 7. **MLlib**: Uma biblioteca de aprendizado de máquina que fornece algoritmos e ferramentas para tarefas como classificação, regressão e clustering.
 
-8. **GraphX**: Um módulo para análise de grafos e computação gráfica.
+8. **GraphX**: Um módulo para análise e processamento de grafos.
 
 Esses elementos trabalham juntos para fornecer uma plataforma robusta e escalável para análise de dados em larga escala.
 
