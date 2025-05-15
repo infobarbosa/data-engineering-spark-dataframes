@@ -309,9 +309,9 @@ df.show(truncate=False)
 <details>
   <summary>Clique aqui</summary>
 
-**Solução 3 do Desafio PySpark - Sem uso de UDF**
+**Solução 3 do Desafio PySpark - Pandas UDF**
 
-Vamos implementar o calculo da idade e retornar a saudação personalizada, desta vez sem qualquer uso de UDF.
+Vamos implementar o calculo da idade e retornar a saudação personalizada, desta vez com Pandas UDF.
 
 **Código completo:**
 
