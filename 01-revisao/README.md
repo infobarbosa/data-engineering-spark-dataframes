@@ -14,39 +14,76 @@
 ## 1. Introdução
 Neste módulo, vamos revisar os conceitos fundamentais do Apache Spark relacionados ao uso de DataFrames. Esta base teórica é essencial para os próximos módulos do curso, onde abordaremos tópicos mais avançados.
 
+### 1.1. Apache Spark
+O **Apache Spark** é uma plataforma de computação distribuída de código aberto projetada para processar grandes volumes de dados de forma rápida e eficiente. Ele foi desenvolvido para superar as limitações de desempenho do Hadoop MapReduce, oferecendo um modelo de processamento em memória que reduz significativamente o tempo de execução de tarefas.
+
+### Propósito
+O principal objetivo do Apache Spark é fornecer uma estrutura unificada para o processamento de dados em larga escala, permitindo a execução de tarefas como:
+- Processamento em lote;
+- Processamento em tempo real (streaming);
+- Consultas interativas;
+- Machine Learning;
+- Análise de grafos.
+
+### Principais Elementos da Arquitetura
+1. **Driver**: O componente central que coordena a execução do programa Spark. Ele traduz as operações de alto nível em tarefas distribuídas e as envia para os executores.
+
+2. **Executors**: São os processos responsáveis por executar as tarefas atribuídas pelo driver. Cada executor armazena dados em memória e realiza cálculos.
+
+3. **Cluster Manager**: Gerencia os recursos do cluster e aloca nós para o driver e os executores. Exemplos incluem YARN, Mesos e o gerenciador de cluster embutido do Spark.
+
+4. **RDD (Resilient Distributed Dataset)**: A abstração fundamental do Spark, representando um conjunto de dados distribuído e imutável que pode ser processado em paralelo.
+
+5. **Spark SQL**: Um módulo para trabalhar com dados estruturados, permitindo consultas SQL e integração com DataFrames e Datasets.
+
+6. **Spark Streaming**: Um módulo para processamento de dados em tempo real, permitindo a análise contínua de fluxos de dados.
+
+7. **MLlib**: Uma biblioteca de aprendizado de máquina que fornece algoritmos e ferramentas para tarefas como classificação, regressão e clustering.
+
+8. **GraphX**: Um módulo para análise de grafos e computação gráfica.
+
+Esses elementos trabalham juntos para fornecer uma plataforma robusta e escalável para análise de dados em larga escala.
+
 ## 2. Conceitos Fundamentais de DataFrame
 ### 2.1. Criação de DataFrames
 Os DataFrames são estruturas de dados distribuídas, imutáveis e organizadas em colunas nomeadas. No Spark, você pode criar DataFrames de várias fontes, como arquivos CSV, JSON, Parquet, tabelas SQL, entre outros.
 
 **Exemplo**
 
-Faça o clone do repositório a seguir:
-```sh
-git clone https://github.com/infobarbosa/datasets-csv-clientes
-```
+1. Faça o clone do repositório a seguir:
+   ```sh
+   git clone https://github.com/infobarbosa/datasets-csv-clientes
 
-A seguir vamos criar um script que carrega o arquivo `clientes.csv.gz`.
+   ```
 
-```python
-from pyspark.sql import SparkSession
+2. Instale o **pyspark**:
+   ```
+   pip install pyspark
 
-# Inicializando a SparkSession
-spark = SparkSession.builder.appName("dataeng-revisao-dataframe").getOrCreate()
+   ```
 
-# Criando um DataFrame a partir de um arquivo CSV
-df = spark.read \
-      .format("csv") \
-      .option("compression", "gzip") \
-      .option("sep", ";") \
-      .load("./datasets-csv-clientes/clientes.csv.gz", header=True, inferSchema=True)
+3. A seguir vamos criar um script que carrega o arquivo `clientes.csv.gz`.
 
-# Mostrando o schema
-df.printSchema()
+   ```python
+   from pyspark.sql import SparkSession
 
-# Mostrando as primeiras linhas do DataFrame
-df.show()
+   # Inicializando a SparkSession
+   spark = SparkSession.builder.appName("dataeng-revisao-dataframe").getOrCreate()
 
-```
+   # Criando um DataFrame a partir de um arquivo CSV
+   df = spark.read \
+         .format("csv") \
+         .option("compression", "gzip") \
+         .option("sep", ";") \
+         .load("./datasets-csv-clientes/clientes.csv.gz", header=True, inferSchema=True)
+
+   # Mostrando o schema
+   df.printSchema()
+
+   # Mostrando as primeiras linhas do DataFrame
+   df.show()
+
+   ```
 
 ### 2.2. Seleção de Colunas com `select`
 A operação `select` no Spark permite selecionar colunas específicas de um DataFrame. Isso é útil quando você deseja trabalhar apenas com um subconjunto dos dados.
@@ -310,6 +347,7 @@ Elabore o script pyspark para:
 Faça o clone do dataset `clientes.csv.gz`
 ```sh
 git clone https://github.com/infobarbosa/datasets-csv-clientes
+
 ```
 
 #### O leiaute 
