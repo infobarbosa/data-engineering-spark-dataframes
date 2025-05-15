@@ -26,6 +26,11 @@ O principal objetivo do Apache Spark é fornecer uma estrutura unificada para o 
 - Análise de grafos.
 
 ### Principais Elementos da Arquitetura
+
+![Apache Spark Architecture](apache-spark-architecture.png)
+
+Crédito: https://spark.apache.org/docs/latest/cluster-overview.html
+
 1. **Driver**: O componente central que coordena a execução do programa Spark. Ele traduz as operações de alto nível em tarefas distribuídas e as envia para os executores.
 
 2. **Executors**: São os processos responsáveis por executar as tarefas atribuídas pelo driver. Cada executor armazena dados em memória e realiza cálculos.
