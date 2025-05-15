@@ -342,19 +342,30 @@ data = [
 columns = ["nome", "data_nascimento"]
 df = spark.createDataFrame(data, columns)
 
-# Definindo a Pandas UDF
+# Definindo a Pandas UDF corrigida
 @pandas_udf(StringType())
 def saudacao_personalizada(nome: pd.Series, data_nascimento: pd.Series) -> pd.Series:
     data_nasc = pd.to_datetime(data_nascimento)
     data_atual = pd.to_datetime(datetime.now().date())
-    idade = (data_atual.year - data_nasc.dt.year) - ((data_atual.month, data_atual.day) < (data_nasc.dt.month, data_nasc.dt.day))
-    return "Olá, " + nome + "! Você tem " + idade.astype(str) + " anos."
+
+    # Cálculo da idade base
+    idade = data_atual.year - data_nasc.dt.year
+
+    # Ajuste caso o aniversário ainda não tenha ocorrido este ano
+    aniversarios_ja_ocorreram = (
+        (data_nasc.dt.month < data_atual.month) |
+        ((data_nasc.dt.month == data_atual.month) & (data_nasc.dt.day <= data_atual.day))
+    )
+    idade_ajustada = idade.where(aniversarios_ja_ocorreram, idade - 1)
+
+    return "Olá, " + nome + "! Você tem " + idade_ajustada.astype(str) + " anos."
 
 # Aplicando a Pandas UDF
 df = df.withColumn("saudacao", saudacao_personalizada("nome", "data_nascimento"))
 
 # Exibindo o resultado
 df.show(truncate=False)
+
 
 ``` 
 </details>
