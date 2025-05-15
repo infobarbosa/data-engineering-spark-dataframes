@@ -446,7 +446,7 @@ Esses tipos de dados são definidos no módulo `pyspark.sql.types` e são usados
 
    ```
 
-3. Execute o script `modulo1.py`:
+3. Execute o script:
    ```sh
    python revisao-4-exercicio-1.py
 
