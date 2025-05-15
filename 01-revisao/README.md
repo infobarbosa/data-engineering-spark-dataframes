@@ -407,13 +407,18 @@ Esses tipos de dados são definidos no módulo `pyspark.sql.types` e são usados
    ]
    ```
 
-2. Crie o script `modulo1.py` que realiza as seguintes etapas:
+2. Crie o script `revisao-4-exercicio-1.py` que realiza as seguintes etapas:
    - Carrega o arquivo JSON de exemplo.
    - Aplica transformações para filtrar e agrupar dados.
    - Define um esquema personalizado para o DataFrame.
    - Exibe o resultado final das transformações.
 
-   **Código do laboratório:**
+   ```sh
+   touch revisao-4-exercicio-1.py
+
+   ```
+
+   **Código**
    ```python
    from pyspark.sql import SparkSession
    from pyspark.sql.types import StructType, StructField, StringType, IntegerType
@@ -443,7 +448,7 @@ Esses tipos de dados são definidos no módulo `pyspark.sql.types` e são usados
 
 3. Execute o script `modulo1.py`:
    ```sh
-   python modulo1.py 
+   python revisao-4-exercicio-1.py
 
    ```
 
