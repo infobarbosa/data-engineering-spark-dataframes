@@ -282,6 +282,7 @@ Os operadores lógicos no PySpark são usados para combinar ou inverter condiç�
    ```
 
 **Exemplo 2 (When/Otherwise)**
+
    No PySpark, as funções when e otherwise são usadas para criar colunas condicionais, de forma semelhante a um if...else ou CASE WHEN no SQL.
 
    ```sh
@@ -319,6 +320,7 @@ Os operadores lógicos no PySpark são usados para combinar ou inverter condiç�
    ```
 
 **Exemplo 3 (When/Otherwise)**
+
    É possível ter diversas cláusulas when no PySpark — e essa é, inclusive, a forma recomendada para simular um if...elif...else ou um CASE WHEN completo do SQL.
 
    ```sh
