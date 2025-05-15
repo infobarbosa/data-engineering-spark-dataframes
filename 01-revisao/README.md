@@ -246,6 +246,8 @@ Os operadores lógicos no PySpark são usados para combinar ou inverter condiç�
 
 ### 2.5. Enriquecimento com `withColumn`
 
+
+**Exemplo 1**
    ```sh
    touch revisao-2.5.withColumn.py
 
@@ -278,6 +280,46 @@ Os operadores lógicos no PySpark são usados para combinar ou inverter condiç�
    df_enriquecido.select("nome", "data_nasc", "ano_nasc", "primeiro_nome").show(5, truncate=False)
 
    ```
+
+**Exemplo 2 (When/Otherwise)**
+   No PySpark, as funções when e otherwise são usadas para criar colunas condicionais, de forma semelhante a um if...else ou CASE WHEN no SQL.
+
+   ```sh
+   touch revisao-2.5.withColumn-When-Otherwise.py
+
+   ```
+
+   **Código**
+   ```python
+   from pyspark.sql import SparkSession
+   from pyspark.sql.functions import col, split, year, to_date, current_date, datediff, when
+
+   # Inicializando a SparkSession
+   spark = SparkSession.builder.appName("dataeng-maioridade").getOrCreate()
+
+   # Carregando o DataFrame a partir de um arquivo CSV
+   df = spark.read \
+      .format("csv") \
+      .option("sep", ";") \
+      .option("header", True) \
+      .load("./datasets-csv-clientes/clientes.csv.gz")
+
+   # Convertendo a coluna data_nasc para tipo Date
+   df = df.withColumn("data_nasc", to_date(col("data_nasc"), "yyyy-MM-dd"))
+
+   # Criando a coluna 'maior_de_idade' com base na diferença de dias
+   df_com_maioridade = df.withColumn(
+      "maior_de_idade",
+      when((datediff(current_date(), col("data_nasc")) / 365.25) >= 18, "Sim").otherwise("Não")
+   )
+
+   # Visualizando as primeiras linhas com nome, data_nasc e maior_de_idade
+   df_com_maioridade.select("nome", "data_nasc", "maior_de_idade").show(5, truncate=False)
+
+   ```
+
+---
+
 ### 2.6. Transformações e Ações
 As transformações no Spark são operações "lazy", ou seja, elas não são executadas até que uma ação seja chamada. <br>
 Exemplos de transformações incluem `filter`, `select`, `groupBy`, enquanto ações incluem `show`, `count`, `collect`.
