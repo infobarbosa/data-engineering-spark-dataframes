@@ -278,7 +278,7 @@ Os operadores lógicos no PySpark são usados para combinar ou inverter condiç�
    df_enriquecido.select("nome", "data_nasc", "ano_nasc", "primeiro_nome").show(5, truncate=False)
 
    ```
-### 2.5. Transformações e Ações
+### 2.6. Transformações e Ações
 As transformações no Spark são operações "lazy", ou seja, elas não são executadas até que uma ação seja chamada. <br>
 Exemplos de transformações incluem `filter`, `select`, `groupBy`, enquanto ações incluem `show`, `count`, `collect`.
 
