@@ -285,7 +285,7 @@ Os operadores lógicos no PySpark são usados para combinar ou inverter condiç�
    No PySpark, as funções when e otherwise são usadas para criar colunas condicionais, de forma semelhante a um if...else ou CASE WHEN no SQL.
 
    ```sh
-   touch revisao-2.5.withColumn-When-Otherwise.py
+   touch revisao-2.5.A-withColumn-When-Otherwise.py
 
    ```
 
@@ -315,6 +315,49 @@ Os operadores lógicos no PySpark são usados para combinar ou inverter condiç�
 
    # Visualizando as primeiras linhas com nome, data_nasc e maior_de_idade
    df_com_maioridade.select("nome", "data_nasc", "maior_de_idade").show(5, truncate=False)
+
+   ```
+
+**Exemplo 3 (When/Otherwise)**
+   É possível ter diversas cláusulas when no PySpark — e essa é, inclusive, a forma recomendada para simular um if...elif...else ou um CASE WHEN completo do SQL.
+
+   ```sh
+   touch revisao-2.5.B-withColumn-When-Otherwise.py
+
+   ```
+
+   **Código**
+   ```python
+   from pyspark.sql import SparkSession
+   from pyspark.sql.functions import col, to_date, current_date, datediff, when
+
+   # Inicializando a SparkSession
+   spark = SparkSession.builder.appName("dataeng-faixa-etaria").getOrCreate()
+
+   # Carregando o DataFrame a partir do CSV
+   df = spark.read \
+      .format("csv") \
+      .option("sep", ";") \
+      .option("header", True) \
+      .load("./datasets-csv-clientes/clientes.csv.gz")
+
+   # Convertendo 'data_nasc' para tipo date
+   df = df.withColumn("data_nasc", to_date(col("data_nasc"), "yyyy-MM-dd"))
+
+   # Calculando a idade (diferença em anos, aproximada)
+   df = df.withColumn("idade", (datediff(current_date(), col("data_nasc")) / 365.25).cast("int"))
+
+   # Classificando por faixa etária
+   df = df.withColumn("faixa_etaria",
+      when(col("idade") < 12, "Criança")
+      .when(col("idade") < 18, "Adolescente")
+      .when(col("idade") < 60, "Adulto")
+      .otherwise("Idoso")
+   )
+
+   # Mostrando resultado
+   df.select("nome", "data_nasc", "idade", "faixa_etaria").show(10, truncate=False)
+
 
    ```
 
