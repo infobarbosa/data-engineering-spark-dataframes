@@ -434,14 +434,14 @@ Esses tipos de dados são definidos no módulo `pyspark.sql.types` e são usados
    ])
 
    df_json = spark.read.json("data.json", schema=schema_custom, multiLine=True)
-   df_json.show()
+   df_json.show(10, False)
+   df_json.printSchema()
 
    # Transformações e ações
    df_result = df_json.filter(df_json["idade"] > 25).groupBy("cidade").count()
 
    # Mostrando o resultado
-   df_result.show()
-
+   df_result.show(10, False)
    df_result.printSchema()
 
    ```
