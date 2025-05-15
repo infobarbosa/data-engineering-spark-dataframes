@@ -349,9 +349,11 @@ Esses tipos de dados são definidos no módulo `pyspark.sql.types` e são usados
    df.printSchema()
 
    # Mostrando as primeiras linhas do DataFrame
-   df.show()
+   df.show(10, False)
 
    ```
+
+   O **StructType** é uma classe do módulo `pyspark.sql.types` usada para definir o esquema de um DataFrame no Apache Spark. Ele representa uma estrutura de dados composta por uma lista de campos, onde cada campo é definido por um objeto **StructField**. Os parâmetros que o **StructType** recebe incluem uma lista de **StructField**, onde cada **StructField** especifica o nome da coluna, o tipo de dado (como `StringType`, `IntegerType`, etc.) e se o campo pode conter valores nulos (`nullable`). Essa abordagem permite criar esquemas personalizados para leitura de dados estruturados, como arquivos CSV ou JSON.
 
 ## 4. Exercício 1
 **Objetivo:** Definir um esquema personalizado, criar um DataFrame a partir de um arquivo JSON e aplicar uma algumas transformações e ações.
