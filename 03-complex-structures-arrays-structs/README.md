@@ -71,6 +71,16 @@ Ao trabalhar com arquivos JSON no PySpark, a lógica de leitura segue alguns pas
 ## 5. **Manuseio de Dados Complexos**
   - **Array e objetos aninhados**: JSONs frequentemente contêm arrays ou objetos aninhados. Para manipular esses dados, você pode precisar usar funções como `explode()` para quebrar arrays ou acessar campos internos com `dot notation` (ex.: `dataframe.select("campo.objeto_interno")`).
 
+#### 📌 O que a função explode faz?
+A função explode() transforma valores que estão em arrays (ou mapas) em várias linhas, uma para cada elemento. É usada quando você quer "desaninhar" estruturas complexas, como listas ou arrays de structs, para processar ou visualizar cada item separadamente.
+
+#### ✅ Quando é necessário usar explode?
+Você deve usar explode quando:
+- A coluna contém listas ou arrays (ex: ArrayType)
+- Você quer transformar cada item da lista em uma linha separada
+
+No exemplo de código apresentado anteriormente, manipulamos um DataFrame contendo uma coluna de arrays de structs (no caso, os cursos de cada aluno). Ao utilizar explode(df["cursos"]), transformamos cada elemento do array presente na coluna cursos em uma nova linha do DataFrame, mantendo as demais informações associadas ao registro original. Isso facilita a análise e o processamento de dados aninhados, permitindo, por exemplo, visualizar cada curso e nota de um aluno em linhas separadas. Assim, o uso do explode é fundamental para "desaninhar" estruturas complexas e trabalhar de forma mais eficiente com dados que possuem arrays ou listas em seu esquema.
+
 ---
 
 ## 6. **Leitura de Arquivos**
