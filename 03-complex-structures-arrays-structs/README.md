@@ -14,7 +14,8 @@
 ## 1. Introdução
 DataFrames no Spark podem conter estruturas de dados complexas como arrays e structs. Manipular esses tipos de dados requer técnicas específicas.
 
-**Exemplo de código:**
+## Exemplo 1
+
 ```python
 ### 1. Importe as bibliotecas necessárias:
 from pyspark.sql import SparkSession
@@ -80,6 +81,109 @@ Você deve usar explode quando:
 - Você quer transformar cada item da lista em uma linha separada
 
 No exemplo de código apresentado anteriormente, manipulamos um DataFrame contendo uma coluna de arrays de structs (no caso, os cursos de cada aluno). Ao utilizar explode(df["cursos"]), transformamos cada elemento do array presente na coluna cursos em uma nova linha do DataFrame, mantendo as demais informações associadas ao registro original. Isso facilita a análise e o processamento de dados aninhados, permitindo, por exemplo, visualizar cada curso e nota de um aluno em linhas separadas. Assim, o uso do explode é fundamental para "desaninhar" estruturas complexas e trabalhar de forma mais eficiente com dados que possuem arrays ou listas em seu esquema.
+
+## Exemplo 2
+
+Vamos considerar um dataset de um campeonato de futebol com 3 times. O dataset inclui duas estruturas aninhadas:
+
+- **Array de jogadores** (necessita de `explode` para analisar cada jogador individualmente)
+- **Struct de estatísticas do time** (não necessita de `explode`, basta acessar os campos internos)
+
+```python
+from pyspark.sql import SparkSession
+from pyspark.sql.functions import explode, col
+from pyspark.sql.types import StringType, IntegerType, StructType, StructField, ArrayType
+
+# Iniciar sessão Spark
+spark = SparkSession.builder.appName("CampeonatoFutebol").getOrCreate()
+
+data = [
+  {
+    "time": "Linhares",
+    "jogadores": [
+      {"nome": "Chimbinha", "gols": 5, "cartoes": 1},
+      {"nome": "Fofão", "gols": 2, "cartoes": 0}
+    ],
+    "estatisticas": {
+      "vitorias": 8,
+      "empates": 2,
+      "derrotas": 1
+    }
+  },
+  {
+    "time": "Ibiraçu",
+    "jogadores": [
+      {"nome": "Sansão", "gols": 3, "cartoes": 2},
+      {"nome": "Morte Lenta", "gols": 4, "cartoes": 1}
+    ],
+    "estatisticas": {
+      "vitorias": 7,
+      "empates": 3,
+      "derrotas": 1
+    }
+  },
+  {
+    "time": "Colatina",
+    "jogadores": [
+      {"nome": "Pepê", "gols": 6, "cartoes": 0},
+      {"nome": "Neném", "gols": 1, "cartoes": 2}
+    ],
+    "estatisticas": {
+      "vitorias": 6,
+      "empates": 4,
+      "derrotas": 1
+    }
+  }
+]
+
+schema = StructType([
+    StructField("time", StringType(), True),
+    StructField("jogadores", ArrayType(
+        StructType([
+            StructField("nome", StringType(), True),
+            StructField("gols", IntegerType(), True),
+            StructField("cartoes", IntegerType(), True)
+        ])
+    ), True),
+    StructField("estatisticas", StructType([
+        StructField("vitorias", IntegerType(), True),
+        StructField("empates", IntegerType(), True),
+        StructField("derrotas", IntegerType(), True)
+    ]), True)
+])
+
+df = spark.createDataFrame(data, schema)
+
+# 1. Explodir o array de jogadores para analisar cada jogador individualmente
+df_jogadores = df.select(
+    "time",
+    explode("jogadores").alias("jogador"),
+    "estatisticas"
+)
+
+# Selecionar informações detalhadas dos jogadores
+df_jogadores.select(
+    "time",
+    col("jogador.nome").alias("nome_jogador"),
+    col("jogador.gols"),
+    col("jogador.cartoes")
+).show()
+
+# 2. Acessar campos internos da struct de estatísticas (sem explode)
+df_estatisticas = df.select(
+    "time",
+    col("estatisticas.vitorias"),
+    col("estatisticas.empates"),
+    col("estatisticas.derrotas")
+)
+
+df_estatisticas.show()
+
+```
+
+**Resumo:**
+- Use `explode` para transformar o array de jogadores em linhas individuais.
+- Para acessar campos de uma struct (como estatísticas), basta usar a notação de ponto, sem necessidade de `explode`.
 
 ---
 
