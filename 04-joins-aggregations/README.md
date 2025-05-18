@@ -19,7 +19,7 @@ Os joins no Apache Spark são operações fundamentais que permitem combinar dad
 O Spark oferece vários tipos de joins, como **inner join**, **left join**, **right join**, **full join** e **cross join**, cada um com suas características e casos de uso específicos. <br>
 A eficiência dessas operações pode ser aprimorada com técnicas como o Broadcast Join, especialmente quando se trabalha com grandes volumes de dados.
 
-**Exemplo:**
+**Exemplo 1**
 ```python
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import broadcast
@@ -156,10 +156,134 @@ df_cross_join.show()
 
 ```
 
-## 3. Broadcast Join
+## 3. Exemplo 2
+```python
+from pyspark.sql import SparkSession
+from pyspark.sql.functions import col
+from pyspark.sql.types import StructType, StructField, StringType, IntegerType
+
+spark = SparkSession.builder.appName("joins-chaves-compostas").getOrCreate()
+
+print("### Centro de Distribuição")
+centro_distribuição_data = [
+    ("SP", "Centro de Distribuição SP"),
+    ("RJ", "Centro de Distribuição RJ"),
+    ("MG", "Centro de Distribuição MG")
+]
+centro_distribuição_columns = ["id_centro_dist", "ds_centro_dist"]
+centro_distribuição_df = spark.createDataFrame(centro_distribuição_data, centro_distribuição_columns)
+centro_distribuição_df.show(truncate=False)
+
+print("### Produtos")
+produtos_data = [
+    (10, "Notebook", "Eletrônicos", 1800.0),
+    (20, "Geladeira", "Eletrodomésticos", 2000.0),
+    (30, "Smartphone", "Eletrônicos", 1500.0),
+    (40, "Fogão", "Eletrodomésticos", 800.0),
+    (50, "Tablet", "Eletrônicos", 1200.0),
+]
+produtos_df = spark.createDataFrame(produtos_data, ["id_produto", "ds_produto", "ds_categoria", "vl_unitario"])
+produtos_df.printSchema()
+produtos_df.show(truncate=False)
+
+print("### Clientes")
+clientes_data = [
+    (1, "SP", "2020-01-01", "Barbosa"),
+    (1, "RJ", "2019-06-01", "Carlos"),
+    (2, "RJ", "2018-02-15", "Renato"),
+    (2, "SP", "2016-09-01", "Roberto"),
+    (3, "MG", "2014-03-10", "Marcelo"),
+    (3, "RJ", "2018-07-01", "Fernanda"),
+    (4, "SP", "2023-04-05", "Guilherme"),
+    (4, "MG", "2023-08-01", "Juliana"),
+    (5, "SP", "2023-05-01", "Ana"),
+    (5, "MG", "2023-10-01", "Patricia")
+]
+clientes_columns = ["id_cliente", "uf_cliente", "dt_cadastro", "nome"]
+clientes_df = spark.createDataFrame(clientes_data, clientes_columns)
+clientes_df.printSchema()
+clientes_df.show(truncate=False)
+
+print("### Pedidos")
+pedidos_data = [
+    (101, 1, "SP", "2025-01-01", "ativo"),
+    (102, 2, "RJ", "2025-02-03", "cancelado"),
+    (103, 3, "MG", "2025-03-05", "ativo"),
+    (104, 4, "SP", "2025-04-07", "ativo"),
+    (105, 1, "SP", "2025-05-09", "ativo"),
+    (106, 5, "MG", "2025-05-10", "ativo"),
+    (107, 3, "RJ", "2025-05-11", "ativo"),
+
+]
+pedidos_schema = StructType([
+    StructField("id_pedido", IntegerType(), True),
+    StructField("id_cliente", IntegerType(), True),
+    StructField("uf_cliente", StringType(), True),
+    StructField("dt_pedido", StringType(), True),
+    StructField("status", StringType(), True)
+])
+
+pedidos_df = spark.createDataFrame(pedidos_data, pedidos_schema)
+pedidos_df.printSchema()
+pedidos_df.show(truncate=False)
+
+print("### Pagamentos")
+pagamentos_data = [
+    (1001, 101, "2025-05-02", "cartao", 1800.0),
+    (1002, 102, "2025-05-04", "boleto", 2000.0),
+    (1003, 103, "2025-05-06", "pix", 1500.0),
+    (1004, 104, "2025-05-10", "cartao", 800.0),
+    (1005, 105, "2025-05-12", "cartao", 2400.0),
+    (1006, 106, "2025-05-14", "cartao", 1200.0),
+    (1007, 107, "2025-05-16", "pix", 1500.0)
+]
+pagamentos_columns = ["id_pagamento", "id_pedido", "dt_pagamento", "ds_metodo", "valor"]
+pagamentos_df = spark.createDataFrame(pagamentos_data, pagamentos_columns)
+pagamentos_df.printSchema()
+pagamentos_df.show(truncate=False)
+
+print("### Itens de Pedidos")
+itens_pedidos_data = [
+    (101, 10, 1, "SP"),
+    (102, 20, 1, "RJ"),
+    (103, 30, 1, "MG"),
+    (104, 40, 1, "SP"),
+    (105, 50, 2, "SP"),
+    (106, 10, 1, "MG"),
+    (107, 20, 1, "RJ")
+]
+itens_pedidos_columns = ["id_pedido", "id_produto", "quantidade", "id_centro_dist"]
+itens_pedidos_df = spark.createDataFrame(itens_pedidos_data, itens_pedidos_columns)
+itens_pedidos_df.printSchema()
+itens_pedidos_df.show(truncate=False)
+
+# OBTER UM RELATÓRIO DE ENTREGAS DO CENTRO DE DISTRIBUIÇÃO DE MG MAIO DE 2025
+# O relatório deve conter o centro de distribuição, o produto e quantidade
+# 1. Filtrar os pedidos do centro de distribuição de MG
+# 2. Filtrar os pedidos do mês de maio de 2025
+# 3. Juntar as tabelas pedidos, itens_pedidos, pagamentos e clientes
+# 4. Exibir as colunas: id_pedido, id_cliente, dt_pedido, dt_pagamento, ds_metodo, valor, nome
+# 5. Ordenar pelo id_pedido
+# 6. Exibir o resultado
+
+df_entregas_mg = (
+    pedidos_df
+    .filter((col("uf_cliente") == "MG") & (col("dt_pedido").between("2025-05-01", "2025-05-31")))
+    .join(itens_pedidos_df, ["id_pedido"], "inner")
+    .join(produtos_df, ["id_produto"], "inner")
+    .join(clientes_df, ["id_cliente", "uf_cliente"], "inner")
+    .join(centro_distribuição_df, ["id_centro_dist"], "inner")
+    .select("ds_centro_dist", "ds_produto", "quantidade", "id_pedido", "id_cliente", "dt_pedido", "nome")
+    .orderBy("id_pedido")
+)   
+df_entregas_mg.show(truncate=False)
+
+```
+
+## 4. Broadcast Join
 O Broadcast Join é uma técnica eficiente para realizar joins quando uma das tabelas é pequena o suficiente para ser copiada para todos os nós de processamento.
 
-**Exemplo de código:**
+**Exemplo:**
 ```python
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import broadcast
@@ -177,8 +301,8 @@ df_join.show()
 ```
 ---
 
-## 4. Técnicas de Agregação
-### 4.1. groupBy
+## 5. Técnicas de Agregação
+### 5.1. groupBy
 A operação `groupBy` permite agrupar os dados com base em uma ou mais colunas e aplicar funções agregadas.
 
 **Exemplo de código:**
@@ -229,7 +353,7 @@ df_pedido.show(truncate=False)
 
 ```
 
-### 4.2. `count`
+### 5.2. `count`
 A função `count` é utilizada para contar o número de elementos em um DataFrame ou RDD no Apache Spark. Ela retorna um valor inteiro que representa a quantidade total de registros presentes na estrutura de dados. Esta função é frequentemente usada em operações de agregação para obter o tamanho de um conjunto de dados.
 
 ```python
@@ -246,11 +370,11 @@ count_by_desc_builtin.show()
 
 ```
 
-### 4.3. `sum`
+### 5.3. `sum`
 
 A função `sum` é utilizada para calcular a soma dos valores de uma coluna específica em um DataFrame. Esta função é frequentemente usada em operações de agregação para obter o total de valores numéricos em um conjunto de dados. Por exemplo, ao trabalhar com dados financeiros, você pode usar `sum` para calcular o total de vendas ou receitas.
 
-**Exemplo de uso:**
+**Exemplo:**
 
 
 ```python
@@ -267,11 +391,11 @@ sum_by_desc_builtin.show()
 
 ```
 
-### 4.4. `avg()`
+### 5.4. `avg()`
 
 A função `avg` é utilizada para calcular a média dos valores de uma coluna específica em um DataFrame. Esta função é frequentemente usada em operações de agregação para obter o valor médio de um conjunto de dados numéricos. Por exemplo, ao trabalhar com dados de vendas, você pode usar `avg` para calcular o valor médio das vendas por departamento.
 
-**Exemplo de uso:**
+**Exemplo:**
 
 ```python
 print('Exemplo 4.4: Média dos valores por departamento')
@@ -279,11 +403,11 @@ avg_by_depart = df_pedido.groupBy("departamento_produto").agg(avg("valor_total_p
 avg_by_depart.show()
 ```
 
-### 4.5. `max()`
+### 5.5. `max()`
 
 A função `max` é utilizada para encontrar o valor máximo de uma coluna específica em um DataFrame. Esta função é frequentemente usada em operações de agregação para identificar o maior valor em um conjunto de dados numéricos. Por exemplo, ao trabalhar com dados de vendas, você pode usar `max` para encontrar o valor máximo das vendas por departamento.
 
-**Exemplo de uso:**
+**Exemplo:**
 
 ```python
 print('Exemplo 4.5: Valor máximo por departamento')
@@ -291,11 +415,11 @@ max_by_depart = df_pedido.groupBy("departamento_produto").agg(max("valor_total_p
 max_by_depart.show()
 ```
 
-### 4.6. `min()`
+### 5.6. `min()`
 
 A função `min` é utilizada para encontrar o valor mínimo de uma coluna específica em um DataFrame. Esta função é frequentemente usada em operações de agregação para identificar o menor valor em um conjunto de dados numéricos. Por exemplo, ao trabalhar com dados de vendas, você pode usar `min` para encontrar o valor mínimo das vendas por departamento.
 
-**Exemplo de uso:**
+**Exemplo:**
 
 ```python
 print('Exemplo 4.6: Valor mínimo por departamento')
@@ -304,7 +428,7 @@ min_by_depart.show()
 ```
 
 
-### 4.7. `stddev()`
+### 5.7. `stddev()`
 
 A função `stddev` é utilizada para calcular o desvio padrão dos valores de uma coluna específica em um DataFrame. Esta função é frequentemente usada em operações de agregação para medir a dispersão ou variabilidade dos dados em um conjunto de dados numéricos. Por exemplo, ao trabalhar com dados de vendas, você pode usar `stddev` para calcular a variabilidade dos valores das vendas por departamento.
 
@@ -316,7 +440,7 @@ stddev_by_depart = df_pedido.groupBy("departamento_produto").agg(stddev("valor_t
 stddev_by_depart.show()
 ```
 
-### 4.8. `variance()`
+### 5.8. `variance()`
 
 A função `variance` é utilizada para calcular a variância dos valores de uma coluna específica em um DataFrame. Esta função é frequentemente usada em operações de agregação para medir a dispersão dos dados em um conjunto de dados numéricos. A variância é uma medida que indica o quão longe os valores de um conjunto de dados estão do valor médio.
 
@@ -328,7 +452,7 @@ variance_by_depart = df_pedido.groupBy("departamento_produto").agg(variance("val
 variance_by_depart.show()
 ```
 
-### 4.9. Agrupando múltiplas agregações
+### 5.9. Agrupando múltiplas agregações
 
 É possível realizar múltiplas agregações em um único comando no Apache Spark. Isso é útil quando você precisa calcular várias estatísticas de uma vez, como contagem, soma, média, valor máximo e valor mínimo, agrupadas por uma ou mais colunas. O exemplo a seguir mostra como agrupar os dados pelo campo `departamento_produto` e aplicar todas essas funções de agregação em uma única operação.
 
@@ -348,7 +472,7 @@ all_aggregations.show()
 
 ---
 
-## 5. Desafio
+## 6. Desafio
 
 Faça o clone do repositório abaixo:
 ```sh
@@ -525,10 +649,10 @@ Output esperado:
 ```
 
 ---
-## 6. Parabéns!
+## 7. Parabéns!
 Parabéns por concluir o módulo! Agora você domina as operações de junção e agregação mais básicas no Apache Spark.
 
-## 7. Destruição dos recursos
+## 8. Destruição dos recursos
 Para evitar custos desnecessários, lembre-se de destruir os recursos criados durante este módulo:
 - Exclua quaisquer instâncias do AWS Cloud9 que não sejam mais necessárias.
 - Remova dados temporários ou resultados intermediários armazenados no S3.
