@@ -47,10 +47,8 @@ print("Dataframe original")
 df.show()
 
 # Aplicando a agregação com ROLLUP
-df_rollup = df.groupBy("categoria_produto", "ano") \
+df_rollup = df.rollup("categoria_produto", "ano") \
               .agg(sum("vendas").alias("total_vendas")) \
-              .rollup("categoria_produto", "ano") \
-              .sum("total_vendas") \
               .orderBy("categoria_produto", "ano")
 
 print("Resultado agregado com rollup")
@@ -111,10 +109,8 @@ columns = ["categoria_produto", "ano", "vendas"]
 df = spark.createDataFrame(data, columns)
 
 # Aplicando a função CUBE para todas as combinações de categoria e ano
-df_cube = df.groupBy("categoria_produto", "ano") \
+df_cube = df.cube("categoria_produto", "ano") \
             .agg(sum("vendas").alias("total_vendas")) \
-            .cube("categoria_produto", "ano") \
-            .sum("total_vendas") \
             .orderBy("categoria_produto", "ano")
 
 # Mostrar o resultado
