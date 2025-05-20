@@ -252,10 +252,8 @@ df = spark.read \
 df.printSchema()
 
 # Desafio ROLLUP: Agrupando pelos campos UF e PRODUTO, calcule a soma das QUANTIDADES dos produtos nos pedidos
-df_rollup = df.groupBy(_______) \
+df_rollup = df.rollup(_______) \
                 .agg(sum(_______).alias(_______)) \
-                .rollup(_______) \
-                .sum(_______).alias(_______) \
                 .orderBy(_______)
 
 # Mostrando os resultados parciais do rollup
@@ -271,11 +269,9 @@ df_rollup.show(truncate=False)
 df = df.withColumn("VALOR_TOTAL_PEDIDO", _______)
 df = df.withColumn("HORA_PEDIDO", _______)
 
-df_cube = df.filter( (_______) | (_______) | (_______)) \
-            .groupBy(_______) \
-            .agg(sum("_______").alias("_______")) \
+df_cube = df.filter( col("uf").isin(_______) ) \
             .cube("_______", "_______") \
-            .sum("_______") \
+            .agg(sum("_______").alias("_______")) \
             .orderBy("_______", "_______")
 
 # Mostrando os resultados parciais do cube
