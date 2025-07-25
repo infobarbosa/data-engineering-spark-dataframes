@@ -19,8 +19,6 @@ O pivot transforma valores únicos de uma coluna em múltiplas colunas, enquanto
 
 ![pivot](pivot-unpivot.png)
 
-
-
 ```python
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import explode, col
@@ -161,7 +159,7 @@ unpivot_expr = "stack(3, 'produto_A', produto_A, 'produto_B', produto_B, 'produt
 ## 4. Desafio 1 - Pivot
 Examine o dataset a seguir:
 ```
-+-----------------+----+------+                                                 
++-----------------+----+------+
 |categoria_produto|ano |vendas|
 +-----------------+----+------+
 |Eletrônicos      |2022|1000  |
