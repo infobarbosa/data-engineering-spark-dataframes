@@ -95,6 +95,11 @@ Os DataFrames são estruturas de dados distribuídas, imutáveis e organizadas e
 
    ```
 
+   **Execução**
+   ```sh
+   python revisao-2.1.py
+   ```
+
 ### 2.2. Seleção de Colunas com `select`
 A operação `select` no Spark permite selecionar colunas específicas de um DataFrame. Isso é útil quando você deseja trabalhar apenas com um subconjunto dos dados.
 
@@ -124,6 +129,11 @@ A operação `select` no Spark permite selecionar colunas específicas de um Dat
    # Mostrando as primeiras linhas do DataFrame selecionado
    df_selected.show(5, truncate=False)
 
+   ```
+
+   **Execução**
+   ```sh
+   python revisao-2.2.py
    ```
 
 Neste exemplo, utilizamos a função `select` para escolher apenas as colunas `id`, `nome` e `email` do DataFrame original. Isso pode ser útil para reduzir a quantidade de dados processados ou para focar em informações específicas.
@@ -189,6 +199,12 @@ A operação `filter` no Spark permite filtrar linhas de um DataFrame com base e
    df_filtrado.show(5, truncate=False)
 
    ```
+
+   **Execução**
+   ```sh
+   python revisao-2.3.filtro-simples.py
+   ```
+
 ### 2.4. Operadores lógicos
 Os operadores lógicos no PySpark são usados para combinar ou inverter condições ao filtrar ou manipular dados em DataFrames. Eles permitem criar expressões complexas para selecionar ou transformar dados com base em múltiplos critérios. Os operadores mais comuns incluem `&` (AND), `|` (OR), e `~` (NOT). Esses operadores são aplicados em conjunto com funções como `col` ou expressões de coluna.
 
@@ -244,6 +260,11 @@ Os operadores lógicos no PySpark são usados para combinar ou inverter condiç�
 
    ```
 
+   **Execução**
+   ```sh
+   python revisao-2.4.filtro-composto.py
+   ```
+
 ### 2.5. Enriquecimento com `withColumn`
 
 
@@ -279,6 +300,11 @@ Os operadores lógicos no PySpark são usados para combinar ou inverter condiç�
    # Mostrando as primeiras linhas do DataFrame enriquecido
    df_enriquecido.select("nome", "data_nasc", "ano_nasc", "primeiro_nome").show(5, truncate=False)
 
+   ```
+
+   **Execução**
+   ```sh
+   python revisao-2.5.withColumn.py
    ```
 
 **Exemplo 2 (When/Otherwise)**
@@ -361,6 +387,11 @@ Os operadores lógicos no PySpark são usados para combinar ou inverter condiç�
    df.select("nome", "data_nasc", "idade", "faixa_etaria").show(10, truncate=False)
 
 
+   ```
+
+   **Execução**
+   ```sh
+   python revisao-2.5.B-withColumn-When-Otherwise.py
    ```
 
 ---
