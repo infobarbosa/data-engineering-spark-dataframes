@@ -100,6 +100,8 @@ Os DataFrames são estruturas de dados distribuídas, imutáveis e organizadas e
    python revisao-2.1.py
    ```
 
+---
+
 ### 2.2. Seleção de Colunas com `select`
 A operação `select` no Spark permite selecionar colunas específicas de um DataFrame. Isso é útil quando você deseja trabalhar apenas com um subconjunto dos dados.
 
@@ -139,6 +141,7 @@ A operação `select` no Spark permite selecionar colunas específicas de um Dat
 Neste exemplo, utilizamos a função `select` para escolher apenas as colunas `id`, `nome` e `email` do DataFrame original. Isso pode ser útil para reduzir a quantidade de dados processados ou para focar em informações específicas.
 
 
+---
 ### 2.3. Filtragem com `filter`
 A operação `filter` no Spark permite filtrar linhas de um DataFrame com base em uma condição específica. Isso é útil para trabalhar apenas com um subconjunto de dados que atende a determinados critérios.
 
@@ -169,6 +172,11 @@ A operação `filter` no Spark permite filtrar linhas de um DataFrame com base e
    # Mostrando as primeiras linhas do DataFrame filtrado
    df_filtrado.show(5, truncate=False)
 
+   ```
+
+   **Execução**
+   ```sh
+   python revisao-2.3.filtro-simples.py
    ```
 
 **Exemplo 2 (between)**
@@ -205,6 +213,7 @@ A operação `filter` no Spark permite filtrar linhas de um DataFrame com base e
    python revisao-2.3.filtro-simples.py
    ```
 
+---
 ### 2.4. Operadores lógicos
 Os operadores lógicos no PySpark são usados para combinar ou inverter condições ao filtrar ou manipular dados em DataFrames. Eles permitem criar expressões complexas para selecionar ou transformar dados com base em múltiplos critérios. Os operadores mais comuns incluem `&` (AND), `|` (OR), e `~` (NOT). Esses operadores são aplicados em conjunto com funções como `col` ou expressões de coluna.
 
@@ -265,6 +274,7 @@ Os operadores lógicos no PySpark são usados para combinar ou inverter condiç�
    python revisao-2.4.filtro-composto.py
    ```
 
+---
 ### 2.5. Enriquecimento com `withColumn`
 
 
