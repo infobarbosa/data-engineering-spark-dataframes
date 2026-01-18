@@ -300,8 +300,8 @@ No PySpark, existem dois métodos para aplicar filtros em DataFrames:
    ```
 
 #### Exemplo 9 (where)
-
-   Altere o arquivo `revisao-2.3.filtro-simples.py` para usar o método `where`:
+   Se você preferir usar a sintaxe SQL, pode usar o método `where`: 
+   
    ```python
 
    # Filtrando pessoas que nasceram entre 1975 e 1980
@@ -336,7 +336,7 @@ Os operadores lógicos no PySpark são usados para combinar ou inverter condiç�
    df.filter(~(col("cidade") == "São Paulo")).show()
    ```
 
-#### Exemplo 1 (filtro composto )
+#### Exemplo 1 (filtro composto)
    ```sh
    touch revisao-2.4.filtro-composto.py
 
@@ -357,10 +357,10 @@ Os operadores lógicos no PySpark são usados para combinar ou inverter condiç�
       .option("header", True) \
       .load("./datasets-csv-clientes/clientes.csv.gz")
 
-   # Filtrando pessoas com nome iniciando por Pedro e nascimento entre 1975 e 1980
+   # O operador & é o AND. Nesse caso, filtrando pessoas com nome iniciando por Pedro E nascimento entre 1975 e 1980
    df_filtrado = df.filter(
       (col("data_nasc").between("1975-01-01", "1980-12-31")) &
-      (split(col("nome"), " ")[0] == "Pedro")
+      (col("nome").startswith("Pedro"))
    )
    
    # Mostrando as primeiras linhas do DataFrame filtrado
@@ -372,6 +372,20 @@ Os operadores lógicos no PySpark são usados para combinar ou inverter condiç�
    ```sh
    python revisao-2.4.filtro-composto.py
    ```
+
+#### Exemplo 2 (filtro composto)
+   ```python
+   # O operador ~ inverte a lógica: "traga tudo que NÃO corresponde ao rlike"
+   # O operador | é o OR. Nesse caso, traz todos os registros que não correspondem ao formato do CPF ou do email
+   df_registros_invalidos = df.filter(
+      ~col("cpf").rlike(r"^\d{3}\.\d{3}\.\d{3}-\d{2}$") | 
+      ~col("email").rlike(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$")
+   )
+
+   df_registros_invalidos.show()
+
+   ```
+
 
 ---
 ### 2.5. Enriquecimento com `withColumn`
