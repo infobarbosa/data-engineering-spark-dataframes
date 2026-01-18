@@ -361,13 +361,12 @@ Os operadores lógicos no PySpark são usados para combinar ou inverter condiç�
 
    **Código**
    ```python
-
+   print("### withColumn")
    # Criando as novas colunas: ano_nasc e primeiro_nome
    df_enriquecido = df \
       .withColumn("ano_nasc", F.year(F.col("data_nasc"))) \
       .withColumn("primeiro_nome", F.split(F.col("nome"), " ")[0])
 
-   # Mostrando as primeiras linhas do DataFrame enriquecido
    df_enriquecido.select("nome", "data_nasc", "ano_nasc", "primeiro_nome").show(5, truncate=False)
 
    ```
@@ -377,22 +376,7 @@ Os operadores lógicos no PySpark são usados para combinar ou inverter condiç�
    No PySpark, as funções when e otherwise são usadas para criar colunas condicionais, de forma semelhante a um if...else ou CASE WHEN no SQL.
 
    ```python
-   from pyspark.sql import SparkSession
-   from pyspark.sql.functions import col, split, year, to_date, current_date, datediff, when
-
-   # Inicializando a SparkSession
-   spark = SparkSession.builder.appName("dataeng-maioridade").getOrCreate()
-
-   # Carregando o DataFrame a partir de um arquivo CSV
-   df = spark.read \
-      .format("csv") \
-      .option("sep", ";") \
-      .option("header", True) \
-      .load("./datasets-csv-clientes/clientes.csv.gz")
-
-   # Convertendo a coluna data_nasc para tipo Date
-   df = df.withColumn("data_nasc", to_date(col("data_nasc"), "yyyy-MM-dd"))
-
+   print("### withColumn com when/otherwise (1)")
    # Criando a coluna 'maior_de_idade' com base na diferença de dias
    df_com_maioridade = df.withColumn(
       "maior_de_idade",
@@ -409,42 +393,21 @@ Os operadores lógicos no PySpark são usados para combinar ou inverter condiç�
    É possível ter diversas cláusulas when no PySpark — e essa é, inclusive, a forma recomendada para simular um if...elif...else ou um CASE WHEN completo do SQL.
 
    ```python
-   from pyspark.sql import SparkSession
-   from pyspark.sql.functions import col, to_date, current_date, datediff, when
-
-   # Inicializando a SparkSession
-   spark = SparkSession.builder.appName("dataeng-faixa-etaria").getOrCreate()
-
-   # Carregando o DataFrame a partir do CSV
-   df = spark.read \
-      .format("csv") \
-      .option("sep", ";") \
-      .option("header", True) \
-      .load("./datasets-csv-clientes/clientes.csv.gz")
-
-   # Convertendo 'data_nasc' para tipo date
-   df = df.withColumn("data_nasc", to_date(col("data_nasc"), "yyyy-MM-dd"))
+   print("### withColumn com when/otherwise (1)")
 
    # Calculando a idade (diferença em anos, aproximada)
-   df = df.withColumn("idade", (datediff(current_date(), col("data_nasc")) / 365.25).cast("int"))
+   df_com_idade = df.withColumn("idade", (F.datediff(F.current_date(), F.col("data_nasc")) / 365.25).cast("int"))
 
    # Classificando por faixa etária
-   df = df.withColumn("faixa_etaria",
-      when(col("idade") < 12, "Criança")
-      .when(col("idade") < 18, "Adolescente")
-      .when(col("idade") < 60, "Adulto")
+   df_com_faixa_etaria = df_com_idade.withColumn("faixa_etaria",
+      when(F.col("idade") < 12, "Criança")
+      .when(F.col("idade") < 18, "Adolescente")
+      .when(F.col("idade") < 60, "Adulto")
       .otherwise("Idoso")
    )
 
-   # Mostrando resultado
    df.select("nome", "data_nasc", "idade", "faixa_etaria").show(10, truncate=False)
 
-
-   ```
-
-   **Execução**
-   ```sh
-   python exemplo-2.5.B-withColumn-When-Otherwise.py
    ```
 
 ---
