@@ -409,6 +409,74 @@ Os operadores lógicos no PySpark são usados para combinar ou inverter condiç�
 
    ```
 
+## Desafio 1 - Bolsa Família
+
+1. Baixe a base de pagamentos do programa Novo Bolsa Família referente a **Novembro de 2025**.
+   - Baixe o arquivo `202511_NovoBolsaFamilia.csv` do [Portal da Transparência](https://portaldatransparencia.gov.br/download-de-dados/novo-bolsa-familia)
+   - O dicionário de dados pode ser obtido [aqui](https://portaldatransparencia.gov.br/dicionario-de-dados/novo-bolsa-familia)
+   - Salve o arquivo em um diretório chamado `data` na raiz do projeto
+2. Obtenha as seguintes informações:
+   - Lista dos primeiros 10 registros
+   - Lista dos primeiros 10 beneficiários que receberam valor **maior** que R$ 1.000,00
+   - Lista dos primeiros 10 beneficiários que receberam valor **maior** que R$ 2.000,00
+   - Lista dos primeiros 10 beneficiários que moram no municipio de `BONITO` no estado da **Bahia**
+   - Lista dos beneficiários que:
+      * moram no municipio de `BONITO` no estado da **Bahia** 
+      * receberam valor **maior** que R$ 2.000,00
+   - Lista dos beneficiários que:
+      * moram no municipio de `BONITO` no estado da **Bahia** 
+      * receberam valor **menor** que R$ 2.000,00 
+      * número do CPF esteja nulo
+   - Lista dos beneficiários que:
+      * moram em qualquer estado da região **Norte**
+      * receberam valor **menor** que R$ 1.000,00 
+      * número do CPF **não** esteja nulo
+      * O primeiro nome do beneficiário seja **Marcelo**
+      * O último nome do beneficiário seja **Barbosa**
+
+### Código inicial
+   ```python
+   from pyspark.sql import SparkSession
+   import pyspark.sql.functions as F
+
+   spark = SparkSession.builder.appName("dataeng-bolsa-familia").getOrCreate()
+
+   schema = """
+      mes_competencia INT, 
+      mes_referencia INT, 
+      uf STRING, 
+      codigo_municipio_siafi STRING, 
+      nome_municipio STRING,
+      cpf_favorecido STRING,
+      nis_favorecido STRING,
+      nome_favorecido STRING,
+      valor_parcela STRING
+   """
+
+   df = spark.read \
+      .format("csv") \
+      .option("sep", ";") \
+      .option("header", True) \
+      .option("encoding", "ISO-8859-1") \
+      .schema(schema) \
+      .load("./202511_NovoBolsaFamilia.csv")
+
+   df = df.withColumn(
+      "valor_parcela", 
+      F.regexp_replace(F.col("valor_parcela"), r"\.", "")
+   ).withColumn(
+      "valor_parcela", 
+      F.regexp_replace(F.col("valor_parcela"), ",", ".") 
+   ).withColumn(
+      "valor_parcela", 
+      F.col("valor_parcela").cast("decimal(10,2)")
+   )
+
+   df.show(10, truncate=False)
+   df.printSchema()
+
+   ```
+
 ---
 
 ### 2.6. Transformações e Ações
