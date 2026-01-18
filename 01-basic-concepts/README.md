@@ -147,16 +147,22 @@ Neste exemplo, utilizamos a função `select` para escolher apenas as colunas `i
 
 #### Exemplo 2
    É possível determinar apelidos (ou aliases) para as colunas selecionadas.
+
+   1. Usando a função `selectExpr`:
    ```python
-   # alterando coluna NOME para NOME_CLIENTE
-   df_selected = df.select("id", "nome as nome_cliente", "email")
-   
+   df_selected = df.selectExpr("id", "nome as nome_cliente", "email")   
    ```   
 
-   ```
+   2. Usando a função `select` com `alias`:
+   ```python
    df_selected = df.select("id", col("nome").alias("nome_cliente"), "email")
    
    ```
+
+   3. Usando o método `withColumnRenamed`:
+   ```python
+   df_selected = df.withColumnRenamed("nome", "nome_cliente")
+   ```   
 
 ---
 ### 2.3. Filtragem com `filter`
