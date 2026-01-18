@@ -61,6 +61,11 @@ Os DataFrames são estruturas de dados distribuídas, imutáveis e organizadas e
 
    ```
 
+   ```
+   zcat datasets-csv-clientes/clientes.csv.gz | column -t -s ';' | head -10
+
+   ```
+
 2. Instale o **pyspark**:
    ```
    pip install pyspark
@@ -166,7 +171,7 @@ A operação `filter` no Spark permite filtrar linhas de um DataFrame com base e
       .option("header", True) \
       .load("./datasets-csv-clientes/clientes.csv.gz")
 
-   # Filtrando linhas onde a idade é maior que 50 anos
+   # Filtrando linhas onde a data de nascimento é menor ou igual a 1973-01-01
    df_filtrado = df.filter(col("data_nasc") <= "1973-01-01")
 
    # Mostrando as primeiras linhas do DataFrame filtrado
