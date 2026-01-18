@@ -72,10 +72,10 @@ Os DataFrames são estruturas de dados distribuídas, imutáveis e organizadas e
 
    ```
 
-3. A seguir vamos criar um script `revisao-2.1.py` que carrega o arquivo `clientes.csv.gz`.
+3. A seguir vamos criar um script `exemplo-2.1.py` que carrega o arquivo `clientes.csv.gz`.
 
    ```sh
-   touch revisao-2.1.py
+   touch exemplo-2.1.py
 
    ```
 
@@ -83,7 +83,7 @@ Os DataFrames são estruturas de dados distribuídas, imutáveis e organizadas e
    from pyspark.sql import SparkSession
 
    # Inicializando a SparkSession
-   spark = SparkSession.builder.appName("dataeng-revisao-dataframe").getOrCreate()
+   spark = SparkSession.builder.appName("dataeng-exemplo-dataframe").getOrCreate()
 
    # Criando um DataFrame a partir de um arquivo CSV
    df = spark.read \
@@ -102,7 +102,7 @@ Os DataFrames são estruturas de dados distribuídas, imutáveis e organizadas e
 
    **Execução**
    ```sh
-   python revisao-2.1.py
+   python exemplo-2.1.py
    ```
 
 ---
@@ -112,7 +112,7 @@ A operação `select` no Spark permite selecionar colunas específicas de um Dat
 
 #### Exemplo 1
    ```sh
-   touch revisao-2.2.py
+   touch exemplo-2.2.py
 
    ```
 
@@ -140,7 +140,7 @@ A operação `select` no Spark permite selecionar colunas específicas de um Dat
 
    **Execução**
    ```sh
-   python revisao-2.2.py
+   python exemplo-2.2.py
    ```
 
 Neste exemplo, utilizamos a função `select` para escolher apenas as colunas `id`, `nome` e `email` do DataFrame original. Isso pode ser útil para reduzir a quantidade de dados processados ou para focar em informações específicas.
@@ -173,7 +173,7 @@ No PySpark, existem dois métodos para aplicar filtros em DataFrames:
 
 #### Exemplo 1
    ```sh
-   touch revisao-2.3.filtro-simples.py
+   touch exemplo-2.3.filtro-simples.py
 
    ```
 
@@ -222,12 +222,12 @@ No PySpark, existem dois métodos para aplicar filtros em DataFrames:
 
    **Execução**
    ```sh
-   python revisao-2.3.filtro-simples.py
+   python exemplo-2.3.filtro-simples.py
 
    ```
 
 #### Exemplo 2 (isin)
-   Altere o arquivo `revisao-2.3.filtro-simples.py` para usar o método `isin`:
+   Altere o arquivo `exemplo-2.3.filtro-simples.py` para usar o método `isin`:
    ```python
    df_filtrado = df.filter(col("email").isin(["mirella.ribeiro@example.com", "pedro.lucas.nascimento@example.com"]))
 
@@ -240,7 +240,7 @@ No PySpark, existem dois métodos para aplicar filtros em DataFrames:
    - 784.563.029-29
 
 #### Exemplo 3 (like)
-   Altere o arquivo `revisao-2.3.filtro-simples.py` para usar o método `like`:
+   Altere o arquivo `exemplo-2.3.filtro-simples.py` para usar o método `like`:
    ```python
    df_filtrado = df.filter(col("nome").like("%Barbosa%"))
 
@@ -252,7 +252,7 @@ No PySpark, existem dois métodos para aplicar filtros em DataFrames:
 #### Exemplo 4 (rlike)
    O rlike permite que você use toda a biblioteca de Regex do Java/Python. Com ele, você pode criar filtros complexos que seriam impossíveis com o like simples.
 
-   Altere o arquivo `revisao-2.3.filtro-simples.py` para usar o método `rlike`:
+   Altere o arquivo `exemplo-2.3.filtro-simples.py` para usar o método `rlike`:
    ```python
    # O operador ~ inverte a lógica: "traga tudo que NÃO corresponde ao rlike"
    df_cpfs_invalidos = df.filter(~col("cpf").rlike(r"^\d{3}\.\d{3}\.\d{3}-\d{2}$"))
@@ -270,14 +270,14 @@ No PySpark, existem dois métodos para aplicar filtros em DataFrames:
    ```
 
 #### Exemplo 5 (startswith)
-   Altere o arquivo `revisao-2.3.filtro-simples.py` para usar o método `startswith`:
+   Altere o arquivo `exemplo-2.3.filtro-simples.py` para usar o método `startswith`:
    ```
    df_filtrado = df.filter(col("nome").startswith("Maria"))
 
    ```
 
 #### Exemplo 6 (endswith)
-   Altere o arquivo `revisao-2.3.filtro-simples.py` para usar o método `endswith`:
+   Altere o arquivo `exemplo-2.3.filtro-simples.py` para usar o método `endswith`:
    ```
    df_filtrado = df.filter(col("nome").endswith("Silva"))
 
@@ -285,7 +285,7 @@ No PySpark, existem dois métodos para aplicar filtros em DataFrames:
 
 #### Exemplo 7 (between)
 
-   Altere o arquivo `revisao-2.3.filtro-simples.py` para usar o método `between`:
+   Altere o arquivo `exemplo-2.3.filtro-simples.py` para usar o método `between`:
    ```python
 
    # Filtrando pessoas que nasceram entre 1975 e 1980
@@ -299,13 +299,13 @@ No PySpark, existem dois métodos para aplicar filtros em DataFrames:
 #### Exemplo 8 (isNull / isNotNull)
 
 
-   Altere o arquivo `revisao-2.3.filtro-simples.py` para usar o método `isNull`:
+   Altere o arquivo `exemplo-2.3.filtro-simples.py` para usar o método `isNull`:
    ```python
    df_filtrado = df.filter(col("email").isNull())
 
    ```
 
-   Altere o arquivo `revisao-2.3.filtro-simples.py` para usar o método `isNotNull`:
+   Altere o arquivo `exemplo-2.3.filtro-simples.py` para usar o método `isNotNull`:
    ```python
    df_filtrado = df.filter(col("email").isNotNull())
 
@@ -350,7 +350,7 @@ Os operadores lógicos no PySpark são usados para combinar ou inverter condiç�
 
 #### Exemplo 1 (filtro composto)
    ```sh
-   touch revisao-2.4.filtro-composto.py
+   touch exemplo-2.4.filtro-composto.py
 
    ```
 
@@ -382,7 +382,7 @@ Os operadores lógicos no PySpark são usados para combinar ou inverter condiç�
 
    **Execução**
    ```sh
-   python revisao-2.4.filtro-composto.py
+   python exemplo-2.4.filtro-composto.py
    ```
 
 #### Exemplo 2 (filtro composto)
@@ -405,7 +405,7 @@ Os operadores lógicos no PySpark são usados para combinar ou inverter condiç�
 
 #### Exemplo 1
    ```sh
-   touch revisao-2.5.withColumn.py
+   touch exemplo-2.5.withColumn.py
 
    ```
 
@@ -439,7 +439,7 @@ Os operadores lógicos no PySpark são usados para combinar ou inverter condiç�
 
    **Execução**
    ```sh
-   python revisao-2.5.withColumn.py
+   python exemplo-2.5.withColumn.py
    ```
 
 #### Exemplo 2 (When/Otherwise)
@@ -447,7 +447,7 @@ Os operadores lógicos no PySpark são usados para combinar ou inverter condiç�
    No PySpark, as funções when e otherwise são usadas para criar colunas condicionais, de forma semelhante a um if...else ou CASE WHEN no SQL.
 
    ```sh
-   touch revisao-2.5.A-withColumn-When-Otherwise.py
+   touch exemplo-2.5.A-withColumn-When-Otherwise.py
 
    ```
 
@@ -485,7 +485,7 @@ Os operadores lógicos no PySpark são usados para combinar ou inverter condiç�
    É possível ter diversas cláusulas when no PySpark — e essa é, inclusive, a forma recomendada para simular um if...elif...else ou um CASE WHEN completo do SQL.
 
    ```sh
-   touch revisao-2.5.B-withColumn-When-Otherwise.py
+   touch exemplo-2.5.B-withColumn-When-Otherwise.py
 
    ```
 
@@ -526,7 +526,7 @@ Os operadores lógicos no PySpark são usados para combinar ou inverter condiç�
 
    **Execução**
    ```sh
-   python revisao-2.5.B-withColumn-When-Otherwise.py
+   python exemplo-2.5.B-withColumn-When-Otherwise.py
    ```
 
 ---
@@ -569,7 +569,7 @@ Esses tipos de dados são definidos no módulo `pyspark.sql.types` e são usados
 
 **Exemplo**
    ```sh
-   touch revisao-3.1.data-types.py
+   touch exemplo-3.1.data-types.py
 
    ```
 
@@ -579,7 +579,7 @@ Esses tipos de dados são definidos no módulo `pyspark.sql.types` e são usados
    from pyspark.sql.types import StructType, StructField, StringType, LongType, DateType
 
    # Inicializando a SparkSession
-   spark = SparkSession.builder.appName("dataeng-revisao-dataframe").getOrCreate()
+   spark = SparkSession.builder.appName("dataeng-exemplo-dataframe").getOrCreate()
 
    # Definindo o schema
    schema = StructType([
@@ -660,14 +660,14 @@ Esses tipos de dados são definidos no módulo `pyspark.sql.types` e são usados
    ]
    ```
 
-2. Crie o script `revisao-4-exercicio-1.py` que realiza as seguintes etapas:
+2. Crie o script `exemplo-4-exercicio-1.py` que realiza as seguintes etapas:
    - Carrega o arquivo JSON de exemplo.
    - Aplica transformações para filtrar e agrupar dados.
    - Define um esquema personalizado para o DataFrame.
    - Exibe o resultado final das transformações.
 
    ```sh
-   touch revisao-4-exercicio-1.py
+   touch exemplo-4-exercicio-1.py
 
    ```
 
@@ -701,7 +701,7 @@ Esses tipos de dados são definidos no módulo `pyspark.sql.types` e são usados
 
 3. Execute o script:
    ```sh
-   python revisao-4-exercicio-1.py
+   python exemplo-4-exercicio-1.py
 
    ```
 
