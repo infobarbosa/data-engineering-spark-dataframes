@@ -110,7 +110,7 @@ Os DataFrames são estruturas de dados distribuídas, imutáveis e organizadas e
 ### 2.2. Seleção de Colunas com `select`
 A operação `select` no Spark permite selecionar colunas específicas de um DataFrame. Isso é útil quando você deseja trabalhar apenas com um subconjunto dos dados.
 
-**Exemplo**
+#### Exemplo 1
    ```sh
    touch revisao-2.2.py
 
@@ -145,6 +145,18 @@ A operação `select` no Spark permite selecionar colunas específicas de um Dat
 
 Neste exemplo, utilizamos a função `select` para escolher apenas as colunas `id`, `nome` e `email` do DataFrame original. Isso pode ser útil para reduzir a quantidade de dados processados ou para focar em informações específicas.
 
+#### Exemplo 2
+   É possível determinar apelidos (ou aliases) para as colunas selecionadas.
+   ```python
+   # alterando coluna NOME para NOME_CLIENTE
+   df_selected = df.select("id", "nome as nome_cliente", "email")
+   
+   ```   
+
+   ```
+   df_selected = df.select("id", col("nome").alias("nome_cliente"), "email")
+   
+   ```
 
 ---
 ### 2.3. Filtragem com `filter`
