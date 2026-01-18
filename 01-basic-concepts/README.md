@@ -201,23 +201,6 @@ No PySpark, existem dois métodos para aplicar filtros em DataFrames:
       .schema(schema) \
       .load("./datasets-csv-clientes/clientes.csv.gz")
 
-   ### Vamos criar alguns registros inválidos e concatenar ao dataframe ###
-
-   # Email nulo
-   df = df.union(spark.createDataFrame([(20000, "dave brubeck", date(2000, 1, 1), "123.456.789-00", None)], df.schema))
-
-   # Email inválido
-   df = df.union(spark.createDataFrame([(20004, "chet baker", date(1929, 12, 23), "123.456.789-04", "chetbaker")], df.schema))
-
-   # CPF inválido
-   df = df.union(spark.createDataFrame([(20001, "duke ellington", date(1899, 4, 29), "123.ABC.789-01", "dukeellington@ig.com")], df.schema))
-
-   # Data de nascimento no futuro
-   df = df.union(spark.createDataFrame([(20002, "miles davis", date(2045, 5, 26), "123.456.789-02", "milesdavis@bol.com")], df.schema))
-
-   # Nome sem sobrenome
-   df = df.union(spark.createDataFrame([(20003, "coltrane", date(1926, 9, 23), "123.456.789-03", "coltrane@gmail.com")], df.schema))
-
    # Filtrando linhas onde a data de nascimento é menor ou igual a 1973-01-01
    df_filtrado = df.filter(col("data_nasc") <= "1973-01-01")
 
