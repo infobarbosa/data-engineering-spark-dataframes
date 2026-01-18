@@ -72,10 +72,10 @@ Os DataFrames são estruturas de dados distribuídas, imutáveis e organizadas e
 
    ```
 
-3. A seguir vamos criar um script `exemplo-2.1.py` que carrega o arquivo `clientes.csv.gz`.
+3. A seguir vamos criar um script `exemplos.py` que carrega o arquivo `clientes.csv.gz`.
 
    ```sh
-   touch exemplo-2.1.py
+   touch exemplos.py
 
    ```
 
@@ -87,11 +87,13 @@ Os DataFrames são estruturas de dados distribuídas, imutáveis e organizadas e
    spark = SparkSession.builder.appName("dataeng-exemplo-dataframe").getOrCreate()
 
    # Criando um DataFrame a partir de um arquivo CSV
+   schema = "id INT, nome STRING, data_nasc DATE, cpf STRING, email STRING, cidade STRING, uf STRING"
    df = spark.read \
-         .format("csv") \
-         .option("compression", "gzip") \
-         .option("sep", ";") \
-         .load("./datasets-csv-clientes/clientes.csv.gz", header=True, inferSchema=True)
+      .format("csv") \
+      .option("sep", ";") \
+      .option("header", True) \
+      .schema(schema) \
+      .load("./datasets-csv-clientes/clientes.csv.gz")
 
    # Mostrando o schema
    df.printSchema()
@@ -103,7 +105,8 @@ Os DataFrames são estruturas de dados distribuídas, imutáveis e organizadas e
 
    **Execução**
    ```sh
-   python exemplo-2.1.py
+   python exemplos.py
+
    ```
 
 ---
@@ -112,37 +115,20 @@ Os DataFrames são estruturas de dados distribuídas, imutáveis e organizadas e
 A operação `select` no Spark permite selecionar colunas específicas de um DataFrame. Isso é útil quando você deseja trabalhar apenas com um subconjunto dos dados.
 
 #### Exemplo 1
-   ```sh
-   touch exemplo-2.2.py
-
-   ```
 
    **Código**
    ```python
-   from pyspark.sql import SparkSession
-   import pyspark.sql.functions as F
-
-   # Inicializando a SparkSession
-   spark = SparkSession.builder.appName("dataeng-select").getOrCreate()
-
-   # Carregando o DataFrame a partir de um arquivo CSV
-   df = spark.read \
-      .format("csv") \
-      .option("sep", ";") \
-      .option("header", True) \
-      .load("./datasets-csv-clientes/clientes.csv.gz")
 
    # Selecionando colunas específicas
    df_selected = df.select("id", "nome", "email")
-
-   # Mostrando as primeiras linhas do DataFrame selecionado
    df_selected.show(5, truncate=False)
 
    ```
 
    **Execução**
    ```sh
-   python exemplo-2.2.py
+   python exemplos.py
+
    ```
 
 Neste exemplo, utilizamos a função `select` para escolher apenas as colunas `id`, `nome` e `email` do DataFrame original. Isso pode ser útil para reduzir a quantidade de dados processados ou para focar em informações específicas.
@@ -181,35 +167,13 @@ No PySpark, existem dois métodos para aplicar filtros em DataFrames:
 1. `filter()`: O método padrão para aplicar condições.
 2. `where()`: Exatamente igual ao `filter()`, mas útil para quem vem do SQL e prefere essa semântica.
 
-
-
 #### Formas de Expressar a Condição
 1. Usando Strings (Estilo SQL): `df.filter("idade > 18")`. É simples e intuitivo para iniciantes.
 2. Usando a Coluna (Objeto Column): `df.filter(df.idade > 18)` ou `df.filter(col("idade") > 18)`. Esta é a forma mais "Spark" e permite maior flexibilidade.
 
 #### Exemplo 1
-   ```sh
-   touch exemplo-2.3.filtro-simples.py
 
-   ```
-
-   **Código**
    ```python
-   from pyspark.sql import SparkSession
-   import pyspark.sql.functions as F
-   from datetime import date
-
-   # Inicializando a SparkSession
-   spark = SparkSession.builder.appName("dataeng-filter").getOrCreate()
-
-   # Carregando o DataFrame a partir de um arquivo CSV
-   schema = "id INT, nome STRING, data_nasc DATE, cpf STRING, email STRING, cidade STRING, uf STRING"
-   df = spark.read \
-      .format("csv") \
-      .option("sep", ";") \
-      .option("header", True) \
-      .schema(schema) \
-      .load("./datasets-csv-clientes/clientes.csv.gz")
 
    # Filtrando linhas onde a data de nascimento é menor ou igual a 1973-01-01
    df_filtrado = df.filter(F.col("data_nasc") <= "1973-01-01")
@@ -218,14 +182,7 @@ No PySpark, existem dois métodos para aplicar filtros em DataFrames:
 
    ```
 
-   **Execução**
-   ```sh
-   python exemplo-2.3.filtro-simples.py
-
-   ```
-
 #### Exemplo 2 (isin)
-   Altere o arquivo `exemplo-2.3.filtro-simples.py` para usar o método `isin`:
    ```python
    print("### isin")
    df_filtrado = df.filter(F.col("cidade").isin(["São Paulo", "Guarulhos"]))
@@ -241,7 +198,6 @@ No PySpark, existem dois métodos para aplicar filtros em DataFrames:
    - 167.259.048-58
 
 #### Exemplo 3 (like)
-   Altere o arquivo `exemplo-2.3.filtro-simples.py` para usar o método `like`:
    ```python
    print("### like")
    df_filtrado = df.filter(F.col("nome").like("%Barbosa%"))
@@ -256,7 +212,6 @@ No PySpark, existem dois métodos para aplicar filtros em DataFrames:
 #### Exemplo 4 (rlike)
    O rlike permite que você use toda a biblioteca de Regex do Java/Python. Com ele, você pode criar filtros complexos que seriam impossíveis com o like simples.
 
-   Altere o arquivo `exemplo-2.3.filtro-simples.py` para usar o método `rlike`:
    ```python
    print("### rlike")
    # O operador ~ inverte a lógica: "traga tudo que NÃO corresponde ao rlike"
@@ -271,7 +226,6 @@ No PySpark, existem dois métodos para aplicar filtros em DataFrames:
    A expressão regular para validar emails é: `^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`
 
 #### Exemplo 5 (startswith)
-   Altere o arquivo `exemplo-2.3.filtro-simples.py` para usar o método `startswith`:
    ```python
    print("### startswith")
    df_filtrado = df.filter(F.col("nome").startswith("Maria"))
@@ -280,7 +234,6 @@ No PySpark, existem dois métodos para aplicar filtros em DataFrames:
    ```
 
 #### Exemplo 6 (endswith)
-   Altere o arquivo `exemplo-2.3.filtro-simples.py` para usar o método `endswith`:
    ```python
    print("### endswith")
    df_filtrado = df.filter(F.col("nome").endswith("Silva"))
@@ -289,22 +242,15 @@ No PySpark, existem dois métodos para aplicar filtros em DataFrames:
    ```
 
 #### Exemplo 7 (between)
-
-   Altere o arquivo `exemplo-2.3.filtro-simples.py` para usar o método `between`:
    ```python
    print("### between")
    # Filtrando pessoas que nasceram entre 1975 e 1980
    df_filtrado = df.filter(F.col("data_nasc").between("1975-01-01", "1980-12-31"))
-
-   # Mostrando as primeiras linhas do DataFrame filtrado
    df_filtrado.show(5, truncate=False)
 
    ```
 
 #### Exemplo 8 (isNull / isNotNull)
-
-
-   Altere o arquivo `exemplo-2.3.filtro-simples.py` para usar o método `isNull`:
    ```python
    print("### isNull")
    df_filtrado = df.filter(F.col("email").isNull())
@@ -312,7 +258,6 @@ No PySpark, existem dois métodos para aplicar filtros em DataFrames:
 
    ```
 
-   Altere o arquivo `exemplo-2.3.filtro-simples.py` para usar o método `isNotNull`:
    ```python
    print("### isNotNull")
    df_filtrado = df.filter(F.col("email").isNotNull())
@@ -383,42 +328,16 @@ Os operadores lógicos no PySpark são usados para combinar ou inverter condiç�
    ```
 
 #### Exemplo 1 (filtro composto)
-   ```sh
-   touch exemplo-2.4.filtro-composto.py
-
-   ```
-
-   **Código**
    ```python
-   from pyspark.sql import SparkSession
-   from pyspark.sql.functions import col
-
-   # Inicializando a SparkSession
-   spark = SparkSession.builder.appName("dataeng-filter").getOrCreate()
-
-   schema = "id INT, nome STRING, data_nasc STRING, cpf STRING, email STRING, cidade STRING, uf STRING"
-   # Carregando o DataFrame a partir de um arquivo CSV
-   df = spark.read \
-      .format("csv") \
-      .option("sep", ";") \
-      .option("header", True) \
-      .option("schema", schema) \
-      .load("./datasets-csv-clientes/clientes.csv.gz")
 
    # O operador & é o AND. Nesse caso, filtrando pessoas com nome iniciando por Pedro E nascimento entre 1975 e 1980
    df_filtrado = df.filter(
-      (F.col("data_nasc").between("1975-01-01", "1980-12-31")) &
+      (F.col("data_nasc").between("1978-01-01", "1980-12-31")) &
       (F.col("nome").startswith("Pedro"))
    )
    
-   # Mostrando as primeiras linhas do DataFrame filtrado
    df_filtrado.show(5, truncate=False)
 
-   ```
-
-   **Execução**
-   ```sh
-   python exemplo-2.4.filtro-composto.py
    ```
 
 #### Exemplo 2 (filtro composto)
@@ -438,56 +357,25 @@ Os operadores lógicos no PySpark são usados para combinar ou inverter condiç�
 ---
 ### 2.5. Enriquecimento com `withColumn`
 
-
 #### Exemplo 1
-   ```sh
-   touch exemplo-2.5.withColumn.py
-
-   ```
 
    **Código**
    ```python
-   from pyspark.sql import SparkSession
-   from pyspark.sql.functions import col, split, year, to_date
-
-   # Inicializando a SparkSession
-   spark = SparkSession.builder.appName("dataeng-novas-colunas").getOrCreate()
-
-   # Carregando o DataFrame a partir de um arquivo CSV
-   df = spark.read \
-      .format("csv") \
-      .option("sep", ";") \
-      .option("header", True) \
-      .load("./datasets-csv-clientes/clientes.csv.gz")
-
-   # Convertendo 'data_nasc' para tipo Date
-   df = df.withColumn("data_nasc", to_date(col("data_nasc"), "yyyy-MM-dd"))
 
    # Criando as novas colunas: ano_nasc e primeiro_nome
    df_enriquecido = df \
-      .withColumn("ano_nasc", year(col("data_nasc"))) \
-      .withColumn("primeiro_nome", split(col("nome"), " ")[0])
+      .withColumn("ano_nasc", F.year(F.col("data_nasc"))) \
+      .withColumn("primeiro_nome", F.split(F.col("nome"), " ")[0])
 
    # Mostrando as primeiras linhas do DataFrame enriquecido
    df_enriquecido.select("nome", "data_nasc", "ano_nasc", "primeiro_nome").show(5, truncate=False)
 
    ```
 
-   **Execução**
-   ```sh
-   python exemplo-2.5.withColumn.py
-   ```
-
 #### Exemplo 2 (When/Otherwise)
 
    No PySpark, as funções when e otherwise são usadas para criar colunas condicionais, de forma semelhante a um if...else ou CASE WHEN no SQL.
 
-   ```sh
-   touch exemplo-2.5.A-withColumn-When-Otherwise.py
-
-   ```
-
-   **Código**
    ```python
    from pyspark.sql import SparkSession
    from pyspark.sql.functions import col, split, year, to_date, current_date, datediff, when
@@ -520,12 +408,6 @@ Os operadores lógicos no PySpark são usados para combinar ou inverter condiç�
 
    É possível ter diversas cláusulas when no PySpark — e essa é, inclusive, a forma recomendada para simular um if...elif...else ou um CASE WHEN completo do SQL.
 
-   ```sh
-   touch exemplo-2.5.B-withColumn-When-Otherwise.py
-
-   ```
-
-   **Código**
    ```python
    from pyspark.sql import SparkSession
    from pyspark.sql.functions import col, to_date, current_date, datediff, when
