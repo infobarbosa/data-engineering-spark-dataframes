@@ -499,7 +499,7 @@ No Spark, o esquema de um DataFrame define as colunas e seus tipos de dados. É 
 
 ### 3.1. Tipos de Dados no Spark
 
-O Spark SQL suporta vários tipos de dados que podem ser usados para definir o esquema de um DataFrame. Aqui estão alguns dos tipos de dados mais comuns:
+O Spark suporta vários tipos de dados que podem ser usados para definir o esquema de um DataFrame. Aqui estão alguns dos tipos de dados mais comuns:
 
    1. **StringType**: Representa uma string.
    2. **IntegerType**: Representa um número inteiro.
@@ -535,7 +535,9 @@ Esses tipos de dados são definidos no módulo `pyspark.sql.types` e são usados
       StructField("NOME", StringType(), True),
       StructField("DATA_NASC", DateType(), True),
       StructField("CPF", StringType(), True),
-      StructField("EMAIL", StringType(), True)
+      StructField("EMAIL", StringType(), True),
+      StructField("CIDADE", StringType(), True),
+      StructField("UF", StringType(), True)
    ])
 
    # Criando o dataframe utilizando o schema definido acima
