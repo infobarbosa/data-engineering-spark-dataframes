@@ -160,16 +160,36 @@ A operação `filter` no Spark permite filtrar linhas de um DataFrame com base e
    ```python
    from pyspark.sql import SparkSession
    from pyspark.sql.functions import col
+   from datetime import date
 
    # Inicializando a SparkSession
    spark = SparkSession.builder.appName("dataeng-filter").getOrCreate()
 
    # Carregando o DataFrame a partir de um arquivo CSV
+   schema = "id INT, nome STRING, data_nasc DATE, cpf STRING, email STRING"
    df = spark.read \
       .format("csv") \
       .option("sep", ";") \
       .option("header", True) \
+      .schema(schema) \
       .load("./datasets-csv-clientes/clientes.csv.gz")
+
+   ### Vamos criar alguns registros inválidos e concatenar ao dataframe ###
+
+   # Email nulo
+   df = df.union(spark.createDataFrame([(20000, "dave brubeck", date(2000, 1, 1), "123.456.789-00", None)], df.schema))
+
+   # Email inválido
+   df = df.union(spark.createDataFrame([(20004, "chet baker", date(1929, 12, 23), "123.456.789-04", "chetbaker")], df.schema))
+
+   # CPF inválido
+   df = df.union(spark.createDataFrame([(20001, "duke ellington", date(1899, 4, 29), "123.ABC.789-01", "dukeellington@ig.com")], df.schema))
+
+   # Data de nascimento no futuro
+   df = df.union(spark.createDataFrame([(20002, "miles davis", date(2045, 5, 26), "123.456.789-02", "milesdavis@bol.com")], df.schema))
+
+   # Nome sem sobrenome
+   df = df.union(spark.createDataFrame([(20003, "coltrane", date(1926, 9, 23), "123.456.789-03", "coltrane@gmail.com")], df.schema))
 
    # Filtrando linhas onde a data de nascimento é menor ou igual a 1973-01-01
    df_filtrado = df.filter(col("data_nasc") <= "1973-01-01")
@@ -182,28 +202,70 @@ A operação `filter` no Spark permite filtrar linhas de um DataFrame com base e
    **Execução**
    ```sh
    python revisao-2.3.filtro-simples.py
-   ```
-
-**Exemplo 2 (between)**
-   ```sh
-   touch revisao-2.3.filtro-between.py
 
    ```
 
-   **Código**
+**Exemplo 2 (isin)**
+   Altere o arquivo `revisao-2.3.filtro-simples.py` para usar o método `isin`:
    ```python
-   from pyspark.sql import SparkSession
-   from pyspark.sql.functions import col
+   df_filtrado = df.filter(col("email").isin(["mirella.ribeiro@example.com", "pedro.lucas.nascimento@example.com"]))
 
-   # Inicializando a SparkSession
-   spark = SparkSession.builder.appName("dataeng-filter").getOrCreate()
+   ```
 
-   # Carregando o DataFrame a partir de um arquivo CSV
-   df = spark.read \
-      .format("csv") \
-      .option("sep", ";") \
-      .option("header", True) \
-      .load("./datasets-csv-clientes/clientes.csv.gz")
+   **Desafio**
+   Crie um filtro que retorne apenas os clientes cujo CPF esteja na lista:
+   - 672.135.804-26
+   - 783.640.251-71
+   - 784.563.029-29
+
+**Exemplo 3 (like)**
+   Altere o arquivo `revisao-2.3.filtro-simples.py` para usar o método `like`:
+   ```python
+   df_filtrado = df.filter(col("nome").like("%Barbosa%"))
+
+   ```
+
+   **Desafio**
+   Crie um filtro que retorne apenas os clientes cujos emails contêm o termo "gmail".
+
+#### Exemplo 4 (rlike)
+   O rlike permite que você use toda a biblioteca de Regex do Java/Python. Com ele, você pode criar filtros complexos que seriam impossíveis com o like simples.
+
+   Altere o arquivo `revisao-2.3.filtro-simples.py` para usar o método `rlike`:
+   ```python
+   # O operador ~ inverte a lógica: "traga tudo que NÃO corresponde ao rlike"
+   df_cpfs_invalidos = df.filter(~col("cpf").rlike(r"^\d{3}\.\d{3}\.\d{3}-\d{2}$"))
+
+   df_cpfs_invalidos.show()
+
+   ```
+
+   ```python
+   # Filtra e-mails que NÃO seguem uma estrutura básica de email
+   df_emails_invalidos = df.filter(~col("email").rlike(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"))
+
+   df_emails_invalidos.show()
+
+   ```
+
+**Exemplo 5 (startswith)**
+   Altere o arquivo `revisao-2.3.filtro-simples.py` para usar o método `startswith`:
+   ```
+   df_filtrado = df.filter(col("nome").startswith("Maria"))
+
+   ```
+
+#### Exemplo 6 (endswith)
+   Altere o arquivo `revisao-2.3.filtro-simples.py` para usar o método `endswith`:
+   ```
+   df_filtrado = df.filter(col("nome").endswith("Silva"))
+
+   ```
+
+#### Exemplo 7 (between)
+
+   Altere o arquivo `revisao-2.3.filtro-simples.py` para usar o método `between`:
+   ```python
 
    # Filtrando pessoas que nasceram entre 1975 e 1980
    df_filtrado = df.filter(col("data_nasc").between("1975-01-01", "1980-12-31"))
@@ -213,9 +275,32 @@ A operação `filter` no Spark permite filtrar linhas de um DataFrame com base e
 
    ```
 
-   **Execução**
-   ```sh
-   python revisao-2.3.filtro-simples.py
+#### Exemplo 8 (isNull / isNotNull)
+
+
+   Altere o arquivo `revisao-2.3.filtro-simples.py` para usar o método `isNull`:
+   ```python
+   df_filtrado = df.filter(col("email").isNull())
+
+   ```
+
+   Altere o arquivo `revisao-2.3.filtro-simples.py` para usar o método `isNotNull`:
+   ```python
+   df_filtrado = df.filter(col("email").isNotNull())
+
+   ```
+
+#### Exemplo 9 (where)
+
+   Altere o arquivo `revisao-2.3.filtro-simples.py` para usar o método `where`:
+   ```python
+
+   # Filtrando pessoas que nasceram entre 1975 e 1980
+   df_filtrado = df.where("data_nasc between '1975-01-01' and '1980-12-31'")
+
+   # Mostrando as primeiras linhas do DataFrame filtrado
+   df_filtrado.show(5, truncate=False)
+
    ```
 
 ---
