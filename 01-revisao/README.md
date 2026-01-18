@@ -150,7 +150,7 @@ Neste exemplo, utilizamos a função `select` para escolher apenas as colunas `i
 ### 2.3. Filtragem com `filter`
 A operação `filter` no Spark permite filtrar linhas de um DataFrame com base em uma condição específica. Isso é útil para trabalhar apenas com um subconjunto de dados que atende a determinados critérios.
 
-**Exemplo 1**
+#### Exemplo 1
    ```sh
    touch revisao-2.3.filtro-simples.py
 
@@ -205,7 +205,7 @@ A operação `filter` no Spark permite filtrar linhas de um DataFrame com base e
 
    ```
 
-**Exemplo 2 (isin)**
+#### Exemplo 2 (isin)
    Altere o arquivo `revisao-2.3.filtro-simples.py` para usar o método `isin`:
    ```python
    df_filtrado = df.filter(col("email").isin(["mirella.ribeiro@example.com", "pedro.lucas.nascimento@example.com"]))
@@ -218,7 +218,7 @@ A operação `filter` no Spark permite filtrar linhas de um DataFrame com base e
    - 783.640.251-71
    - 784.563.029-29
 
-**Exemplo 3 (like)**
+#### Exemplo 3 (like)
    Altere o arquivo `revisao-2.3.filtro-simples.py` para usar o método `like`:
    ```python
    df_filtrado = df.filter(col("nome").like("%Barbosa%"))
@@ -248,7 +248,7 @@ A operação `filter` no Spark permite filtrar linhas de um DataFrame com base e
 
    ```
 
-**Exemplo 5 (startswith)**
+#### Exemplo 5 (startswith)
    Altere o arquivo `revisao-2.3.filtro-simples.py` para usar o método `startswith`:
    ```
    df_filtrado = df.filter(col("nome").startswith("Maria"))
@@ -327,7 +327,7 @@ Os operadores lógicos no PySpark são usados para combinar ou inverter condiç�
    df.filter(~(col("cidade") == "São Paulo")).show()
    ```
 
-**Exemplo 1 (filtro composto )**
+#### Exemplo 1 (filtro composto )
    ```sh
    touch revisao-2.4.filtro-composto.py
 
@@ -368,7 +368,7 @@ Os operadores lógicos no PySpark são usados para combinar ou inverter condiç�
 ### 2.5. Enriquecimento com `withColumn`
 
 
-**Exemplo 1**
+#### Exemplo 1
    ```sh
    touch revisao-2.5.withColumn.py
 
@@ -407,7 +407,7 @@ Os operadores lógicos no PySpark são usados para combinar ou inverter condiç�
    python revisao-2.5.withColumn.py
    ```
 
-**Exemplo 2 (When/Otherwise)**
+#### Exemplo 2 (When/Otherwise)
 
    No PySpark, as funções when e otherwise são usadas para criar colunas condicionais, de forma semelhante a um if...else ou CASE WHEN no SQL.
 
@@ -445,7 +445,7 @@ Os operadores lógicos no PySpark são usados para combinar ou inverter condiç�
 
    ```
 
-**Exemplo 3 (When/Otherwise)**
+#### Exemplo 3 (When/Otherwise)
 
    É possível ter diversas cláusulas when no PySpark — e essa é, inclusive, a forma recomendada para simular um if...elif...else ou um CASE WHEN completo do SQL.
 
