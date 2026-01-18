@@ -321,7 +321,7 @@ No PySpark, existem dois métodos para aplicar filtros em DataFrames:
    ```
 
    **Desafio**
-   
+
    Verifique registros que não possuem **CPF**.
 
 #### Exemplo 9 (where)
@@ -352,7 +352,7 @@ Os operadores lógicos no PySpark são usados para combinar ou inverter condiç�
    Filtra linhas que atendem a TODAS as condições especificadas.  
    ```python
    print("### AND")
-   df_filtrado = df.filter((F.year(col("data_nasc")) < 1990) & (col("cidade") == "São Paulo"))
+   df_filtrado = df.filter((F.year(F.col("data_nasc")) < 1990) & (F.col("cidade") == "São Paulo"))
 
    df_filtrado.show(5, truncate=False)
 
@@ -362,7 +362,7 @@ Os operadores lógicos no PySpark são usados para combinar ou inverter condiç�
    Filtra linhas que atendem a pelo menos uma das condições especificadas.  
    ```python
    print("### OR")
-   df_filtrado = df.filter((F.year(col("data_nasc")) < 1990) | (col("cidade") == "São Paulo"))
+   df_filtrado = df.filter((F.year(F.col("data_nasc")) < 1990) | (F.col("cidade") == "São Paulo"))
    
    ```
 
