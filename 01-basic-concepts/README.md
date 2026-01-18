@@ -380,10 +380,9 @@ Os operadores lógicos no PySpark são usados para combinar ou inverter condiç�
    # Criando a coluna 'maior_de_idade' com base na diferença de dias
    df_com_maioridade = df.withColumn(
       "maior_de_idade",
-      when((datediff(current_date(), col("data_nasc")) / 365.25) >= 18, "Sim").otherwise("Não")
+      F.when((F.datediff(F.current_date(), F.col("data_nasc")) / 365.25) >= 18, "Sim").otherwise("Não")
    )
 
-   # Visualizando as primeiras linhas com nome, data_nasc e maior_de_idade
    df_com_maioridade.select("nome", "data_nasc", "maior_de_idade").show(5, truncate=False)
 
    ```
@@ -393,20 +392,20 @@ Os operadores lógicos no PySpark são usados para combinar ou inverter condiç�
    É possível ter diversas cláusulas when no PySpark — e essa é, inclusive, a forma recomendada para simular um if...elif...else ou um CASE WHEN completo do SQL.
 
    ```python
-   print("### withColumn com when/otherwise (1)")
+   print("### withColumn com when/otherwise (2)")
 
    # Calculando a idade (diferença em anos, aproximada)
    df_com_idade = df.withColumn("idade", (F.datediff(F.current_date(), F.col("data_nasc")) / 365.25).cast("int"))
 
    # Classificando por faixa etária
    df_com_faixa_etaria = df_com_idade.withColumn("faixa_etaria",
-      when(F.col("idade") < 12, "Criança")
+      F.when(F.col("idade") < 12, "Criança")
       .when(F.col("idade") < 18, "Adolescente")
       .when(F.col("idade") < 60, "Adulto")
       .otherwise("Idoso")
    )
 
-   df.select("nome", "data_nasc", "idade", "faixa_etaria").show(10, truncate=False)
+   df_com_faixa_etaria.select("nome", "data_nasc", "idade", "faixa_etaria").show(10, truncate=False)
 
    ```
 
