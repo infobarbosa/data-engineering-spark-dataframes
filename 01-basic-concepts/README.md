@@ -296,6 +296,9 @@ No PySpark, existem dois métodos para aplicar filtros em DataFrames:
 
    ```
 
+   **Desafio**
+   Verifique registros que não possuem **CPF**.
+
 #### Exemplo 9 (where)
    Se você preferir usar a sintaxe SQL, pode usar o método `where`: 
    
