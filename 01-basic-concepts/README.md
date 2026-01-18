@@ -152,18 +152,25 @@ Neste exemplo, utilizamos a função `select` para escolher apenas as colunas `i
 
    1. Usando a função `selectExpr`:
    ```python
+   print("### selectExpr")
    df_selected = df.selectExpr("id", "nome as nome_cliente", "email")   
+   df_selected.show(5, truncate=False)
    ```   
 
    2. Usando a função `select` com `alias`:
    ```python
-   df_selected = df.select("id", col("nome").alias("nome_cliente"), "email")
+   print("### select com alias")
+   df_selected = df.select("id", F.col("nome").alias("nome_cliente"), "email")
+   df_selected.show(5, truncate=False)
    
    ```
 
    3. Usando o método `withColumnRenamed`:
    ```python
+   print("### withColumnRenamed")
    df_selected = df.withColumnRenamed("nome", "nome_cliente")
+   df_selected.show(5, truncate=False) 
+
    ```   
 
 ---
