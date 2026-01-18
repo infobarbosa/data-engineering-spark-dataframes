@@ -148,7 +148,16 @@ Neste exemplo, utilizamos a função `select` para escolher apenas as colunas `i
 
 ---
 ### 2.3. Filtragem com `filter`
-A operação `filter` no Spark permite filtrar linhas de um DataFrame com base em uma condição específica. Isso é útil para trabalhar apenas com um subconjunto de dados que atende a determinados critérios.
+No PySpark, existem dois métodos para aplicar filtros em DataFrames:
+
+1. `filter()`: O método padrão para aplicar condições.
+2. `where()`: Exatamente igual ao `filter()`, mas útil para quem vem do SQL e prefere essa semântica.
+
+
+
+#### Formas de Expressar a Condição
+1. Usando Strings (Estilo SQL): `df.filter("idade > 18")`. É simples e intuitivo para iniciantes.
+2. Usando a Coluna (Objeto Column): `df.filter(df.idade > 18)` ou `df.filter(col("idade") > 18)`. Esta é a forma mais "Spark" e permite maior flexibilidade.
 
 #### Exemplo 1
    ```sh
