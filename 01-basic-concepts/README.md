@@ -218,15 +218,15 @@ No PySpark, existem dois métodos para aplicar filtros em DataFrames:
 #### Exemplo 2 (isin)
    Altere o arquivo `exemplo-2.3.filtro-simples.py` para usar o método `isin`:
    ```python
-   df_filtrado = df.filter(col("email").isin(["mirella.ribeiro@example.com", "pedro.lucas.nascimento@example.com"]))
+   df_filtrado = df.filter(col("cidade").isin(["São Paulo", "Guarulhos"]))
 
    ```
 
    **Desafio**
    Crie um filtro que retorne apenas os clientes cujo CPF esteja na lista:
-   - 672.135.804-26
-   - 783.640.251-71
-   - 784.563.029-29
+   - 487.602.159-76
+   - 579.640.821-67
+   - 167.259.048-58
 
 #### Exemplo 3 (like)
    Altere o arquivo `exemplo-2.3.filtro-simples.py` para usar o método `like`:
@@ -250,13 +250,9 @@ No PySpark, existem dois métodos para aplicar filtros em DataFrames:
 
    ```
 
-   ```python
-   # Filtra e-mails que NÃO seguem uma estrutura básica de email
-   df_emails_invalidos = df.filter(~col("email").rlike(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"))
-
-   df_emails_invalidos.show()
-
-   ```
+   **Desafio**
+   Verifique quais emails estão inválidos.
+   A expressão regular para validar emails é: `^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`
 
 #### Exemplo 5 (startswith)
    Altere o arquivo `exemplo-2.3.filtro-simples.py` para usar o método `startswith`:
