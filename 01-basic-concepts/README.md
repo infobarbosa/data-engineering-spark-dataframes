@@ -81,6 +81,7 @@ Os DataFrames são estruturas de dados distribuídas, imutáveis e organizadas e
 
    ```python
    from pyspark.sql import SparkSession
+   import pyspark.sql.functions as F
 
    # Inicializando a SparkSession
    spark = SparkSession.builder.appName("dataeng-exemplo-dataframe").getOrCreate()
@@ -119,6 +120,7 @@ A operação `select` no Spark permite selecionar colunas específicas de um Dat
    **Código**
    ```python
    from pyspark.sql import SparkSession
+   import pyspark.sql.functions as F
 
    # Inicializando a SparkSession
    spark = SparkSession.builder.appName("dataeng-select").getOrCreate()
@@ -186,7 +188,7 @@ No PySpark, existem dois métodos para aplicar filtros em DataFrames:
    **Código**
    ```python
    from pyspark.sql import SparkSession
-   from pyspark.sql.functions import col
+   import pyspark.sql.functions as F
    from datetime import date
 
    # Inicializando a SparkSession
@@ -202,7 +204,7 @@ No PySpark, existem dois métodos para aplicar filtros em DataFrames:
       .load("./datasets-csv-clientes/clientes.csv.gz")
 
    # Filtrando linhas onde a data de nascimento é menor ou igual a 1973-01-01
-   df_filtrado = df.filter(col("data_nasc") <= "1973-01-01")
+   df_filtrado = df.filter(F.col("data_nasc") <= "1973-01-01")
 
    # Mostrando as primeiras linhas do DataFrame filtrado
    df_filtrado.show(5, truncate=False)
@@ -219,7 +221,7 @@ No PySpark, existem dois métodos para aplicar filtros em DataFrames:
    Altere o arquivo `exemplo-2.3.filtro-simples.py` para usar o método `isin`:
    ```python
    print("### isin")
-   df_filtrado = df.filter(col("cidade").isin(["São Paulo", "Guarulhos"]))
+   df_filtrado = df.filter(F.col("cidade").isin(["São Paulo", "Guarulhos"]))
    df_filtrado.show(5, truncate=False)
 
    ```
@@ -234,7 +236,7 @@ No PySpark, existem dois métodos para aplicar filtros em DataFrames:
    Altere o arquivo `exemplo-2.3.filtro-simples.py` para usar o método `like`:
    ```python
    print("### like")
-   df_filtrado = df.filter(col("nome").like("%Barbosa%"))
+   df_filtrado = df.filter(F.col("nome").like("%Barbosa%"))
    df_filtrado.show(5, truncate=False)
 
    ```
@@ -249,7 +251,7 @@ No PySpark, existem dois métodos para aplicar filtros em DataFrames:
    ```python
    print("### rlike")
    # O operador ~ inverte a lógica: "traga tudo que NÃO corresponde ao rlike"
-   df_cpfs_invalidos = df.filter(~col("cpf").rlike(r"^\d{3}\.\d{3}\.\d{3}-\d{2}$"))
+   df_cpfs_invalidos = df.filter(~(F.col("cpf").rlike(r"^\d{3}\.\d{3}\.\d{3}-\d{2}$")))
    df_cpfs_invalidos.show(5, truncate=False)
 
    ```
@@ -262,7 +264,7 @@ No PySpark, existem dois métodos para aplicar filtros em DataFrames:
    Altere o arquivo `exemplo-2.3.filtro-simples.py` para usar o método `startswith`:
    ```python
    print("### startswith")
-   df_filtrado = df.filter(col("nome").startswith("Maria"))
+   df_filtrado = df.filter(F.col("nome").startswith("Maria"))
    df_filtrado.show(5, truncate=False)
 
    ```
@@ -271,7 +273,7 @@ No PySpark, existem dois métodos para aplicar filtros em DataFrames:
    Altere o arquivo `exemplo-2.3.filtro-simples.py` para usar o método `endswith`:
    ```python
    print("### endswith")
-   df_filtrado = df.filter(col("nome").endswith("Silva"))
+   df_filtrado = df.filter(F.col("nome").endswith("Silva"))
    df_filtrado.show(5, truncate=False)
 
    ```
@@ -282,7 +284,7 @@ No PySpark, existem dois métodos para aplicar filtros em DataFrames:
    ```python
    print("### between")
    # Filtrando pessoas que nasceram entre 1975 e 1980
-   df_filtrado = df.filter(col("data_nasc").between("1975-01-01", "1980-12-31"))
+   df_filtrado = df.filter(F.col("data_nasc").between("1975-01-01", "1980-12-31"))
 
    # Mostrando as primeiras linhas do DataFrame filtrado
    df_filtrado.show(5, truncate=False)
@@ -295,7 +297,7 @@ No PySpark, existem dois métodos para aplicar filtros em DataFrames:
    Altere o arquivo `exemplo-2.3.filtro-simples.py` para usar o método `isNull`:
    ```python
    print("### isNull")
-   df_filtrado = df.filter(col("email").isNull())
+   df_filtrado = df.filter(F.col("email").isNull())
    df_filtrado.show(5, truncate=False)
 
    ```
@@ -303,7 +305,7 @@ No PySpark, existem dois métodos para aplicar filtros em DataFrames:
    Altere o arquivo `exemplo-2.3.filtro-simples.py` para usar o método `isNotNull`:
    ```python
    print("### isNotNull")
-   df_filtrado = df.filter(col("email").isNotNull())
+   df_filtrado = df.filter(F.col("email").isNotNull())
    df_filtrado.show(5, truncate=False)
 
    ```
@@ -315,6 +317,7 @@ No PySpark, existem dois métodos para aplicar filtros em DataFrames:
    Se você preferir usar a sintaxe SQL, pode usar o método `where`: 
    
    ```python
+   print("### where")
 
    # Filtrando pessoas que nasceram entre 1975 e 1980
    df_filtrado = df.where("data_nasc between '1975-01-01' and '1980-12-31'")
@@ -337,7 +340,7 @@ Os operadores lógicos no PySpark são usados para combinar ou inverter condiç�
    Filtra linhas que atendem a TODAS as condições especificadas.  
    ```python
    print("### AND")
-   df_filtrado = df.filter((col("idade") > 30) & (col("cidade") == "São Paulo"))
+   df_filtrado = df.filter((F.year(col("data_nasc")) < 1990) & (col("cidade") == "São Paulo"))
 
    df_filtrado.show(5, truncate=False)
 
@@ -347,7 +350,7 @@ Os operadores lógicos no PySpark são usados para combinar ou inverter condiç�
    Filtra linhas que atendem a pelo menos uma das condições especificadas.  
    ```python
    print("### OR")
-   df_filtrado = df.filter((col("idade") > 30) | (col("cidade") == "São Paulo"))
+   df_filtrado = df.filter((F.year(col("data_nasc")) < 1990) | (col("cidade") == "São Paulo"))
    
    ```
 
@@ -357,14 +360,14 @@ Os operadores lógicos no PySpark são usados para combinar ou inverter condiç�
    print("### NOT (isin)")
    estados_sudeste = ["SP", "RJ", "MG", "ES"]
 
-   df_filtrado = df.filter(~(col("uf").isin(estados_sudeste)))
+   df_filtrado = df.filter(~(F.col("uf").isin(estados_sudeste)))
 
    df_filtrado.show(5, truncate=False)
    ```
 
    ```python
    print("### NOT (contains)")
-   df_filtrado = df.filter(~(col("email").contains("hotmail.com")))
+   df_filtrado = df.filter(~(F.col("email").contains("hotmail.com")))
 
    df_filtrado.show(5, truncate=False)
    ```
@@ -394,8 +397,8 @@ Os operadores lógicos no PySpark são usados para combinar ou inverter condiç�
 
    # O operador & é o AND. Nesse caso, filtrando pessoas com nome iniciando por Pedro E nascimento entre 1975 e 1980
    df_filtrado = df.filter(
-      (col("data_nasc").between("1975-01-01", "1980-12-31")) &
-      (col("nome").startswith("Pedro"))
+      (F.col("data_nasc").between("1975-01-01", "1980-12-31")) &
+      (F.col("nome").startswith("Pedro"))
    )
    
    # Mostrando as primeiras linhas do DataFrame filtrado
@@ -413,8 +416,8 @@ Os operadores lógicos no PySpark são usados para combinar ou inverter condiç�
    # O operador ~ inverte a lógica: "traga tudo que NÃO corresponde ao rlike"
    # O operador | é o OR. Nesse caso, traz todos os registros que não correspondem ao formato do CPF ou do email
    df_registros_invalidos = df.filter(
-      ~col("cpf").rlike(r"^\d{3}\.\d{3}\.\d{3}-\d{2}$") | 
-      ~col("email").rlike(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$")
+      ~(F.col("cpf").rlike(r"^\d{3}\.\d{3}\.\d{3}-\d{2}$")) | 
+      ~(F.col("email").rlike(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"))
    )
 
    df_registros_invalidos.show()
