@@ -193,7 +193,7 @@ No PySpark, existem dois métodos para aplicar filtros em DataFrames:
    spark = SparkSession.builder.appName("dataeng-filter").getOrCreate()
 
    # Carregando o DataFrame a partir de um arquivo CSV
-   schema = "id INT, nome STRING, data_nasc DATE, cpf STRING, email STRING"
+   schema = "id INT, nome STRING, data_nasc DATE, cpf STRING, email STRING, cidade STRING, uf STRING"
    df = spark.read \
       .format("csv") \
       .option("sep", ";") \
