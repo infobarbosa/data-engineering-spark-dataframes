@@ -155,6 +155,7 @@ Neste exemplo, utilizamos a função `select` para escolher apenas as colunas `i
    print("### selectExpr")
    df_selected = df.selectExpr("id", "nome as nome_cliente", "email")   
    df_selected.show(5, truncate=False)
+
    ```   
 
    2. Usando a função `select` com `alias`:
@@ -212,7 +213,6 @@ No PySpark, existem dois métodos para aplicar filtros em DataFrames:
 
    # Filtrando linhas onde a data de nascimento é menor ou igual a 1973-01-01
    df_filtrado = df.filter(F.col("data_nasc") <= "1973-01-01")
-
    # Mostrando as primeiras linhas do DataFrame filtrado
    df_filtrado.show(5, truncate=False)
 
@@ -332,7 +332,6 @@ No PySpark, existem dois métodos para aplicar filtros em DataFrames:
 
    # Filtrando pessoas que nasceram entre 1975 e 1980
    df_filtrado = df.where("data_nasc between '1975-01-01' and '1980-12-31'")
-
    # Mostrando as primeiras linhas do DataFrame filtrado
    df_filtrado.show(5, truncate=False)
 
@@ -353,7 +352,6 @@ Os operadores lógicos no PySpark são usados para combinar ou inverter condiç�
    ```python
    print("### AND")
    df_filtrado = df.filter((F.year(F.col("data_nasc")) < 1990) & (F.col("cidade") == "São Paulo"))
-
    df_filtrado.show(5, truncate=False)
 
    ```
@@ -363,7 +361,8 @@ Os operadores lógicos no PySpark são usados para combinar ou inverter condiç�
    ```python
    print("### OR")
    df_filtrado = df.filter((F.year(F.col("data_nasc")) < 1990) | (F.col("cidade") == "São Paulo"))
-   
+   df_filtrado.show(5, truncate=False)
+
    ```
 
 3. **NOT (`~`)**  
@@ -371,17 +370,16 @@ Os operadores lógicos no PySpark são usados para combinar ou inverter condiç�
    ```python
    print("### NOT (isin)")
    estados_sudeste = ["SP", "RJ", "MG", "ES"]
-
    df_filtrado = df.filter(~(F.col("uf").isin(estados_sudeste)))
-
    df_filtrado.show(5, truncate=False)
+   
    ```
 
    ```python
    print("### NOT (contains)")
    df_filtrado = df.filter(~(F.col("email").contains("hotmail.com")))
-
    df_filtrado.show(5, truncate=False)
+
    ```
 
 #### Exemplo 1 (filtro composto)
