@@ -218,7 +218,9 @@ No PySpark, existem dois métodos para aplicar filtros em DataFrames:
 #### Exemplo 2 (isin)
    Altere o arquivo `exemplo-2.3.filtro-simples.py` para usar o método `isin`:
    ```python
+   print("### isin")
    df_filtrado = df.filter(col("cidade").isin(["São Paulo", "Guarulhos"]))
+   df_filtrado.show(5, truncate=False)
 
    ```
 
@@ -231,7 +233,9 @@ No PySpark, existem dois métodos para aplicar filtros em DataFrames:
 #### Exemplo 3 (like)
    Altere o arquivo `exemplo-2.3.filtro-simples.py` para usar o método `like`:
    ```python
+   print("### like")
    df_filtrado = df.filter(col("nome").like("%Barbosa%"))
+   df_filtrado.show(5, truncate=False)
 
    ```
 
@@ -243,10 +247,10 @@ No PySpark, existem dois métodos para aplicar filtros em DataFrames:
 
    Altere o arquivo `exemplo-2.3.filtro-simples.py` para usar o método `rlike`:
    ```python
+   print("### rlike")
    # O operador ~ inverte a lógica: "traga tudo que NÃO corresponde ao rlike"
    df_cpfs_invalidos = df.filter(~col("cpf").rlike(r"^\d{3}\.\d{3}\.\d{3}-\d{2}$"))
-
-   df_cpfs_invalidos.show()
+   df_cpfs_invalidos.show(5, truncate=False)
 
    ```
 
@@ -256,15 +260,19 @@ No PySpark, existem dois métodos para aplicar filtros em DataFrames:
 
 #### Exemplo 5 (startswith)
    Altere o arquivo `exemplo-2.3.filtro-simples.py` para usar o método `startswith`:
-   ```
+   ```python
+   print("### startswith")
    df_filtrado = df.filter(col("nome").startswith("Maria"))
+   df_filtrado.show(5, truncate=False)
 
    ```
 
 #### Exemplo 6 (endswith)
    Altere o arquivo `exemplo-2.3.filtro-simples.py` para usar o método `endswith`:
-   ```
+   ```python
+   print("### endswith")
    df_filtrado = df.filter(col("nome").endswith("Silva"))
+   df_filtrado.show(5, truncate=False)
 
    ```
 
@@ -272,7 +280,7 @@ No PySpark, existem dois métodos para aplicar filtros em DataFrames:
 
    Altere o arquivo `exemplo-2.3.filtro-simples.py` para usar o método `between`:
    ```python
-
+   print("### between")
    # Filtrando pessoas que nasceram entre 1975 e 1980
    df_filtrado = df.filter(col("data_nasc").between("1975-01-01", "1980-12-31"))
 
@@ -286,13 +294,17 @@ No PySpark, existem dois métodos para aplicar filtros em DataFrames:
 
    Altere o arquivo `exemplo-2.3.filtro-simples.py` para usar o método `isNull`:
    ```python
+   print("### isNull")
    df_filtrado = df.filter(col("email").isNull())
+   df_filtrado.show(5, truncate=False)
 
    ```
 
    Altere o arquivo `exemplo-2.3.filtro-simples.py` para usar o método `isNotNull`:
    ```python
+   print("### isNotNull")
    df_filtrado = df.filter(col("email").isNotNull())
+   df_filtrado.show(5, truncate=False)
 
    ```
 
@@ -311,6 +323,9 @@ No PySpark, existem dois métodos para aplicar filtros em DataFrames:
    df_filtrado.show(5, truncate=False)
 
    ```
+
+   **Desafio**
+   Verifique registros de clientes que moram na cidade de **São Paulo** e que nasceram entre 1990 e 2000.
 
 ---
 ### 2.4. Operadores lógicos
