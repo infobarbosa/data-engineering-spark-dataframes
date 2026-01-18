@@ -233,7 +233,8 @@ No PySpark, existem dois métodos para aplicar filtros em DataFrames:
 
    ```
 
-   **Desafio**
+   **Desafio** 
+   
    Crie um filtro que retorne apenas os clientes cujo CPF esteja na lista:
    - 487.602.159-76
    - 579.640.821-67
@@ -249,6 +250,7 @@ No PySpark, existem dois métodos para aplicar filtros em DataFrames:
    ```
 
    **Desafio**
+   
    Crie um filtro que retorne apenas os clientes cujos emails contêm o termo "gmail".
 
 #### Exemplo 4 (rlike)
@@ -264,7 +266,8 @@ No PySpark, existem dois métodos para aplicar filtros em DataFrames:
    ```
 
    **Desafio**
-   Verifique quais emails estão inválidos.
+
+   Verifique quais emails estão inválidos.<br/>
    A expressão regular para validar emails é: `^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`
 
 #### Exemplo 5 (startswith)
@@ -318,6 +321,7 @@ No PySpark, existem dois métodos para aplicar filtros em DataFrames:
    ```
 
    **Desafio**
+   
    Verifique registros que não possuem **CPF**.
 
 #### Exemplo 9 (where)
@@ -335,6 +339,7 @@ No PySpark, existem dois métodos para aplicar filtros em DataFrames:
    ```
 
    **Desafio**
+
    Verifique registros de clientes que moram na cidade de **São Paulo** e que nasceram entre 1990 e 2000.
 
 ---
