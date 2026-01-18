@@ -334,21 +334,39 @@ Os operadores lógicos no PySpark são usados para combinar ou inverter condiç�
 **Exemplos de operadores lógicos:**
 
 1. **AND (`&`)**  
-   Filtra linhas que atendem a todas as condições especificadas.  
+   Filtra linhas que atendem a TODAS as condições especificadas.  
    ```python
-   df.filter((col("idade") > 30) & (col("cidade") == "São Paulo")).show()
+   print("### AND")
+   df_filtrado = df.filter((col("idade") > 30) & (col("cidade") == "São Paulo"))
+
+   df_filtrado.show(5, truncate=False)
+
    ```
 
 2. **OR (`|`)**  
    Filtra linhas que atendem a pelo menos uma das condições especificadas.  
    ```python
-   df.filter((col("idade") > 30) | (col("cidade") == "São Paulo")).show()
+   print("### OR")
+   df_filtrado = df.filter((col("idade") > 30) | (col("cidade") == "São Paulo"))
+   
    ```
 
 3. **NOT (`~`)**  
    Filtra linhas que não atendem a uma condição específica.  
    ```python
-   df.filter(~(col("cidade") == "São Paulo")).show()
+   print("### NOT (isin)")
+   estados_sudeste = ["SP", "RJ", "MG", "ES"]
+
+   df_filtrado = df.filter(~(col("uf").isin(estados_sudeste)))
+
+   df_filtrado.show(5, truncate=False)
+   ```
+
+   ```python
+   print("### NOT (contains)")
+   df_filtrado = df.filter(~(col("email").contains("hotmail.com")))
+
+   df_filtrado.show(5, truncate=False)
    ```
 
 #### Exemplo 1 (filtro composto)
@@ -365,11 +383,13 @@ Os operadores lógicos no PySpark são usados para combinar ou inverter condiç�
    # Inicializando a SparkSession
    spark = SparkSession.builder.appName("dataeng-filter").getOrCreate()
 
+   schema = "id INT, nome STRING, data_nasc STRING, cpf STRING, email STRING, cidade STRING, uf STRING"
    # Carregando o DataFrame a partir de um arquivo CSV
    df = spark.read \
       .format("csv") \
       .option("sep", ";") \
       .option("header", True) \
+      .option("schema", schema) \
       .load("./datasets-csv-clientes/clientes.csv.gz")
 
    # O operador & é o AND. Nesse caso, filtrando pessoas com nome iniciando por Pedro E nascimento entre 1975 e 1980
