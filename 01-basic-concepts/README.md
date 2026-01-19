@@ -273,11 +273,9 @@ No PySpark, existem dois métodos para aplicar filtros em DataFrames:
    Se você preferir usar a sintaxe SQL, pode usar o método `where`: 
    
    ```python
-   print("### where")
-
    # Filtrando pessoas que nasceram entre 1975 e 1980
+   print("### where")
    df_filtrado = df.where("data_nasc between '1975-01-01' and '1980-12-31'")
-   # Mostrando as primeiras linhas do DataFrame filtrado
    df_filtrado.show(5, truncate=False)
 
    ```
@@ -353,7 +351,6 @@ Os operadores lógicos no PySpark são usados para combinar ou inverter condiç�
 
    ```
 
-
 ---
 ### 2.5. Enriquecimento com `withColumn`
 
@@ -409,88 +406,128 @@ Os operadores lógicos no PySpark são usados para combinar ou inverter condiç�
 
    ```
 
-## Desafio 1 - Bolsa Família
-
-1. Baixe a base de pagamentos do programa Novo Bolsa Família referente a **Novembro de 2025**.
-   - Baixe o arquivo `202511_NovoBolsaFamilia.csv` do [Portal da Transparência](https://portaldatransparencia.gov.br/download-de-dados/novo-bolsa-familia)
-   - O dicionário de dados pode ser obtido [aqui](https://portaldatransparencia.gov.br/dicionario-de-dados/novo-bolsa-familia)
-   - Salve o arquivo em um diretório chamado `data` na raiz do projeto
-2. Obtenha as seguintes informações:
-   - Lista dos primeiros 10 registros
-   - Lista dos primeiros 10 beneficiários que receberam valor **maior** que R$ 1.000,00
-   - Lista dos primeiros 10 beneficiários que receberam valor **maior** que R$ 2.000,00
-   - Lista dos primeiros 10 beneficiários que moram no municipio de `BONITO` no estado da **Bahia**
-   - Lista dos beneficiários que:
-      * moram no municipio de `BONITO` no estado da **Bahia** 
-      * receberam valor **maior** que R$ 2.000,00
-   - Lista dos beneficiários que:
-      * moram no municipio de `BONITO` no estado da **Bahia** 
-      * receberam valor **menor** que R$ 2.000,00 
-      * número do CPF esteja nulo
-   - Lista dos beneficiários que:
-      * moram em qualquer estado da região **Norte**
-      * receberam valor **menor** que R$ 1.000,00 
-      * número do CPF **não** esteja nulo
-      * O primeiro nome do beneficiário seja **Marcelo**
-      * O último nome do beneficiário seja **Barbosa**
-
-### Código inicial
-   ```python
-   from pyspark.sql import SparkSession
-   import pyspark.sql.functions as F
-
-   spark = SparkSession.builder.appName("dataeng-bolsa-familia").getOrCreate()
-
-   schema = """
-      mes_competencia INT, 
-      mes_referencia INT, 
-      uf STRING, 
-      codigo_municipio_siafi STRING, 
-      nome_municipio STRING,
-      cpf_favorecido STRING,
-      nis_favorecido STRING,
-      nome_favorecido STRING,
-      valor_parcela STRING
-   """
-
-   df = spark.read \
-      .format("csv") \
-      .option("sep", ";") \
-      .option("header", True) \
-      .option("encoding", "ISO-8859-1") \
-      .schema(schema) \
-      .load("./202511_NovoBolsaFamilia.csv")
-
-   df = df.withColumn(
-      "valor_parcela", 
-      F.regexp_replace(F.col("valor_parcela"), r"\.", "")
-   ).withColumn(
-      "valor_parcela", 
-      F.regexp_replace(F.col("valor_parcela"), ",", ".") 
-   ).withColumn(
-      "valor_parcela", 
-      F.col("valor_parcela").cast("decimal(10,2)")
-   )
-
-   df.show(10, truncate=False)
-   df.printSchema()
-
-   ```
-
 ---
 
 ### 2.6. Transformações e Ações
 As transformações no Spark são operações "lazy", ou seja, elas não são executadas até que uma ação seja chamada. <br>
 Exemplos de transformações incluem `filter`, `select`, `groupBy`, enquanto ações incluem `show`, `count`, `collect`.
 
-```python
-# Transformação: Filtrando linhas onde a coluna 'idade' é maior que 30
-df_filtered = df.filter(df["idade"] > 30)
+#### Transformations
 
-# Ação: Contando o número de linhas resultantes
-total = df_filtered.count()
-print(f"Total de pessoas com mais de 30 anos: {total}")
-```
+As **Transformações** no PySpark são operações que definem como os dados devem ser modificados, mas — ao contrário das ações — elas não são executadas imediatamente. Elas seguem o conceito de **Lazy Evaluation** (Avaliação Preguiçosa): o Spark apenas registra a sequência de transformações em um plano de execução chamado **DAG** (*Directed Acyclic Graph*).
+
+As transformações são divididas em duas categorias principais, baseadas na necessidade de movimentar dados entre os nós do cluster (*shuffle*).
+
+---
+
+##### 1. Transformações Estreitas (*Narrow Transformations*)
+
+São as mais eficientes, pois os dados necessários para calcular o resultado de uma partição estão em uma única partição do RDD/DataFrame pai. **Não exigem troca de dados entre os executores (no shuffle).**
+
+| Transformação | Descrição |
+| --- | --- |
+| **`select()`** | Seleciona colunas específicas do DataFrame. |
+| **`filter()`** / **`where()`** | Filtra linhas com base em uma condição lógica. |
+| **`withColumn()`** | Adiciona uma nova coluna ou substitui uma existente. |
+| **`drop()`** | Remove colunas específicas. |
+| **`map()`** | (RDD) Aplica uma função a cada elemento e retorna um novo RDD. |
+| **`flatMap()`** | Semelhante ao map, mas cada elemento de entrada pode ser mapeado para 0 ou mais elementos de saída (achata o resultado). |
+| **`union()`** | Combina dois DataFrames com a mesma estrutura. |
+| **`alias()`** | Atribui um apelido ao DataFrame ou coluna. |
+
+---
+
+##### 2. Transformações Largas (*Wide Transformations*)
+
+Essas transformações exigem dados de várias partições para calcular o resultado, o que dispara um **Shuffle**. Isso significa que o Spark precisa mover dados pela rede entre os nós do cluster, o que é computacionalmente caro.
+
+| Transformação | Descrição |
+| --- | --- |
+| **`groupBy()`** | Agrupa os dados com base em colunas específicas (geralmente seguida de uma agregação como `sum` ou `avg`). |
+| **`orderBy()`** / **`sort()`** | Ordena os dados em todo o cluster. |
+| **`distinct()`** | Remove linhas duplicadas (exige comparação global). |
+| **`join()`** | Combina dois DataFrames com base em uma chave comum. |
+| **`repartition(n)`** | Aumenta ou diminui o número de partições de forma balanceada (gera shuffle total). |
+| **`coalesce(n)`** | Diminui o número de partições tentando evitar o shuffle (minimiza a movimentação). |
+| **`intersect()`** | Retorna apenas as linhas que aparecem em ambos os DataFrames. |
+| **`cube()`** / **`rollup()`** | Gera agregações multidimensionais complexas. |
+
+---
+
+##### 3. Transformações de Conjunto e Estrutura
+
+Utilizadas para manipular a forma e o relacionamento entre datasets.
+
+* **`dropDuplicates()`**: Remove duplicatas considerando colunas específicas.
+* **`fillna()` / `na.fill()**`: Substitui valores nulos por um valor padrão.
+* **`replace()`**: Substitui valores específicos por outros.
+* **`sample()`**: Retorna uma fração aleatória dos dados (pode ser narrow ou wide dependendo dos parâmetros).
+* **`pivot()`**: Transpõe linhas em colunas (operação cara que gera shuffle).
+
+---
+#### Actions
+No PySpark, as **Ações (Actions)** são as operações que efetivamente iniciam o processamento dos dados. Diferente das transformações, que são "preguiçosas" (*Lazy Evaluation*) e apenas criam um plano de execução, as ações forçam o Spark a executar esse plano e retornar um resultado para o Driver ou gravar dados em um armazenamento externo.
+
+---
+
+##### 1. Ações de Recuperação e Visualização
+
+Essas ações trazem dados do cluster para o seu programa local (Driver) ou os exibem no console.
+
+| Ação | Descrição |
+| --- | --- |
+| **`collect()`** | Retorna todos os elementos do conjunto de dados como uma lista/array para o Driver. *Cuidado com datasets gigantes.* |
+| **`show(n)`** | Exibe as primeiras `n` linhas de um DataFrame de forma tabular. |
+| **`take(n)`** | Retorna os primeiros `n` elementos em uma lista. |
+| **`first()`** | Retorna apenas o primeiro elemento (equivalente a `take(1)`). |
+| **`head(n)`** | Semelhante ao `take`, retorna as primeiras `n` linhas do DataFrame. |
+| **`top(n)`** | Retorna os `n` maiores elementos (baseado na ordenação padrão ou customizada). |
+| **`takeSample()`** | Retorna uma amostra aleatória de tamanho fixo. |
+
+##### 2. Ações de Contagem e Estatística
+
+Utilizadas para obter métricas rápidas sobre a distribuição e volume dos dados.
+
+* **`count()`**: Retorna o número total de linhas/elementos.
+* **`describe(*cols)`**: Computa estatísticas básicas (média, desvio padrão, min, max) para colunas numéricas.
+* **`summary(*statistics)`**: Uma versão mais flexível do `describe`, permitindo escolher os percentis.
+* **`countByKey()`**: (Exclusivo RDD) Conta o número de elementos para cada chave.
+* **`countByValue()`**: Retorna a contagem de cada valor único no dataset.
+
+##### 3. Ações de Processamento e Agregação
+
+Estas ações realizam cálculos matemáticos ou lógicos sobre os dados distribuídos.
+
+* **`reduce(f)`**: Agrega os elementos usando uma função binária (ex: soma todos os valores).
+* **`fold(zeroValue, op)`**: Semelhante ao `reduce`, mas utiliza um valor inicial (*zeroValue*).
+* **`aggregate(zeroValue, seqOp, combOp)`**: Permite retornar um tipo de dado diferente do original através de funções de sequência e combinação.
+* **`isEmpty()`**: Retorna `True` se o DataFrame/RDD não contiver registros.
+
+##### 4. Ações de Escrita e Armazenamento
+
+Essas ações persistem os resultados em sistemas de arquivos, bancos de dados ou tópicos de streaming.
+
+* **`df.write.save(path)`**: Ação genérica para salvar um DataFrame.
+* **`df.write.csv/parquet/json/orc(path)`**: Atalhos para salvar em formatos específicos.
+* **`saveAsTextFile(path)`**: (RDD) Grava o conteúdo como arquivos de texto.
+* **`saveAsTable(tableName)`**: Grava o DataFrame como uma tabela no catálogo do Spark (Hive Metastore).
+* **`saveAsPickleFile(path)`**: Salva o RDD usando a serialização Python Pickle.
+
+##### 5. Ações de Iteração (Side Effects)
+
+Usadas quando você precisa executar uma função para cada registro, geralmente para interagir com serviços externos (ex: enviar um log ou e-mail).
+
+* **`foreach(f)`**: Aplica a função `f` a cada linha do dataset.
+* **`foreachPartition(f)`**: Aplica a função `f` a cada partição. É muito mais eficiente que o `foreach` comum para abrir conexões com bancos de dados, pois abre uma conexão por partição em vez de uma por linha.
+
+---
+
+As transformações constroem o grafo (DAG), mas nada acontece até que uma dessas ações seja chamada:
+
+1. **Transformations** (`map`, `filter`, `join`) → **Plano Lógico**
+2. **Actions** (`count`, `collect`, `save`) → **Execução Física (Job)**
+
+[Detailed PySpark Actions and Transformations Guide](https://www.youtube.com/watch?v=DLsHq8TTvaY)
 
 ---
 
@@ -655,100 +692,80 @@ Esses tipos de dados são definidos no módulo `pyspark.sql.types` e são usados
 
    ```
 
-## 5. Desafio
-Contagem da quantidade de clientes nascidos por ano.
+---
+## 5. Desafio Bolsa Família
 
-Elabore o script pyspark para:
-- abrir o arquivo `clientes.csv.gz`;
-- filtrar todos os clientes com mais de 50 anos; 
-- agrupar por ano de nascimento;
-- apresentar em ordem decrescente de quantidade por ano.
+1. Baixe a base de pagamentos do programa **Novo Bolsa Família** referente a **Novembro de 2025**.
+   - Baixe o arquivo `202511_NovoBolsaFamilia.csv` do [Portal da Transparência](https://portaldatransparencia.gov.br/download-de-dados/novo-bolsa-familia)
+   - O dicionário de dados pode ser obtido [aqui](https://portaldatransparencia.gov.br/dicionario-de-dados/novo-bolsa-familia)
+   - Salve o arquivo em um diretório chamado `data` na raiz do projeto
+2. Obtenha as seguintes informações:
+   - Lista dos primeiros 10 registros
+   - Lista dos primeiros 10 beneficiários que receberam valor **maior** que R$ 1.000,00
+   - Lista dos primeiros 10 beneficiários que receberam valor **maior** que R$ 2.000,00
+   - Lista dos primeiros 10 beneficiários que moram no municipio de `BONITO` no estado da **Bahia**
+   - Lista dos beneficiários que:
+      * moram no municipio de `BONITO` no estado da **Bahia** 
+      * receberam valor **maior** que R$ 2.000,00
+   - Lista dos beneficiários que:
+      * moram no municipio de `BONITO` no estado da **Bahia** 
+      * receberam valor **menor** que R$ 2.000,00 
+      * número do CPF esteja nulo
+   - Lista dos beneficiários que:
+      * moram em qualquer estado da região **Norte**
+      * receberam valor **menor** que R$ 1.000,00 
+      * número do CPF **não** esteja nulo
+      * O primeiro nome do beneficiário seja **Marcelo**
+      * O último nome do beneficiário seja **Barbosa**
 
-#### A base de dados
-Faça o clone do dataset `clientes.csv.gz`
-```sh
-git clone https://github.com/infobarbosa/datasets-csv-clientes
+### Código inicial
+   ```python
+   from pyspark.sql import SparkSession
+   import pyspark.sql.functions as F
 
-```
+   spark = SparkSession.builder.appName("dataeng-bolsa-familia").getOrCreate()
 
-#### O leiaute 
+   schema = """
+      mes_competencia INT, 
+      mes_referencia INT, 
+      uf STRING, 
+      codigo_municipio_siafi STRING, 
+      nome_municipio STRING,
+      cpf_favorecido STRING,
+      nis_favorecido STRING,
+      nome_favorecido STRING,
+      valor_parcela STRING
+   """
 
-- Separador: ";"
-- Header: True
-- Compressão: gzip
+   df = spark.read \
+      .format("csv") \
+      .option("sep", ";") \
+      .option("header", True) \
+      .option("encoding", "ISO-8859-1") \
+      .schema(schema) \
+      .load("./202511_NovoBolsaFamilia.csv")
 
-#### Os atributos
-| Atributo        | Tipo      | Obs                                               |
-| ---             | ---       | ---                                               |
-| ID              | long      | O identificador da pessoa                         |
-| NOME            | string    | O nome da pessoa                                  |
-| DATA_NASC       | date      | A data de nascimento da pessoa                    |
-| CPF             | string    | O CPF da pessoa                                   |
-| EMAIL           | string    | O email da pessoa                                 |
+   df = df.withColumn(
+      "valor_parcela", 
+      F.regexp_replace(F.col("valor_parcela"), r"\.", "")
+   ).withColumn(
+      "valor_parcela", 
+      F.regexp_replace(F.col("valor_parcela"), ",", ".") 
+   ).withColumn(
+      "valor_parcela", 
+      F.col("valor_parcela").cast("decimal(10,2)")
+   )
 
-#### Amostra
+   df.show(10, truncate=False)
+   df.printSchema()
 
-```
-id;nome;data_nasc;cpf;email
-1;Isabelly Barbosa;1963-08-15;137.064.289-03;isabelly.barbosa@example.com<br>
-2;Larissa Fogaça;1933-09-29;703.685.294-10;larissa.fogaca@example.com<br>
-3;João Gabriel Silveira;1958-05-27;520.179.643-52;joao.gabriel.silveira@example.com<br>
-4;Pedro Lucas Nascimento;1950-08-23;274.351.896-00;pedro.lucas.nascimento@example.com<br>
-5;Felipe Azevedo;1986-12-31;759.061.842-01;felipe.azevedo@example.com<br>
-6;Ana Laura Lopes;1963-04-27;165.284.390-60;ana.laura.lopes@example.com<br>
-7;Ana Beatriz Aragão;1958-04-21;672.135.804-26;ana.beatriz.aragao@example.com<br>
-8;Murilo da Rosa;1944-07-13;783.640.251-71;murilo.da.rosa@example.com<br>
-9;Alícia Souza;1960-08-26;784.563.029-29;alicia.souza@example.com<br>
-```
+   ```
 
-#### Dica 1
-O arquivo é do tipo `csv` então utilize:
-- o método `read.csv` para abrir o arquivo;
-- o parâmetro `sep` para especificar o separador ponto-e-vírgula;
-- o parâmetro `header` como **True** ou **False** caso o arquivo possua cabeçalho.
-
-Exemplo:
-```python
-df_clientes = spark.read.csv("nome_do_arquivo.csv", sep=";", header=True, ...outros parâmetros...)
-```
-
-#### Dica 2
-Para resolver o desafio, você pode utilizar a função `year` do pacote `pyspark.sql.functions` para extrair o ano de nascimento dos clientes. <br>
-Exemplo:
-
-```python
-# Filtrar clientes com mais de 25 anos
-df_filtrado = df_clientes.filter(year("data_nasc") <= 1996)
-```
-
-#### Dica 3
-Para resolver o desafio, você pode adicionar uma coluna `IDADE` ao DataFrame para facilitar o filtro dos clientes com mais de 50 anos. <br>
-A função `withColumn` serve para adicionar novas colunas ao DataFrame.
-
-Exemplo:
-
-```python
-# Adicionar coluna IDADE
-df_clientes = df_clientes.withColumn("IDADE", 2023 - year(col("data_nasc")))
-```
-
-#### Dica 4
-Para calcular a idade com base na data atual, você pode utilizar as funções `current_date` e `datediff` do pacote `pyspark.sql.functions`. <br>
-Exemplo:
-
-```python
-from pyspark.sql.functions import current_date, datediff
-
-# Adicionar coluna IDADE calculada com base na data atual
-df_clientes = df_clientes.withColumn("IDADE", (datediff(current_date(), col("data_nasc")) / 365.25).cast("int"))
-```
-
-Neste exemplo, a função `year` é usada para extrair o ano da coluna `data_nasc`, permitindo que você agrupe os dados por ano de nascimento.
-
-
+---
 ## 6. Parabéns!
 Parabéns por concluir o módulo! Você revisou os conceitos fundamentais de DataFrames no Apache Spark e praticou com transformações, ações e manipulação de esquemas.
 
+---
 ## 7. Destruição dos recursos
 Para evitar custos desnecessários, lembre-se de destruir os recursos criados durante este módulo:
 - Exclua quaisquer instâncias do AWS Cloud9 que não sejam mais necessárias.
