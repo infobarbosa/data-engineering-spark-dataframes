@@ -37,7 +37,7 @@ No Spark (e em formatos como JSON), nem tudo cabe em uma célula simples de Exce
 
 ---
 
-### 2. StructType (Objeto Fixo) `{...}`
+#### 2. StructType (Objeto Fixo) `{...}`
 
 É uma estrutura rígida onde cada campo tem um **nome** e um **tipo** definidos previamente. É como uma mini-tabela dentro de uma coluna.
 
@@ -62,7 +62,7 @@ No Spark (e em formatos como JSON), nem tudo cabe em uma célula simples de Exce
 
 ---
 
-### 3. MapType (Dicionário Dinâmico) `{ k -> v }`
+#### 3. MapType (Dicionário Dinâmico) `{ k -> v }`
 
 É uma coleção de pares **Chave-Valor**. Diferente do Struct, aqui as chaves **não são fixas** no esquema. Cada linha pode ter chaves totalmente diferentes.
 
@@ -78,7 +78,6 @@ No Spark (e em formatos como JSON), nem tudo cabe em uma célula simples de Exce
   ```python
   StructField("investimentos", MapType(StringType(), DoubleType()), True)
   ````
-
 * **No PySpark:** Usa-se a função `explode()` para gerar duas colunas genéricas: uma para a `key` (a etiqueta) e outra para o `value` (o valor).
 
 ---
