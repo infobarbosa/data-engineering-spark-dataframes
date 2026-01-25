@@ -49,7 +49,7 @@ zcat datasets-csv-pedidos/data/pedidos/pedidos-2025-12.csv.gz | head -10
 
 ```
 
-
+---
 
 ## 2. Joins
 Os joins no Apache Spark são operações fundamentais que permitem combinar dados de diferentes DataFrames com base em uma chave comum. Eles são essenciais para a integração de dados provenientes de diversas fontes e para a realização de análises complexas. <br>
@@ -59,83 +59,48 @@ A eficiência dessas operações pode ser aprimorada com técnicas como o Broadc
 **Exemplo 1**
 ```python
 from pyspark.sql import SparkSession
-from pyspark.sql.functions import broadcast
+from pyspark.sql.functions import explode, col, array_contains
+from pyspark.sql.types import StructType, StructField, LongType, StringType, ArrayType, MapType, DoubleType, FloatType, IntegerType, DateType
+from datetime import date
 
-# Inicializando a SparkSession
-spark = SparkSession.builder.appName("dataeng-joins").getOrCreate()
+spark = SparkSession.builder \
+    .appName("data-eng-joins") \
+    .getOrCreate()
 
-print("Dataframe de UF")
-df_uf = spark.createDataFrame([
-    ("RO", "Rondônia"),
-    ("AC", "Acre"),
-    ("AM", "Amazonas"),
-    ("RR", "Roraima"),
-    ("PA", "Pará"),
-    ("AP", "Amapá"),
-    ("TO", "Tocantins"),
-    ("MA", "Maranhão"),
-    ("PI", "Piauí"),
-    ("CE", "Ceará"),
-    ("RN", "Rio Grande do Norte"),
-    ("PB", "Paraíba"),
-    ("PE", "Pernambuco"),
-    ("AL", "Alagoas"),
-    ("SE", "Sergipe"),
-    ("BA", "Bahia"),
-    ("MG", "Minas Gerais"),
-    ("ES", "Espírito Santo"),
-    ("RJ", "Rio de Janeiro"),
-    ("SP", "São Paulo"),
-    ("PR", "Paraná"),
-    ("SC", "Santa Catarina"),
-    ("RS", "Rio Grande do Sul"),
-    ("MS", "Mato Grosso do Sul"),
-    ("MT", "Mato Grosso"),
-    ("GO", "Goiás"),
-    ("DF", "Distrito Federal")
-], ["uf", "nome"])
+schema_clientes = StructType([
+    StructField("id", LongType(), True),
+    StructField("nome", StringType(), True),
+    StructField("data_nasc", StringType(), True),
+    StructField("cpf", StringType(), True),
+    StructField("email", StringType(), True),
+    StructField("interesses", ArrayType(StringType()), True),
+    StructField("carteira_investimentos", MapType(StringType(), DoubleType()), True)
+])
 
-df_uf.show()
+df_clientes = spark.read.schema(schema_clientes).json("./dataset-json-clientes/data/clientes.json.gz")
 
-print("DataFrame de clientes")
-df_cliente = spark.createDataFrame([
-    ('2b162060', 'MARIVALDA', 'SP'),
-    ('2b16242a', 'JUCILENE',  'ES'),
-    ('2b16256a', 'GRACIMAR',  'MG'),
-    ('2b16353c', 'ALDENORA',  'SP'),
-    ('2b1636ae', 'VERA',      'RJ'),
-    ('2b16396a', 'IVONE',     'RJ'),
-    ('2b163bcc', 'LUCILIA',   'RS'),
-    ('2b163bff', 'MARTINS',   ''),
-    ('2b163bdd', 'GENARO',    ''),
-], ["id_cliente", "nome", "uf"])
+df_clientes.select("id", "nome").show(10, truncate=False)
+df_clientes.printSchema()
 
-df_cliente.show()
+schema_pedidos = StructType([
+    StructField("id_pedido", StringType(), True),
+    StructField("produto", StringType(), True),
+    StructField("valor_unitario", FloatType(), True),
+    StructField("quantidade", IntegerType(), True),
+    StructField("data_criacao", DateType(), True),
+    StructField("uf", StringType(), True),
+    StructField("id_cliente", LongType(), True)
+])
 
-print("DataFrame de pedidos")
-df_pedido = spark.createDataFrame([
-    # Cliente MARIVALDA (dois pedidos)
-    ('2b162060', 2, 'Celular', 1500.00, 3000.00, '2024-09-01'),
-    ('2b162060', 1, 'Notebook', 3500.00, 3500.00, '2024-09-05'),
-    
-    # Cliente JUCILENE (um pedido de um item)
-    ('2b16242a', 1, 'Geladeira', 2000.00, 2000.00, '2024-09-03'),
-    
-    # Cliente IVONE (um pedido de um item)
-    ('2b16396a', 1, 'Smart TV', 2500.00, 2500.00, '2024-09-08'),
-    
-    # Cliente ALDENORA (um pedido de dez itens)
-    ('2b16353c', 10, 'Teclado', 150.00, 1500.00, '2024-09-10'),
-    
-    # Cliente GRACIMAR (cinco pedidos de um item cada)
-    ('2b16256a', 1, 'Fogão', 1200.00, 1200.00, '2024-09-02'),
-    ('2b16256a', 1, 'Microondas', 800.00, 800.00, '2024-09-04'),
-    ('2b16256a', 1, 'Máquina de Lavar', 1800.00, 1800.00, '2024-09-06'),
-    ('2b16256a', 1, 'Ventilador', 200.00, 200.00, '2024-09-09'),
-    ('2b16256a', 1, 'Aspirador de Pó', 600.00, 600.00, '2024-09-11')
-], ["id_cliente", "quantidade", "descricao_produto", "valor_produto", "valor_total_pedido", "data_pedido"])
+df_pedidos = spark.read. \
+    schema(schema_pedidos). \
+    option("header", "true") \
+    .option("sep", ";") \
+    .csv("./datasets-csv-pedidos/data/pedidos/pedidos-2025-12.csv.gz")
 
-df_pedido.show()
+df_pedidos.select("id_pedido", "id_cliente", "produto", "valor_unitario", "quantidade", "data_criacao", "uf").show(10, truncate=False)
+df_pedidos.printSchema()
+
 ```
 
 ### 2.1 Inner Joins
@@ -143,9 +108,9 @@ Um **Inner Join** é uma operação de junção entre dois DataFrames que retorn
 
 ```python
 # Inner Join entre df_cliente e df_pedido usando a coluna id_cliente como chave
-print("Inner Join:")
-df_inner_join = df_cliente.join(df_pedido, on='id_cliente', how='inner')
-df_inner_join.show()
+print("### INNER JOIN ###")
+df_vendas = df_clientes.select("id", "nome").join(df_pedidos, df_clientes.id == df_pedidos.id_cliente, "inner")
+df_vendas.show(10, truncate=False)
 
 ```
 
@@ -154,9 +119,9 @@ Um **Left Join** (ou Left Outer Join) combina dois DataFrames mantendo todas as 
 
 ```python
 # Left Join (ou Left Outer Join) - Mantém todos os registros do DataFrame da esquerda (df1) e adiciona os registros correspondentes do DataFrame da direita (df2)
-print("Left Join:")
-df_inner_join = df_cliente.join(df_pedido, on='id_cliente', how='left')
-df_inner_join.show()
+print("### LEFT JOIN ###")
+df_vendas = df_clientes.select("id", "nome").join(df_pedidos, df_clientes.id == df_pedidos.id_cliente, "left")
+df_vendas.show(10, truncate=False)
 
 ```
 
@@ -165,9 +130,25 @@ df_inner_join.show()
 
 ```python
 # Right Join (ou Right Outer Join) - Mantém todos os registros do DataFrame da direita (df2) e adiciona os registros correspondentes do DataFrame da esquerda (df1)
-print("Right Join:")
-df_right_join = df_cliente.join(df_uf, "uf", "right")
-df_right_join.show()
+print("### RIGHT JOIN ###")
+# Gera 3 pedidos sem cliente
+# 3. Criando os dados (3 pedidos com id_cliente = None)
+dados_pedidos_sem_cliente = [
+    ("PED-001", "Notebook Gamer", 4500.00, 1, date(2024, 1, 15), "SP", None),
+    ("PED-002", "Mouse Sem Fio", 120.50, 2, date(2024, 1, 16), "RJ", None),
+    ("PED-003", "Teclado Mecânico", 350.00, 1, date(2024, 1, 17), "MG", None)
+]
+
+# 4. Criando o DataFrame
+df_pedidos_sem_cliente = spark.createDataFrame(data=dados_pedidos_sem_cliente, schema=schema_pedidos)
+
+# 5. Exibindo o resultado e o schema para validação
+print("--- Visualização dos Dados ---")
+df_pedidos_sem_cliente.show()
+
+df_vendas = df_clientes.select("id", "nome").join(df_pedidos_sem_cliente, df_clientes.id == df_pedidos_sem_cliente.id_cliente, "right")
+df_vendas.show(10, truncate=False)
+print("df_vendas.count(): ", df_vendas.count())
 
 ```
 
@@ -176,9 +157,14 @@ Um **Full Join** (ou Full Outer Join) combina todos os registros de ambos os Dat
 
 ```python
 # Full Join (ou Full Outer Join) - Mantém todos os registros de ambos os DataFrames (df1 e df2), preenchendo com nulls onde não há correspondência
-print("Full Join:")
-df_full_join = df_cliente.join(df_uf, "uf", "full")
-df_full_join.show()
+# Concatena os dois DataFrames
+print("df_pedidos.count(): ", df_pedidos.count())
+df_pedidos = df_pedidos.union(df_pedidos_sem_cliente)
+print("df_pedidos.count(): ", df_pedidos.count())
+
+df_vendas = df_clientes.select("id", "nome").join(df_pedidos, df_clientes.id == df_pedidos.id_cliente, "full")
+df_vendas.show(10, truncate=False)
+print("df_vendas.count(): ", df_vendas.count())
 
 ```
 
@@ -187,9 +173,10 @@ Um **Cross Join** (ou Cartesian Join) é uma operação que combina cada linha d
 
 ```python
 # Cross Join (ou Cartesian Join) - Faz o produto cartesiano entre os DataFrames, ou seja, combina cada linha de df1 com cada linha de df2
-print("Cross Join:")
-df_cross_join = df_cliente.crossJoin(df_uf)
-df_cross_join.show()
+print("### CROSS JOIN ###")
+df_vendas = df_clientes.select("id", "nome").crossJoin(df_pedidos)
+df_vendas.show(10, truncate=False)
+print("df_vendas.count(): ", df_vendas.count())
 
 ```
 
