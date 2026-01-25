@@ -14,7 +14,7 @@
 ## 1. Introdução
 DataFrames no Spark podem conter estruturas de dados complexas como arrays e structs. Manipular esses tipos de dados requer técnicas específicas.
 
-## Exemplo 1
+### Exemplo 1
 
 ```python
 ### 1. Importe as bibliotecas necessárias:
@@ -47,22 +47,20 @@ df_exploded.select("nome", col("curso.curso"), col("curso.nota")).show()
 
 ---
 
-
-
 ## 2. **Manuseio de Dados Complexos**
   **Array e objetos aninhados**: JSONs frequentemente contêm arrays ou objetos aninhados. Para manipular esses dados, você pode precisar usar funções como `explode()` para quebrar arrays ou acessar campos internos com `dot notation` (ex.: `dataframe.select("campo.objeto_interno")`).
 
-#### 📌 O que a função explode faz?
+### 📌 O que a função explode faz?
 A função explode() transforma valores que estão em arrays (ou mapas) em várias linhas, uma para cada elemento. É usada quando você quer "desaninhar" estruturas complexas, como listas ou arrays de structs, para processar ou visualizar cada item separadamente.
 
-#### ✅ Quando é necessário usar explode?
+### ✅ Quando é necessário usar explode?
 Você deve usar explode quando:
 - A coluna contém listas ou arrays (ex: ArrayType)
 - Você quer transformar cada item da lista em uma linha separada
 
 No exemplo de código apresentado anteriormente, manipulamos um DataFrame contendo uma coluna de arrays de structs (no caso, os cursos de cada aluno). Ao utilizar explode(df["cursos"]), transformamos cada elemento do array presente na coluna cursos em uma nova linha do DataFrame, mantendo as demais informações associadas ao registro original. Isso facilita a análise e o processamento de dados aninhados, permitindo, por exemplo, visualizar cada curso e nota de um aluno em linhas separadas. Assim, o uso do explode é fundamental para "desaninhar" estruturas complexas e trabalhar de forma mais eficiente com dados que possuem arrays ou listas em seu esquema.
 
-## Exemplo 2
+### Exemplo 2
 
 Vamos considerar um dataset de um campeonato de futebol com 3 times. O dataset inclui duas estruturas aninhadas:
 
@@ -167,9 +165,7 @@ df_estatisticas.show()
 
 ---
 
-## 10. Desafio (Arrays, Structs)
-
-**Descrição do Desafio:**
+## 3. Desafio 1
 
 Você recebeu um dataset contendo informações de clientes de uma empresa. O dataset possui estruturas de dados complexas, como arrays e structs. Seu objetivo é manipular esse dataset usando PySpark para extrair insights específicos.
 
@@ -303,7 +299,7 @@ dados_clientes.show(truncate=False)
 
 ```
 
-##### Soluções dos desafios
+### Soluções dos desafios
 
 <details>
     <summary>Solução do Item 1: Flatten das Structs</summary>
@@ -417,10 +413,152 @@ root
 ```
 </details>
 
-## 11. Parabéns!
+---
+
+## 4. Desafio 2 - Campanha Leitura & Renda
+Utilizando o dataset de clientes, gere um DataFrame que mostre apenas os candidatos à campanha **Leitura & Renda**. Para isso, você precisará normalizar (explodir) a coluna de investimentos para filtrar quem tem **FIIs** e também verificar a lista de interesses."
+
+### Tarefas
+1. Explodir a coluna `carteira_investimentos` para transformar o Map em linhas de tipo_investimento e valor.
+  * Atenção! Nesse caso você vai precisar tratar `carteira_investimentos` como `MapType`.
+2. Filtrar apenas as linhas onde o `tipo_investimento` é igual a "FIIs".
+3. Filtrar os clientes que possuem "Livros" OU "Economia" dentro do array `interesses`.
+
+### Output esperado
+```
++---------------------+-----+--------+------------------------------+
+|nome                 |ativo|valor   |interesses                    |
++---------------------+-----+--------+------------------------------+
+|Donna Luna           |FIIs |45980.88|[Música, Livros, Astronomia]  |
+|Beatriz Souza        |FIIs |23776.66|[Livros]                      |
+|Davi Lucca Costa     |FIIs |46564.9 |[Livros, Lazer, Religião]     |
+|Emanuella da Mota    |FIIs |20496.74|[Ciências, Astrologia, Livros]|
+|Otto Cavalcanti      |FIIs |38825.44|[Livros, Lazer]               |
+|Vitor Hugo Moreira   |FIIs |1818.16 |[Livros, Gastronomia, Música] |
+|Fernando Cardoso     |FIIs |28402.07|[Economia]                    |
+|Giovanna Caldeira    |FIIs |31379.87|[Economia, Política, Viagens] |
+|Rodrigo Nascimento   |FIIs |35713.46|[Viagens, Livros, Economia]   |
+|Ian Marques          |FIIs |19400.76|[Viagens, Livros]             |
+|Luna Costela         |FIIs |21244.44|[Economia]                    |
+|Bento Almeida        |FIIs |24032.7 |[Economia]                    |
+|Gabriel Gomes        |FIIs |48443.13|[Economia, Esportes, Lazer]   |
+|Dante Vargas         |FIIs |1000.58 |[Livros, Gastronomia]         |
+|Danilo Cavalcante    |FIIs |12326.4 |[Livros]                      |
+|Samuel da Cruz       |FIIs |4554.25 |[Astronomia, Música, Economia]|
+|Allana Marques       |FIIs |21540.26|[Economia]                    |
+|Luiz Gustavo Ferreira|FIIs |32314.42|[Livros]                      |
+|Dawn Collins         |FIIs |5886.46 |[Economia]                    |
+|Daniela Moraes       |FIIs |17485.78|[Economia, Filmes, Astrologia]|
++---------------------+-----+--------+------------------------------+
+```
+
+### Dataset
+```sh
+mkdir -p ./data/inputs/
+
+```
+
+```sh
+wget -P ./data/inputs https://raw.githubusercontent.com/infobarbosa/dataset-json-clientes/main/data/clientes.json.gz
+
+```
+
+```sh
+zcat ./data/inputs/clientes.json.gz | head -n 10
+
+```
+
+### Código inicial
+```sh
+touch desafio-campanha-leitura-renda.py
+
+```
+
+```python
+from pyspark.sql import SparkSession
+from pyspark.sql.functions import explode, col, array_contains, explode_outer
+
+# Inicialização (ajuste o caminho do arquivo conforme seu ambiente)
+spark = SparkSession.builder.appName("data-eng-desafio-map-type").getOrCreate()
+
+# 1. DEFINA O SCHEMA
+schema = None
+
+df = spark.read.schema(schema).json("./data/inputs/clientes.json.gz")
+
+# 2. Explodir o Map 
+# df_investimentos = df.select(...)
+
+# 3. Filtrar FIIs
+# df_final = df_investimentos.filter(...)
+
+# 4. Filtrar por Interesses (Array) 
+# df_final = df_investimentos.filter(array_contains( ...
+
+# 5. Mostre o resultado
+print("### Público Campanha Leitura & Renda")
+df_final.select("nome", "ativo", "valor", "interesses").show(truncate=False)
+
+```
+
+### Solução
+**Não desista!** Tente ao menos uma solução antes de checar a resposta. ;)
+
+<details>
+    <summary>Solução do desafio 2</summary>
+
+```python
+from pyspark.sql import SparkSession
+from pyspark.sql.functions import explode, col, array_contains
+from pyspark.sql.types import StructType, StructField, LongType, StringType, ArrayType, MapType, DoubleType
+
+spark = SparkSession.builder \
+    .appName("data-eng-desafio-map-type") \
+    .getOrCreate()
+
+# 1. Defina o schema
+schema = StructType([
+    StructField("id", LongType(), True),
+    StructField("nome", StringType(), True),
+    StructField("data_nasc", StringType(), True),
+    StructField("cpf", StringType(), True),
+    StructField("email", StringType(), True),
+    StructField("interesses", ArrayType(StringType()), True),
+    StructField("carteira_investimentos", MapType(StringType(), DoubleType()), True)
+])
+
+df = spark.read.schema(schema).json("./data/inputs/clientes.json.gz")
+
+# 2. Explodir o Map
+df_investimentos = df.select(
+    "id",
+    "nome",
+    "interesses",
+    explode("carteira_investimentos").alias("ativo", "valor")
+)
+
+# 3. Filtrar FIIs
+df_investimentos = df_investimentos.filter(col("ativo") == "FIIs")
+
+# 4. Filtrar por Interesses (Array)
+df_final = df_investimentos.filter(
+    array_contains(col("interesses"), "Livros") | 
+    array_contains(col("interesses"), "Economia")
+)
+
+# Mostre o resultado
+print("### Campanha Leitura & Renda")
+df_final.select("nome", "ativo", "valor", "interesses").show(truncate=False)
+
+```
+
+</details>
+
+
+## 5. Parabéns!
 Parabéns por concluir o módulo! Você aprendeu técnicas manipulação de DataFrames no Apache Spark explorando estruturas complexas em arrays e structs.
 
-## 12. Destruição dos recursos
+## 6. Destruição dos recursos
 Para evitar custos desnecessários, lembre-se de destruir os recursos criados durante este módulo:
 - Exclua quaisquer instâncias do AWS Cloud9 que não sejam mais necessárias.
 - Remova dados temporários ou resultados intermediários armazenados no S3.
