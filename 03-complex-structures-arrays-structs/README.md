@@ -70,23 +70,27 @@ Vamos considerar um dataset de um campeonato de futebol com 3 times. O dataset i
 ```python
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import explode, col
-from pyspark.sql.types import StringType, IntegerType, StructType, StructField, ArrayType
+from pyspark.sql.types import StringType, IntegerType, StructType, StructField, ArrayType, MapType
 
 # Iniciar sessão Spark
-spark = SparkSession.builder.appName("CampeonatoFutebol").getOrCreate()
+spark = SparkSession.builder.appName("CampeonatoFutebolMap").getOrCreate()
 
 data = [
   {
     "time": "Linhares",
+    # ARRAY: Lista de objetos
     "jogadores": [
       {"nome": "Chimbinha", "gols": 5, "cartoes": 1},
       {"nome": "Fofão", "gols": 2, "cartoes": 0}
     ],
+    # STRUCT: Colunas fixas (sempre tem vitoria, empate, derrota)
     "estatisticas": {
       "vitorias": 8,
       "empates": 2,
       "derrotas": 1
-    }
+    },
+    # MAP: Chaves dinâmicas (cada time tem patrocinadores diferentes)
+    "patrocinadores": {"Supermercado Tio Zé": 3000, "Padaria Central": 1500}
   },
   {
     "time": "Ibiraçu",
@@ -98,7 +102,8 @@ data = [
       "vitorias": 7,
       "empates": 3,
       "derrotas": 1
-    }
+    },
+    "patrocinadores": {"Mecânica Simão": 4500}
   },
   {
     "time": "Colatina",
@@ -110,12 +115,16 @@ data = [
       "vitorias": 6,
       "empates": 4,
       "derrotas": 1
-    }
+    },
+    "patrocinadores": {"Farmácia Saúde": 2000, "Lanchonete da Praça": 1200}
   }
 ]
 
+# Definindo o Schema explicitamente para garantir o MapType
 schema = StructType([
     StructField("time", StringType(), True),
+    
+    # 1. ARRAY de STRUCTS
     StructField("jogadores", ArrayType(
         StructType([
             StructField("nome", StringType(), True),
@@ -123,44 +132,66 @@ schema = StructType([
             StructField("cartoes", IntegerType(), True)
         ])
     ), True),
+    
+    # 2. STRUCT Simples
     StructField("estatisticas", StructType([
         StructField("vitorias", IntegerType(), True),
         StructField("empates", IntegerType(), True),
         StructField("derrotas", IntegerType(), True)
-    ]), True)
+    ]), True),
+
+    # 3. MAP (Chave: Nome do Patrocinador, Valor: Contrato R$)
+    StructField("patrocinadores", MapType(StringType(), IntegerType()), True)
 ])
 
 df = spark.createDataFrame(data, schema)
+print("--- Schema do DataFrame ---")
+df.printSchema()
 
-# 1. Explodir o array de jogadores para analisar cada jogador individualmente
+# ---------------------------------------------------------
+# EXEMPLO 1: ARRAY (Jogadores)
+# Explode gera uma linha por item da lista
+# ---------------------------------------------------------
+print("\n--- 1. Explode Array (Jogadores) ---")
 df_jogadores = df.select(
     "time",
-    explode("jogadores").alias("jogador"),
-    "estatisticas"
+    explode("jogadores").alias("jogador")
 )
-
-# Selecionar informações detalhadas dos jogadores
+# Acessando campos internos da struct que foi explodida
 df_jogadores.select(
     "time",
-    col("jogador.nome").alias("nome_jogador"),
-    col("jogador.gols"),
-    col("jogador.cartoes")
-).show()
+    col("jogador.nome"),
+    col("jogador.gols")
+).show(truncate=False)
 
-# 2. Acessar campos internos da struct de estatísticas (sem explode)
+# ---------------------------------------------------------
+# EXEMPLO 2: STRUCT (Estatísticas)
+# Não usa explode. Usa "ponto" para navegar na hierarquia fixa.
+# ---------------------------------------------------------
+print("\n--- 2. Acesso a Struct (Estatísticas) ---")
 df_estatisticas = df.select(
     "time",
     col("estatisticas.vitorias"),
-    col("estatisticas.empates"),
     col("estatisticas.derrotas")
 )
+df_estatisticas.show(truncate=False)
 
-df_estatisticas.show()
+# ---------------------------------------------------------
+# EXEMPLO 3: MAP (Patrocinadores)
+# Explode gera duas colunas fixas: 'key' e 'value'
+# ---------------------------------------------------------
+print("\n--- 3. Explode Map (Patrocinadores) ---")
+df_patrocinadores = df.select(
+    "time",
+    explode("patrocinadores").alias("patrocinador_nome", "valor_contrato")
+)
+df_patrocinadores.show(truncate=False)
 
 ```
 
 **Resumo:**
-- Use `explode` para transformar o array de jogadores em linhas individuais.
+- Use `explode` para transformar o array de jogadores (ArrayType) m linhas individuais.
+- Use `explode` para transformar a estrutura de patrocinadores (MapType) em pares chave-valor.
 - Para acessar campos de uma struct (como estatísticas), basta usar a notação de ponto, sem necessidade de `explode`.
 
 ---
@@ -281,7 +312,7 @@ from pyspark.sql import SparkSession
 from pyspark.sql.functions import explode, col
 
 # Iniciar uma sessão Spark
-spark = SparkSession.builder.appName("DesafioPySpark").getOrCreate()
+spark = SparkSession.builder.appName("data-eng-complex-structures").getOrCreate()
 
 # Carregar o dataset JSON
 caminho_arquivo = "caminho/para/o/dataset.json"
@@ -309,7 +340,7 @@ from pyspark.sql import SparkSession
 from pyspark.sql.functions import col, coalesce
 
 # Iniciar uma sessão Spark
-spark = SparkSession.builder.appName("DesafioPySpark").getOrCreate()
+spark = SparkSession.builder.appName("data-eng-flatten-structs").getOrCreate()
 
 # Carregar o dataset JSON
 caminho_arquivo = "dataset.json"
@@ -351,7 +382,7 @@ from pyspark.sql import SparkSession
 from pyspark.sql.functions import explode, col
 
 # Iniciar uma sessão Spark
-spark = SparkSession.builder.appName("DesafioPySpark").getOrCreate()
+spark = SparkSession.builder.appName("data-eng-explode-arrays").getOrCreate()
 
 # Carregar o dataset JSON
 caminho_arquivo = "dataset.json"
