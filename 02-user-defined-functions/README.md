@@ -505,6 +505,104 @@ print("### Validação de Leitura ---")
 df_leitura.select("id", "nome", "cpf_decifrado").show(truncate=False)
 
 ```
+---
+
+### Cenário 2: Batch Scoring
+Modelos de Machine Learning (XGBoost, TensorFlow, BERT) são objetos "pesados". Carregar um modelo (model = joblib.load('arquivo.pkl')) pode levar de 1 a 10 segundos e ocupar 500MB de RAM.
+
+**Exemplo**
+```sh
+touch lab_batch_scoring.py
+
+```
+
+```python
+import time
+import pandas as pd
+from typing import Iterator
+from pyspark.sql import SparkSession
+from pyspark.sql.functions import pandas_udf, col
+from pyspark.sql.types import DoubleType
+
+# ---------------------------------------------------------
+# 1. SIMULAÇÃO DO MODELO (A "Caixa Preta" dos Cientistas)
+# ---------------------------------------------------------
+class ModeloPropensaoCredito:
+    def __init__(self):
+        # Simula o "peso" de carregar um modelo do disco (IO + Desserialização)
+        # Se isso rodar para cada linha, o job nunca termina.
+        print(">>> [SISTEMA] INICIANDO CARGA DO MODELO PESADO (WAIT...) <<<")
+        time.sleep(3) # Delay proposital de 3 segundos
+        print(">>> [SISTEMA] MODELO CARREGADO NA MEMÓRIA <<<")
+
+    def predict(self, features: pd.Series) -> pd.Series:
+        # Simula uma inferência matemática (Ex: Regressão Logística)
+        # O modelo recebe um Pandas Series e devolve um Pandas Series (Vetorizado)
+        return features * 0.85 + 0.1
+
+# ---------------------------------------------------------
+# 2. CONFIGURAÇÃO DO SPARK
+# ---------------------------------------------------------
+spark = SparkSession.builder \
+    .appName("LabBatchScoring") \
+    .config("spark.sql.execution.arrow.pyspark.enabled", "true") \
+    .getOrCreate()
+
+schema = "id INT, nome STRING, data_nasc DATE, cpf STRING, email STRING, cidade STRING, uf STRING"
+df_clientes = spark.read \
+                    .format("csv") \
+                    .option("sep", ";") \
+                    .option("header", True) \
+                    .schema(schema) \
+                    .load("./datasets-csv-clientes/clientes.csv.gz")
+
+print("### Dados Brutos")
+df_clientes.show(truncate=False)
+
+# Criando uma coluna de score interno
+df_clientes = df_clientes.withColumn("feature_score_interno", (col("id") % 100) / 100.0)
+
+# Reparticionando para simular processamento distribuído (4 partições = 4 workers teóricos)
+df_clientes = df_clientes.repartition(4)
+
+print(f"Total de Clientes: {df_clientes.count()}")
+
+# ---------------------------------------------------------
+# 3. A IMPLEMENTAÇÃO "MANDATÓRIA" (Pandas UDF Iterator)
+# ---------------------------------------------------------
+# A anotação diz: "Recebo um Iterador de Series e devolvo um Iterador de Series"
+@pandas_udf(DoubleType())
+def calcular_score_lote(iterator: Iterator[pd.Series]) -> Iterator[pd.Series]:
+    
+    # INICIALIZAÇÃO do modelo (Roda 1 vez por Partição)
+    # Dessa forma o modelo carrega uma vez e fica na RAM.
+    modelo = ModeloPropensaoCredito()
+    
+    # PROCESSAMENTO (Loop nos Lotes)
+    for features_batch in iterator:
+        # features_batch é um pedaço (chunk) dos dados, ex: 10.000 linhas
+        # O modelo processa todas elas de uma vez (Vetorização)
+        yield modelo.predict(features_batch)
+
+# ---------------------------------------------------------
+# 4. EXECUÇÃO
+# ---------------------------------------------------------
+print("--- Iniciando Inferência ---")
+start_time = time.time()
+
+df_resultado = df_clientes.withColumn("propensao_compra", calcular_score_lote(col("feature_score_interno")))
+
+# Ação forçada (count) para disparar o processamento
+df_resultado.show(10)
+print(f"Processamento concluído.")
+print(f"Tempo total: {time.time() - start_time:.2f} segundos")
+
+# OBSERVAÇÃO PARA O ALUNO:
+# Olhe no terminal/console.
+# Você verá a mensagem ">>> [SISTEMA] INICIANDO CARGA..." aparecer apenas 
+# 4 VEZES (uma por partição), e não 1000 vezes.
+
+```
 
 ---
 
