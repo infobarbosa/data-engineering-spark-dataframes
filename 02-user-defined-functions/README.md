@@ -517,6 +517,7 @@ touch lab_batch_scoring.py
 ```
 
 ```python
+# lab_batch_scoring.py
 import time
 import pandas as pd
 from typing import Iterator
@@ -546,6 +547,8 @@ class ModeloPropensaoCredito:
 spark = SparkSession.builder \
     .appName("LabBatchScoring") \
     .config("spark.sql.execution.arrow.pyspark.enabled", "true") \
+    .config("spark.sql.adaptive.enabled", "false") \
+    .config("spark.sql.adaptive.coalescePartitions.enabled", "false") \
     .getOrCreate()
 
 schema = "id INT, nome STRING, data_nasc DATE, cpf STRING, email STRING, cidade STRING, uf STRING"
@@ -592,15 +595,12 @@ start_time = time.time()
 
 df_resultado = df_clientes.withColumn("propensao_compra", calcular_score_lote(col("feature_score_interno")))
 
-# Ação forçada (count) para disparar o processamento
-df_resultado.show(10)
+df_resultado.show(50)
 print(f"Processamento concluído.")
 print(f"Tempo total: {time.time() - start_time:.2f} segundos")
+# Força o Spark a contar todas as linhas, obrigando o processamento de todas as partições
+print(f"Total processado: {df_resultado.count()}")
 
-# OBSERVAÇÃO PARA O ALUNO:
-# Olhe no terminal/console.
-# Você verá a mensagem ">>> [SISTEMA] INICIANDO CARGA..." aparecer apenas 
-# 4 VEZES (uma por partição), e não 1000 vezes.
 
 ```
 
