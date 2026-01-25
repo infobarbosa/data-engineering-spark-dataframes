@@ -15,7 +15,12 @@
 
 UDFs permitem a aplicação de funções personalizadas em colunas de um DataFrame. Elas são úteis para operações complexas que não são diretamente suportadas pelas funções nativas do Spark.
 
-**Exemplo de código:**
+**Performance:**
+- Embora as UDFs sejam úteis, elas podem impactar a performance, pois quebram a otimização baseada em JVM do Spark.
+- Para operações em larga escala, considere usar funções embutidas do Spark ou expressões SQL quando possível.
+
+
+**Exemplo:**
 ```python
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import udf
@@ -121,7 +126,7 @@ from pyspark.sql.types import StringType
 from datetime import datetime
 
 # Inicializando a SparkSession
-spark = SparkSession.builder.appName("dataeng-exemplo-dataframe").getOrCreate()
+spark = SparkSession.builder.appName("dataeng-udf").getOrCreate()
 
 # Criando um DataFrame a partir de um arquivo CSV
 schema = "id INT, nome STRING, data_nasc DATE, cpf STRING, email STRING, cidade STRING, uf STRING"
@@ -157,59 +162,11 @@ df_saudacao.show(truncate=False)
 
 ```
 
-**Explicação do Código:**
+* **Registrando a UDF:**<br>
+    Perceba que utilizamos `udf()` para registrar a função `saudacao_personalizada` como uma UDF do Spark, especificando que o tipo de retorno é `StringType()`.
+* **Cálculo da Idade:**
+    O ajuste `- ((data_atual.month, data_atual.day) < (data_nasc.month, data_nasc.day))` considera se a pessoa já fez aniversário no ano atual.
 
-1. **Importações Necessárias:**
-- `SparkSession` para iniciar a sessão Spark.
-- `StringType` e `IntegerType` para definir os tipos de dados.
-- `udf` para criar a função definida pelo usuário.
-- `datetime` para manipular datas e calcular a idade.
-
-2. **Inicializando a Sessão Spark:**
-- Criamos uma sessão Spark com o nome `"DesafioUDF"`.
-
-3. **Criando o DataFrame de Exemplo:**
-- Utilizamos os dados fornecidos e definimos as colunas `"nome"` e `"data_nascimento"`.
-
-4. **Definindo a UDF `saudacao_personalizada`:**
-- A função recebe o `nome` e a `data_nasc` como parâmetros.
-- Converte a `data_nasc` de `string` para um objeto `datetime`.
-- Calcula a `idade` considerando se a pessoa já fez aniversário no ano atual.
-- Retorna a saudação personalizada no formato desejado.
-
-5. **Registrando a UDF:**
-- Utilizamos `udf()` para registrar a função `saudacao_personalizada` como uma UDF do Spark, especificando que o tipo de retorno é `StringType()`.
-
-6. **Aplicando a UDF ao DataFrame:**
-- Usamos `withColumn()` para adicionar uma nova coluna `"saudacao"` ao DataFrame, aplicando a UDF aos campos `"nome"` e `"data_nascimento"`.
-
-7. **Exibindo o DataFrame Resultante:**
-- Utilizamos `df.show(truncate=False)` para mostrar o DataFrame completo sem truncar as colunas.
-
-
-**Notas Adicionais:**
-
-- **Cálculo da Idade:**
-- A idade é calculada subtraindo o ano de nascimento do ano atual.
-- O ajuste `- ((data_atual.month, data_atual.day) < (data_nasc.month, data_nasc.day))` considera se a pessoa já fez aniversário no ano atual.
-
-- **Uso de UDF:**
-- As UDFs em PySpark permitem utilizar funções Python em operações de DataFrame do Spark.
-- É importante especificar o tipo de retorno da UDF para que o Spark possa otimizar o processamento.
-
-- **Performance:**
-- Embora as UDFs sejam úteis, elas podem impactar a performance, pois quebram a otimização baseada em JVM do Spark.
-- Para operações em larga escala, considere usar funções embutidas do Spark ou expressões SQL quando possível.
-
-**Executando o Código:**
-
-Certifique-se de que você tem o PySpark instalado e configurado corretamente no seu ambiente. Salve o código em um arquivo, por exemplo, `desafio_udf.py`, e execute com o comando:
-
-```bash
-spark-submit desafio_udf.py
-```
-
-Ou execute diretamente em um notebook ou ambiente interativo que suporte PySpark.  
 
 </details>
 
@@ -268,9 +225,7 @@ df_saudacao.show(truncate=False)
 
 **Solução 3 do Desafio PySpark - Pandas UDF**
 
-Vamos implementar o calculo da idade e retornar a saudação personalizada, desta vez com Pandas UDF.
-
-**Código completo:**
+Vamos implementar o calculo da idade e retornar a saudação personalizada, desta vez com **Pandas UDF**.
 
 ```python
 from pyspark.sql import SparkSession
@@ -328,41 +283,49 @@ df_saudacao.show(truncate=False)
 
 Vamos implementar o calculo da idade e retornar a saudação personalizada, desta vez sem qualquer uso de UDF.
 
-**Código completo:**
-
 ```python
 from pyspark.sql import SparkSession
-from pyspark.sql.functions import col, expr, concat, lit
-from datetime import datetime
+from pyspark.sql import functions as F
+from pyspark.sql import Column
 
-# Inicializando a sessão Spark
-spark = SparkSession.builder.appName("DesafioUDF").getOrCreate()
+spark = SparkSession.builder.appName("dataeng-func-nativa").getOrCreate()
 
-# Criando um DataFrame de exemplo
-data = [
-    ("Barbosa", "1990-05-14"),
-    ("Roberto", "1985-07-23"),
-    ("Charles", "1992-12-02"),
-    ("Leandro", "1988-03-08"),
-    ("Evanildo", "1995-10-30"),
-    ("Francisco", "1991-08-19"),
-    ("Graciane", "1987-01-11"),
-    ("Heidson", "1993-11-29"),
-    ("Ivan", "1989-06-05"),
-    ("Judite", "1994-09-17")
-]
+schema = "id INT, nome STRING, data_nasc DATE, cpf STRING, email STRING, cidade STRING, uf STRING"
+df = spark.read \
+    .format("csv") \
+    .option("sep", ";") \
+    .option("header", True) \
+    .schema(schema) \
+    .load("./datasets-csv-clientes/clientes.csv.gz")
 
-columns = ["nome", "data_nascimento"]
-df = spark.createDataFrame(data, columns)
-df.show(truncate=False)
+def calcular_idade(col_data_nasc: Column) -> Column:
+    """
+    Recebe uma coluna de data e retorna uma coluna com a idade (int).
+    Diferença em meses / 12, arredondado para baixo.
+    """
+    return F.floor(
+        F.months_between(F.current_date(), col_data_nasc) / 12
+    ).cast("int")
 
-# Calculando a idade e criando a saudação sem UDF
-current_date = datetime.now().date()
-df = df.withColumn("idade", expr(f"floor(datediff(current_date(), to_date(data_nascimento, 'yyyy-MM-dd')) / 365)"))
-df = df.withColumn("saudacao", concat(lit("Olá, "), col("nome"), lit("! Você tem "), col("idade"), lit(" anos.")))
+def criar_saudacao(col_nome: Column, col_idade: Column) -> Column:
+    """
+    Recebe colunas de nome e idade, retorna a string de saudação.
+    """
+    return F.concat(
+        F.lit("Olá, "), 
+        col_nome, 
+        F.lit("! Você tem "), 
+        col_idade.cast("string"), 
+        F.lit(" anos.")
+    )
 
-# Exibindo o DataFrame resultante
-df.show(truncate=False)
+
+df_transformado = df \
+    .withColumn("idade_calculada", calcular_idade(F.col("data_nasc"))) \
+    .withColumn("saudacao", criar_saudacao(F.col("nome"), F.col("idade_calculada")))
+
+df_transformado.select("id", "nome", "idade_calculada", "saudacao").show(truncate=False)
+
 
 ```
 
