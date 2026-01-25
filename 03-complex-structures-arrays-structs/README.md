@@ -366,6 +366,7 @@ O dataset está em formato JSON com o seguinte conteúdo:
 ```python
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import explode, col
+from pyspark.sql.types import StructType, StructField, StringType, IntegerType
 
 # Iniciar uma sessão Spark
 spark = SparkSession.builder.appName("data-eng-complex-structures").getOrCreate()
@@ -597,6 +598,7 @@ Utilizando o dataset de clientes, gere um DataFrame que mostre apenas os candida
   * Atenção! Nesse caso você vai precisar tratar `carteira_investimentos` como `MapType`.
 2. Filtrar apenas as linhas onde o `tipo_investimento` é igual a "FIIs".
 3. Filtrar os clientes que possuem "Livros" OU "Economia" dentro do array `interesses`.
+  * Utilize a função **`array_contains`** para isso. Exemplo: `array_contains(col("interesses"), "Livros")`
 
 ### Output esperado
 ```
