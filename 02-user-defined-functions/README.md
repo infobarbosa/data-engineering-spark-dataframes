@@ -390,6 +390,135 @@ df_pedidos_risco_alto.show()
 
 ---
 
+## 4. Quando a UDF é inevitável?
+Existem situações onde o uso de UDF é difícil (senão impossível) de se evitar.
+
+### Cenário 1: Criptografia e Mascaramento de Dados (PII)
+Este é um clássico em bancos e seguradoras. Embora o Spark tenha funções básicas de hash (sha2, md5), ele não possui suporte nativo robusto para criptografia reversível ou algoritmos específicos de segurança corporativa (como FPE - Format Preserving Encryption ou bibliotecas proprietárias de tokenização).
+
+**Onde usar**: Quando é necessário integrar bibliotecas como `cryptography` ou `Microsoft Presidio` para detecção e ofuscação de dados sensíveis (**LGPD/GDPR**).<br>
+A lógica de cifragem muitas vezes reside em bibliotecas Python externas certificadas pela equipe de segurança (InfoSec), que não podem ser reescritas em expressões SQL nativas do Spark.
+
+**Exemplo**
+
+#### Biblioteca proprietária de encriptação/decriptação
+```sh
+touch lib_seguranca_corp.py
+
+```
+
+```python
+# lib_seguranca_corp.py
+import datetime
+from cryptography.fernet import Fernet
+
+# Em um cenário real, esta chave viria de um AWS Secrets Manager ou Azure Key Vault.
+# Para o laboratório, usamos uma chave fixa hardcoded para garantir que todos tenham o mesmo resultado.
+# ATENÇÃO: Nunca comite chaves reais no Git!
+_CHAVE_MESTRA = b'gAAAAABk_teste_chave_fixa_para_aula_1234567890='
+
+# Se a chave acima der erro de formato invalid token, usaremos uma gerada na hora:
+# _CHAVE_MESTRA = Fernet.generate_key() 
+
+class EncriptadorCorporativo:
+    def __init__(self):
+        # O construtor inicia a conexão com o módulo de criptografia
+        try:
+            self.cipher = Fernet(_CHAVE_MESTRA)
+        except Exception:
+            # Fallback caso a chave hardcoded falhe no ambiente do aluno
+            key = Fernet.generate_key()
+            self.cipher = Fernet(key)
+
+    def proteger_pii(self, dado_sensivel: str) -> str:
+        """
+        Encripta um dado sensível e adiciona metadados de auditoria.
+        """
+        if dado_sensivel is None:
+            return None
+            
+        # 1. Regra de Negócio da Segurança: Logar acesso (Simulado)
+        # O Spark nativo não conseguiria fazer esse print/log customizado facilmente
+        # print(f"[AUDIT {datetime.datetime.now()}] Encriptando dado...") 
+        
+        # 2. Encriptação
+        dado_bytes = dado_sensivel.encode('utf-8')
+        dado_encriptado = self.cipher.encrypt(dado_bytes)
+        
+        # 3. Retorno como string para gravar no Data Lake
+        return dado_encriptado.decode('utf-8')
+
+    def ler_pii(self, dado_encriptado: str) -> str:
+        """
+        Reverte a encriptação para uso autorizado.
+        """
+        if dado_encriptado is None:
+            return None
+            
+        token_bytes = dado_encriptado.encode('utf-8')
+        dado_claro = self.cipher.decrypt(token_bytes)
+        return dado_claro.decode('utf-8')
+```
+
+#### Seu job de ingestão
+```sh
+touch job_ingestao_clientes.py
+
+```
+
+```python
+# job_ingestao_clientes.py
+from pyspark.sql import SparkSession
+from pyspark.sql.functions import udf, col
+from pyspark.sql.types import StringType
+
+# A biblioteca externa
+from lib_seguranca_corp import EncriptadorCorporativo
+
+spark = SparkSession.builder.appName("dataeng-udf-encriptacao-pii").getOrCreate()
+
+schema = "id INT, nome STRING, data_nasc DATE, cpf STRING, email STRING, cidade STRING, uf STRING"
+df_clientes = spark.read \
+                    .format("csv") \
+                    .option("sep", ";") \
+                    .option("header", True) \
+                    .schema(schema) \
+                    .load("./datasets-csv-clientes/clientes.csv.gz")
+
+print("### Dados Brutos")
+df_clientes.show(truncate=False)
+
+def proteger_cpf_wrapper(cpf):
+    ferramenta_seguranca = EncriptadorCorporativo()
+    
+    return ferramenta_seguranca.proteger_pii(cpf)
+
+udf_proteger_cpf = udf(proteger_cpf_wrapper, StringType())
+
+# Aplicamos no DataFrame
+df_seguro = df_clientes.withColumn("cpf_encriptado", udf_proteger_cpf(col("cpf"))) \
+                       .drop("cpf") 
+
+print("### Dados Seguros (Prontos para o Data Lake)")
+df_seguro.show(truncate=False)
+
+# Vamos testar se conseguimos ler de volta usando a mesma lib
+
+def ler_cpf_wrapper(cpf_enc):
+    ferramenta_seguranca = EncriptadorCorporativo()
+    return ferramenta_seguranca.ler_pii(cpf_enc)
+
+udf_ler_cpf = udf(ler_cpf_wrapper, StringType())
+
+df_leitura = df_seguro.withColumn("cpf_decifrado", udf_ler_cpf(col("cpf_encriptado")))
+
+print("### Validação de Leitura ---")
+df_leitura.select("id", "nome", "cpf_decifrado").show(truncate=False)
+
+```
+
+---
+
 ## 5. Parabéns!
 Parabéns! Nesse módulo você aprendeu sobre UDFs e como aplicar esse conhecimento em desafios práticos. <br> 
 Continue assim e bons estudos!
