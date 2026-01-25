@@ -14,6 +14,75 @@
 ## 1. Introdução
 DataFrames no Spark podem conter estruturas de dados complexas como arrays e structs. Manipular esses tipos de dados requer técnicas específicas.
 
+
+### 🧱 Tipos de Estruturas Complexas
+
+No Spark (e em formatos como JSON), nem tudo cabe em uma célula simples de Excel. Às vezes precisamos de estruturas mais robustas para organizar os dados. Existem três tipos principais:
+
+#### 1. ArrayType (A Lista) `[...]`
+
+É uma coleção de itens do **mesmo tipo**. O tamanho da lista pode variar: uma linha pode ter 2 itens, a outra 10, e a outra nenhum.
+
+* **Como reconhecer:** Colchetes `[ ]`
+* **Exemplo:**
+  ```json
+  "interesses": ["Música", "Futebol", "Leitura"]
+  ```
+* **Schema PySpark**:
+  ```python
+  StructField("interesses", ArrayType(StringType()), True)
+  ```
+
+* **No PySpark:** Usa-se a função`explode()` para transformar essa lista horizontal linhas verticais.
+
+---
+
+### 2. StructType (Objeto Fixo) `{...}`
+
+É uma estrutura rígida onde cada campo tem um **nome** e um **tipo** definidos previamente. É como uma mini-tabela dentro de uma coluna.
+
+* **Como reconhecer:** Chaves `{ }` com chaves conhecidas.
+* **Exemplo:**
+  ```json
+  "endereco": {
+      "rua": "Av. Paulista",
+      "numero": 1000,
+      "cidade": "São Paulo"
+  }
+  ```
+* **Schema PySpark**:
+  ```python
+  StructField("endereco", StructType([
+      StructField("rua", StringType(), True),
+      StructField("numero", IntegerType(), True),
+      StructField("cidade", StringType(), True)
+  ]), True)
+  ```
+* **No PySpark:** Acessamos os campos internos usando ponto: `col("endereco.cidade")`.
+
+---
+
+### 3. MapType (Dicionário Dinâmico) `{ k -> v }`
+
+É uma coleção de pares **Chave-Valor**. Diferente do Struct, aqui as chaves **não são fixas** no esquema. Cada linha pode ter chaves totalmente diferentes.
+
+* **Como reconhecer:** Chaves `{ }` mas tratado como pares.
+* **Exemplo:**
+  ```json
+  "investimentos": {
+      "FIIs": 5000.00,
+      "Bitcoin": 200.00
+  }
+  ```
+* **Schema PySpark**:
+  ```python
+  StructField("investimentos", MapType(StringType(), DoubleType()), True)
+  ````
+
+* **No PySpark:** Usa-se a função `explode()` para gerar duas colunas genéricas: uma para a `key` (a etiqueta) e outra para o `value` (o valor).
+
+---
+
 ### Exemplo 1
 
 ```python
@@ -47,25 +116,13 @@ df_exploded.select("nome", col("curso.curso"), col("curso.nota")).show()
 
 ---
 
-## 2. **Manuseio de Dados Complexos**
-  **Array e objetos aninhados**: JSONs frequentemente contêm arrays ou objetos aninhados. Para manipular esses dados, você pode precisar usar funções como `explode()` para quebrar arrays ou acessar campos internos com `dot notation` (ex.: `dataframe.select("campo.objeto_interno")`).
-
-### 📌 O que a função explode faz?
-A função explode() transforma valores que estão em arrays (ou mapas) em várias linhas, uma para cada elemento. É usada quando você quer "desaninhar" estruturas complexas, como listas ou arrays de structs, para processar ou visualizar cada item separadamente.
-
-### ✅ Quando é necessário usar explode?
-Você deve usar explode quando:
-- A coluna contém listas ou arrays (ex: ArrayType)
-- Você quer transformar cada item da lista em uma linha separada
-
-No exemplo de código apresentado anteriormente, manipulamos um DataFrame contendo uma coluna de arrays de structs (no caso, os cursos de cada aluno). Ao utilizar explode(df["cursos"]), transformamos cada elemento do array presente na coluna cursos em uma nova linha do DataFrame, mantendo as demais informações associadas ao registro original. Isso facilita a análise e o processamento de dados aninhados, permitindo, por exemplo, visualizar cada curso e nota de um aluno em linhas separadas. Assim, o uso do explode é fundamental para "desaninhar" estruturas complexas e trabalhar de forma mais eficiente com dados que possuem arrays ou listas em seu esquema.
-
 ### Exemplo 2
 
 Vamos considerar um dataset de um campeonato de futebol com 3 times. O dataset inclui duas estruturas aninhadas:
 
 - **Array de jogadores** (necessita de `explode` para analisar cada jogador individualmente)
 - **Struct de estatísticas do time** (não necessita de `explode`, basta acessar os campos internos)
+- **Map de patrocinadores** (necessita de `explode` para analisar cada patrocinador individualmente)
 
 ```python
 from pyspark.sql import SparkSession
@@ -200,7 +257,7 @@ df_patrocinadores.show(truncate=False)
 
 Você recebeu um dataset contendo informações de clientes de uma empresa. O dataset possui estruturas de dados complexas, como arrays e structs. Seu objetivo é manipular esse dataset usando PySpark para extrair insights específicos.
 
-**Tarefas do desafio:**
+**Tarefas:**
 
 1. **Flatten das Structs:**
 
