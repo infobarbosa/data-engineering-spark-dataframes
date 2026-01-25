@@ -48,7 +48,7 @@ df.show()
 
 ```
 
-## 3. Desafio 1
+## 2. Desafio 1
 
 **Desafio PySpark - Uso de UDF (User Defined Function)**
 
@@ -199,21 +199,13 @@ df = spark.read \
 # Definindo a UDF para calcular a idade e criar a saudação
 @udf(StringType())
 def saudacao_personalizada(nome, data_nasc):
-
-    # Obtendo a data atual
     data_atual = datetime.now().date()
-    # Calculando a idade
     idade = data_atual.year - data_nasc.year - ((data_atual.month, data_atual.day) < (data_nasc.month, data_nasc.day))
-    # Criando a saudação
     saudacao = f"Olá, {nome}! Você tem {idade} anos."
     return saudacao
 
-# Aplicando a UDF ao DataFrame
 df_saudacao = df.withColumn("saudacao", saudacao_personalizada(df.nome, df.data_nasc)).select("id", "nome", "data_nasc", "saudacao")
-
-# Mostrando as primeiras linhas do DataFrame
 df_saudacao.show(truncate=False)
-
 
 ```
 
@@ -266,10 +258,8 @@ def saudacao_personalizada(nome: pd.Series, data_nasc: pd.Series) -> pd.Series:
     
     return saudacao
 
-# Aplicando a UDF ao DataFrame
 df_saudacao = df.withColumn("saudacao", saudacao_personalizada("nome", "data_nasc")).select("id", "nome", "data_nasc", "saudacao")
 
-# Mostrando as primeiras linhas do DataFrame
 df_saudacao.show(truncate=False)
 
 ``` 
@@ -333,7 +323,7 @@ df_transformado.select("id", "nome", "idade_calculada", "saudacao").show(truncat
 
 
 ---
-## 4. Desafio 2: Analisando Transações com Potencial de Fraude
+## 3. Desafio 2: Analisando Transações com Potencial de Fraude
 
 Você recebeu um conjunto de dados de pedidos de uma plataforma de e-commerce que contém informações sobre cada pedido, incluindo seu status e se foi marcado como fraude ou não.
 
