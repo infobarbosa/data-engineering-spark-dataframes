@@ -400,35 +400,29 @@ Este é um clássico em bancos e seguradoras. Embora o Spark tenha funções bá
 A lógica de cifragem muitas vezes reside em bibliotecas Python externas certificadas pela equipe de segurança (InfoSec), que não podem ser reescritas em expressões SQL nativas do Spark.
 
 **Exemplo**
-
-#### Biblioteca proprietária de encriptação/decriptação
 ```sh
 touch lib_seguranca_corp.py
+touch job_ingestao_clientes.py
 
 ```
+
+#### Biblioteca proprietária de encriptação/decriptação
 
 ```python
 # lib_seguranca_corp.py
 import datetime
 from cryptography.fernet import Fernet
+import base64
 
-# Em um cenário real, esta chave viria de um AWS Secrets Manager ou Azure Key Vault.
-# Para o laboratório, usamos uma chave fixa hardcoded para garantir que todos tenham o mesmo resultado.
-# ATENÇÃO: Nunca comite chaves reais no Git!
-_CHAVE_MESTRA = b'gAAAAABk_teste_chave_fixa_para_aula_1234567890='
-
-# Se a chave acima der erro de formato invalid token, usaremos uma gerada na hora:
-# _CHAVE_MESTRA = Fernet.generate_key() 
+# Chave válida gerada (44 caracteres, base64 url-safe)
+# Esta chave é fixa para garantir que a leitura e a escrita usem o mesmo segredo.
+# Atenção 8ABDR! NUNCA FAÇA ISSO EM PRODUÇÃO! 
+_CHAVE_MESTRA = b'uP0_8K5j9L2m4N6p8Q0r3T5v7X9z1A3b5C7d9E1f3G5='
 
 class EncriptadorCorporativo:
     def __init__(self):
-        # O construtor inicia a conexão com o módulo de criptografia
-        try:
-            self.cipher = Fernet(_CHAVE_MESTRA)
-        except Exception:
-            # Fallback caso a chave hardcoded falhe no ambiente do aluno
-            key = Fernet.generate_key()
-            self.cipher = Fernet(key)
+        # Inicializa com a chave fixa. 
+        self.cipher = Fernet(_CHAVE_MESTRA)
 
     def proteger_pii(self, dado_sensivel: str) -> str:
         """
@@ -437,15 +431,14 @@ class EncriptadorCorporativo:
         if dado_sensivel is None:
             return None
             
-        # 1. Regra de Negócio da Segurança: Logar acesso (Simulado)
-        # O Spark nativo não conseguiria fazer esse print/log customizado facilmente
-        # print(f"[AUDIT {datetime.datetime.now()}] Encriptando dado...") 
+        # 1. Regra de Negócio: Logar acesso (Simulado)
+        # print(f"[AUDIT] Encriptando dado...") 
         
         # 2. Encriptação
         dado_bytes = dado_sensivel.encode('utf-8')
         dado_encriptado = self.cipher.encrypt(dado_bytes)
         
-        # 3. Retorno como string para gravar no Data Lake
+        # 3. Retorno como string
         return dado_encriptado.decode('utf-8')
 
     def ler_pii(self, dado_encriptado: str) -> str:
@@ -461,10 +454,6 @@ class EncriptadorCorporativo:
 ```
 
 #### Seu job de ingestão
-```sh
-touch job_ingestao_clientes.py
-
-```
 
 ```python
 # job_ingestao_clientes.py
