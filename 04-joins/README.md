@@ -14,6 +14,43 @@
 ## 1. Introdução
 Neste módulo, vamos aprofundar nosso conhecimento em operações de junção no Apache Spark explorando os diferentes tipos de joins disponíveis.
 
+### Datasets
+Esse laboratório utiliza dois conjuntos de dados:
+#### Clientes
+```sh
+git clone https://github.com/infobarbosa/dataset-json-clientes.git
+
+```
+
+```sh
+zcat dataset-json-clientes/data/clientes.json.gz | wc -l
+
+````
+
+```sh
+zcat dataset-json-clientes/data/clientes.json.gz | head -10
+
+```
+
+#### Pedidos
+
+```sh
+git clone https://github.com/infobarbosa/datasets-csv-pedidos.git
+
+```
+
+```sh
+zcat datasets-csv-pedidos/data/pedidos/pedidos-2025-12.csv.gz | wc -l 
+
+```
+
+```sh
+zcat datasets-csv-pedidos/data/pedidos/pedidos-2025-12.csv.gz | head -10
+
+```
+
+
+
 ## 2. Joins
 Os joins no Apache Spark são operações fundamentais que permitem combinar dados de diferentes DataFrames com base em uma chave comum. Eles são essenciais para a integração de dados provenientes de diversas fontes e para a realização de análises complexas. <br>
 O Spark oferece vários tipos de joins, como **inner join**, **left join**, **right join**, **full join** e **cross join**, cada um com suas características e casos de uso específicos. <br>
