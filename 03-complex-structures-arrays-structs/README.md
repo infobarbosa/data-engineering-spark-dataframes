@@ -17,7 +17,7 @@ DataFrames no Spark podem conter estruturas de dados complexas como arrays e str
 
 ### 🧱 Tipos de Estruturas Complexas
 
-No Spark (e em formatos como JSON), nem tudo cabe em uma célula simples de Excel. Às vezes precisamos de estruturas mais robustas para organizar os dados. Existem três tipos principais:
+No Spark (e em formatos como JSON), nem tudo cabe em uma célula simples e tabular. Às vezes são necessárias estruturas mais robustas para organizar os dados. Existem três tipos principais:
 
 #### 1. ArrayType (A Lista) `[...]`
 
