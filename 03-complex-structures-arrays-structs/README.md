@@ -371,8 +371,12 @@ from pyspark.sql.functions import explode, col
 spark = SparkSession.builder.appName("data-eng-complex-structures").getOrCreate()
 
 # Carregar o dataset JSON
-caminho_arquivo = "caminho/para/o/dataset.json"
-dados_clientes = spark.read.json(caminho_arquivo)
+caminho_arquivo = "./data/inputs/data.json"
+
+# schema 
+schema = StructType([...])
+  
+dados_clientes = spark.read.schema(schema).json(caminho_arquivo)
 
 # Mostrar o schema do DataFrame
 dados_clientes.printSchema()
@@ -394,13 +398,24 @@ dados_clientes.show(truncate=False)
 ```python
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import col, coalesce
+from pyspark.sql.types import StructType, StructField, StringType, IntegerType
 
 # Iniciar uma sessão Spark
 spark = SparkSession.builder.appName("data-eng-flatten-structs").getOrCreate()
 
+schema = StructType([
+    StructField("nome", StringType(), True),
+    StructField("idade", IntegerType(), True),
+    StructField("notas", StructType([
+        StructField("matematica", IntegerType(), True),
+        StructField("portugues", IntegerType(), True),
+        StructField("ciencias", IntegerType(), True)
+    ]), True)
+])
+
 # Carregar o dataset JSON
-caminho_arquivo = "dataset.json"
-dados_clientes = spark.read.json(caminho_arquivo, multiLine=True)
+caminho_arquivo = "./data/inputs/data.json"
+dados_clientes = spark.read.schema(schema).json(caminho_arquivo, multiLine=True)
 
 # Mostrar o schema do DataFrame original
 dados_clientes.printSchema()
@@ -411,9 +426,6 @@ dados_clientes.show(truncate=False)
 # ----------------------------------------------------------------------
 # Solução do Item 1: Flatten das Structs
 # ----------------------------------------------------------------------
-
-# Importar as funções necessárias
-from pyspark.sql.functions import col, coalesce
 
 # Criar um novo DataFrame com as notas extraídas
 dados_notas = dados_clientes \
@@ -436,13 +448,31 @@ dados_notas.select("nome", "idade", "nota_matematica", "nota_portugues", "nota_c
 ```python
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import explode, col
+from pyspark.sql.types import StructType, StructField, StringType, IntegerType, ArrayType
 
 # Iniciar uma sessão Spark
 spark = SparkSession.builder.appName("data-eng-explode-arrays").getOrCreate()
 
+schema = StructType([
+    StructField("nome", StringType(), True),
+    StructField("idade", IntegerType(), True),
+    StructField("notas", StructType([
+        StructField("matematica", IntegerType(), True),
+        StructField("portugues", IntegerType(), True),
+        StructField("ciencias", IntegerType(), True)
+    ]), True),
+    StructField("contatos", ArrayType(
+        StructType([
+            StructField("tipo", StringType(), True),
+            StructField("valor", StringType(), True)
+        ])
+    ), True)
+])
+
 # Carregar o dataset JSON
-caminho_arquivo = "dataset.json"
-dados_clientes = spark.read.json(caminho_arquivo, multiLine=True)
+caminho_arquivo = "./data/inputs/data.json"
+dados_clientes = spark.read.schema(schema).json(caminho_arquivo, multiLine=True)
+
 
 # Mostrar o schema do DataFrame original
 dados_clientes.printSchema()
@@ -498,6 +528,63 @@ root
 +-----+-----+------------+------------------+
 
 ```
+</details>
+
+<details>
+    <summary>Solução do Item 3: Explodir os Interesses</summary>
+
+```python
+from pyspark.sql import SparkSession
+from pyspark.sql.functions import explode, col
+from pyspark.sql.types import StructType, StructField, StringType, IntegerType, ArrayType
+
+# Iniciar uma sessão Spark
+spark = SparkSession.builder.appName("data-eng-explode-arrays").getOrCreate()
+
+schema = StructType([
+    StructField("nome", StringType(), True),
+    StructField("idade", IntegerType(), True),
+    StructField("notas", StructType([
+        StructField("matematica", IntegerType(), True),
+        StructField("portugues", IntegerType(), True),
+        StructField("ciencias", IntegerType(), True)
+    ]), True),
+    StructField("contatos", ArrayType(
+        StructType([
+            StructField("tipo", StringType(), True),
+            StructField("valor", StringType(), True)
+        ])
+    ), True),
+    StructField("interesses", ArrayType(StringType()), True)
+])
+
+# Carregar o dataset JSON
+caminho_arquivo = "./data/inputs/data.json"
+dados_clientes = spark.read.schema(schema).json(caminho_arquivo, multiLine=True)
+
+# Mostrar o schema do DataFrame original
+dados_clientes.printSchema()
+
+# Mostrar os dados originais
+dados_clientes.show(truncate=False)
+
+# ----------------------------------------------------------------------
+# Solução do Item 3: Explodir o Array de Interesses
+# ----------------------------------------------------------------------
+
+# Explodir o array de interesses em linhas individuais
+dados_interesses_explodido = dados_clientes.select(
+    "nome",
+    "idade",
+    explode("interesses").alias("interesse")
+)
+
+dados_interesses_explodido.printSchema()
+
+dados_interesses_explodido.show(truncate=False)
+
+```
+
 </details>
 
 ---
