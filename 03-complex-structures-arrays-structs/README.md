@@ -19,7 +19,7 @@ DataFrames no Spark podem conter estruturas de dados complexas como arrays e str
 
 No Spark (e em formatos como JSON), nem tudo cabe em uma célula simples e tabular. Às vezes são necessárias estruturas mais robustas para organizar os dados. Existem três tipos principais:
 
-#### 1. ArrayType (A Lista) `[...]`
+#### 1. ArrayType (Lista) `[...]`
 
 É uma coleção de itens do **mesmo tipo**. O tamanho da lista pode variar: uma linha pode ter 2 itens, a outra 10, e a outra nenhum.
 
@@ -117,7 +117,7 @@ df_exploded.select("nome", col("curso.curso"), col("curso.nota")).show()
 
 ### Exemplo 2
 
-Vamos considerar um dataset de um campeonato de futebol com 3 times. O dataset inclui duas estruturas aninhadas:
+Vamos considerar um dataset de um campeonato de futebol com 3 times. O dataset inclui algumas informações, incluindo estruturas aninhadas:
 
 - **Array de jogadores** (necessita de `explode` para analisar cada jogador individualmente)
 - **Struct de estatísticas do time** (não necessita de `explode`, basta acessar os campos internos)
