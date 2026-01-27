@@ -21,6 +21,81 @@ O pivot transforma valores únicos de uma coluna em múltiplas colunas, enquanto
 
 ```python
 from pyspark.sql import SparkSession
+from pyspark.sql.types import StructType, StructField, StringType, IntegerType
+
+# Iniciar uma sessão Spark
+spark = SparkSession.builder.appName("DesafioPySpark").getOrCreate()
+
+# Exemplo de DataFrame com arrays e structs
+data = [
+    ("João", "matematica", 85),
+    ("João", "historia", 90),
+    ("João", "portugues", 70),
+    ("Maria", "matematica", 95),
+    ("Maria", "historia", 80),
+    ("Maria", "portugues", None),
+    ("Barbosa", "matematica", 75),
+    ("Barbosa", "historia", 85),
+    ("Barbosa", "portugues", 90)
+]
+schema = StructType([
+    StructField("nome", StringType(), True),
+    StructField("curso", StringType(), True),
+    StructField("nota", IntegerType(), True)
+])
+df = spark.createDataFrame(data, schema)
+
+df.show( truncate=False)
+
+print('### PIVOT ###')
+df_pivot = df.groupBy("nome").pivot("curso").agg({"nota": "sum"})
+df_pivot.show()
+
+```
+
+**Dataframe original:**
+```
++-------+----------+----+                                                       
+|nome   |curso     |nota|
++-------+----------+----+
+|João   |matematica|85  |
+|João   |historia  |90  |
+|João   |portugues |70  |
+|Maria  |matematica|95  |
+|Maria  |historia  |80  |
+|Maria  |portugues |NULL|
+|Barbosa|matematica|75  |
+|Barbosa|historia  |85  |
+|Barbosa|portugues |90  |
++-------+----------+----+
+```
+
+Output esperado após o pivot:
+```
++-------+--------+----------+---------+
+|   nome|historia|matematica|portugues|
++-------+--------+----------+---------+
+|   João|      90|        85|       70|
+|  Maria|      80|        95|     NULL|
+|Barbosa|      85|        75|       90|
++-------+--------+----------+---------+
+```
+
+---
+
+## 3. Transpose
+O método `transpose()` (introduzido no Spark 4.0.0) tem a função de inverter a orientação de um DataFrame, transformando linhas em colunas e colunas em linhas. É uma operação geométrica que rotaciona a matriz de dados, utilizando uma coluna de índice como referência para os novos cabeçalhos.
+
+### Diferença para o método `pivot()`
+Enquanto o `pivot()` é focado em **remodelar e agregar** dados (transformando valores únicos de uma coluna categórica em novas colunas, geralmente reduzindo o número de linhas), o `transpose()` foca na **rotação** estrutural pura. No `pivot`, o número de novas colunas depende da cardinalidade da coluna escolhida; no `transpose`, cada linha original se torna uma coluna (exceto a coluna de índice).
+
+### Cautelas ao usar `transpose()`
+1.  **Explosão de Colunas (Wide DataFrames):** O Spark é otimizado para processar bilhões de linhas, mas sofre com tabelas que possuem milhares de colunas. Como o `transpose` transforma linhas em colunas, aplicar isso em um DataFrame grande resultará em um esquema excessivamente largo, causando degradação de performance ou erros de memória no Driver.
+2.  **Compatibilidade de Tipos:** Ao transpor, os valores que antes estavam em colunas diferentes (ex: `matematica` e `historia`) passarão a ocupar a mesma coluna na nova estrutura. Portanto, as colunas originais devem ter tipos de dados compatíveis (ex: todos inteiros). Se houver tipos mistos, o Spark tentará fazer o *cast* para um tipo comum (geralmente String).
+3.  **Versão:** Certifique-se de estar utilizando o Spark 4.0.0 ou superior.
+
+```python
+from pyspark.sql import SparkSession
 from pyspark.sql.functions import explode, col
 from pyspark.sql.types import StructType, StructField, StringType, IntegerType, ArrayType
 
@@ -31,58 +106,50 @@ from pyspark.sql.functions import explode, col
 
 # Exemplo de DataFrame com arrays e structs
 data = [
-    ("João", [{"curso": "MATEMATICA", "nota": 85}, {"curso": "HISTORIA", "nota": 90}]),
-    ("Maria", [{"curso": "MATEMATICA", "nota": 95}, {"curso": "HISTORIA", "nota": 80}])
+    ("João", 85, 90, 70),
+    ("Maria", 95, 80, None),
+    ("Barbosa", 75, 85, 90)
 ]
 schema = StructType([
-    StructField("nome", StringType(), True),
-    StructField("cursos", ArrayType(StructType([
-        StructField("curso", StringType(), True),
-        StructField("nota", IntegerType(), True)
-    ])), True)
+    StructField("aluno", StringType(), True),
+    StructField("matematica", IntegerType(), True),
+    StructField("historia", IntegerType(), True),
+    StructField("portugues", IntegerType(), True)
 ])
 df = spark.createDataFrame(data, schema)
 
 df.show( truncate=False)
 
-# Explodindo o array para linhas individuais
-df_exploded = df.withColumn("curso", explode(df["cursos"]))
-df = df_exploded.select("nome", col("curso.curso"), col("curso.nota"))
-
-df.show()
-
-print('Exemplo de Pivot')
-df_pivot = df.groupBy("nome").pivot("curso").agg({"nota": "max"})
-df_pivot.show()
-
+# Disponível a partir do Spark 4.0.0
+df_transposto = df.transpose(indexColumn="aluno")
+df_transposto.show( truncate=False)
 
 ```
 
 **Dataframe original:**
 ```
-+-----+----------+----+
-| nome|     curso|nota|
-+-----+----------+----+
-| João|MATEMATICA|  85|
-| João|  HISTORIA|  90|
-|Maria|MATEMATICA|  95|
-|Maria|  HISTORIA|  80|
-+-----+----------+----+
++-------+----------+--------+---------+                                         
+|aluno  |matematica|historia|portugues|
++-------+----------+--------+---------+
+|João   |85        |90      |70       |
+|Maria  |95        |80      |NULL     |
+|Barbosa|75        |85      |90       |
++-------+----------+--------+---------+
 ```
 
-Output esperado após o pivot:
+Output esperado após o transpose:
 ```
-+-----+--------+----------+
-| nome|HISTORIA|MATEMATICA|
-+-----+--------+----------+
-| João|      90|        85|
-|Maria|      80|        95|
-+-----+--------+----------+
++----------+-------+----+-----+
+|key       |Barbosa|João|Maria|
++----------+-------+----+-----+
+|matematica|75     |85  |95   |
+|historia  |85     |90  |80   |
+|portugues |90     |70  |NULL |
++----------+-------+----+-----+
 ```
-
 ---
 
-## 3. Unpivot
+## 4. Unpivot
 
 O processo de unpivot é utilizado para transformar colunas em linhas, o que pode ser útil para normalizar dados ou prepará-los para análises específicas. No PySpark, essa operação pode ser realizada utilizando a função `selectExpr` com a expressão `stack`.
 
@@ -97,53 +164,66 @@ from pyspark.sql.types import StructType, StructField, StringType, IntegerType
 # Iniciar uma sessão Spark
 spark = SparkSession.builder.appName("DesafioPySpark").getOrCreate()
 
-# O dataset:
-#  +-----+--------+----------+
-#  | nome|HISTORIA|MATEMATICA|
-#  +-----+--------+----------+
-#  | João|      90|        85|
-#  |Maria|      80|        95|
-#  +-----+--------+----------+
-
+# Exemplo de DataFrame com arrays e structs
 data = [
-    ("João", 85, 90),
-    ("Maria", 95, 80)
+    ("João", 85, 90, 70),
+    ("Maria", 95, 80, None),
+    ("Barbosa", 75, 85, 90)
 ]
-
 schema = StructType([
-    StructField("nome", StringType(), True),
+    StructField("aluno", StringType(), True),
     StructField("matematica", IntegerType(), True),
-    StructField("historia", IntegerType(), True)
+    StructField("historia", IntegerType(), True),
+    StructField("portugues", IntegerType(), True)
 ])
 df = spark.createDataFrame(data, schema)
 
-print("O dataframe original: ")
 df.show( truncate=False)
 
-unpivot_expression = "stack(2, 'Mat', MATEMATICA, 'Hist', HISTORIA) as (curso, nota)"
+print('### UNPIVOT 1 ###')
+unpivot_expression = "stack(3, 'Matemática', matematica, 'História', historia, 'Português', portugues) as (Disciplina, Nota)"
+df_unpivot = df.selectExpr("aluno", unpivot_expression)
+df_unpivot.show( truncate=False)
 
-print('Exemplo de Unpivot (Requer manipulação manual no PySpark')
-unpivoted = df.selectExpr("nome", unpivot_expression)
-unpivoted.show()
+print('### UNPIVOT 2 ###')
+# O unpivot é mais limpo e legível, mas só está disponível no Spark 4.0.0+
+df_unpivot = df.unpivot("aluno", ["matematica", "historia", "portugues"], "Disciplina", "Nota")
+df_unpivot.show( truncate=False)
 
+```
+
+**Dataframe original:**
+```
++-------+----------+--------+---------+                                         
+|aluno  |matematica|historia|portugues|
++-------+----------+--------+---------+
+|João   |85        |90      |70       |
+|Maria  |95        |80      |NULL     |
+|Barbosa|75        |85      |90       |
++-------+----------+--------+---------+
 ```
 
 Output:
 ```
-+-----+-----+----+
-| nome|curso|nota|
-+-----+-----+----+
-| João|  Mat|  85|
-| João| Hist|  90|
-|Maria|  Mat|  95|
-|Maria| Hist|  80|
-+-----+-----+----+
++-------+----------+----+
+|aluno  |Disciplina|Nota|
++-------+----------+----+
+|João   |matematica|85  |
+|João   |historia  |90  |
+|João   |portugues |70  |
+|Maria  |matematica|95  |
+|Maria  |historia  |80  |
+|Maria  |portugues |NULL|
+|Barbosa|matematica|75  |
+|Barbosa|historia  |85  |
+|Barbosa|portugues |90  |
++-------+----------+----+
 ```
 
 Para realizar o unpivot e transformar os trimestres em linhas, utilizamos a expressão `stack`. <br>
 A sintaxe da função stack é:
 ```
-stack(n, coluna1, valor1, coluna2, valor2, ..., colunaN, valorN)
+stack(n, coluna1, valor1, coluna2, valor2, ..., colunaN, valorN) as (nome_coluna1, nome_coluna2, ..., nome_colunaN)
 ```
 
 - `n` é o número de colunas que você deseja empilhar.
@@ -315,4 +395,3 @@ Parabéns por concluir o módulo! Você aprendeu técnicas de manipulação de D
 Para evitar custos desnecessários, lembre-se de destruir os recursos criados durante este módulo:
 - Exclua quaisquer instâncias do AWS Cloud9 que não sejam mais necessárias.
 - Remova dados temporários ou resultados intermediários armazenados no S3.
-
