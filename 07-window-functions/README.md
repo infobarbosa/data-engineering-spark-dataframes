@@ -198,7 +198,7 @@ df_ltv \
 
 Faça o clone do repositório abaixo (caso ainda não tenha feito):
 ```sh
-git clone [https://github.com/infobarbosa/datasets-csv-pedidos](https://github.com/infobarbosa/datasets-csv-pedidos)
+git clone https://github.com/infobarbosa/datasets-csv-pedidos
 
 ```
 
@@ -256,7 +256,7 @@ df_pedidos = spark.read \
     .option("header", True) \
     .option("sep", ";") \
     .schema(schema) \
-    .load("./datasets-csv-pedidos/data/pedidos/*.csv.gz")
+    .load("./datasets-csv-pedidos/data/pedidos/")
 
 # Criando a coluna de valor total
 df_pedidos = df_pedidos.withColumn("valor_total", F.col("valor_unitario") * F.col("quantidade"))
