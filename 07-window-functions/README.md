@@ -69,6 +69,7 @@ df_pedidos.show(5, truncate=False)
 **Conceito:** `row_number` cria um índice sequencial exclusivo. É a ferramenta padrão para deduplicação.
 
 ```python
+
 print("### row_number(): Deduplicação e Recência ###")
 # 1. Definindo a janela: Particionar por Cliente, Ordenar pela data (Decrescente)
 w_cliente_recente = Window.partitionBy("id_cliente").orderBy(F.col("data_criacao").desc())
@@ -96,7 +97,8 @@ df_recente.filter(F.col("rn") == 1) \
 * `dense_rank`: Não pula posições (1, 2, 2, 3).
 
 ```python
-print("### 2. rank() vs dense_rank(): Ranqueamento ###")
+
+print("### rank() vs dense_rank(): Ranqueamento ###")
 # 1. Definindo a janela: Particionar por Estado (UF), Ordenar por Valor Total (Decrescente)
 w_uf_valor = Window.partitionBy("uf").orderBy(F.col("valor_total").desc())
 
@@ -129,7 +131,8 @@ df_ranking \
 **Conceito:** Acessar linhas anteriores (`lag`) ou posteriores (`lead`) sem fazer joins complexos.
 
 ```python
-print("### 2.3. lag() e lead(): Análise Temporal (Time Travel) ###")
+
+print("### lag() e lead(): Análise Temporal (Time Travel) ###")
 
 # 1. Definindo a janela: Particionar por Cliente, Ordenar Cronologicamente
 w_cliente_cronologico = Window.partitionBy("id_cliente").orderBy("data_criacao")
@@ -171,6 +174,8 @@ df_temporal \
 *Nota didática:* Aqui introduzimos o conceito de `rowsBetween`, fundamental para definir o escopo da agregação (do início até a linha atual).
 
 ```python
+
+print("### Agregações de Janela (Running Total / Média Móvel) ###")
 # 1. Definindo a janela com Frame: Do início (unboundedPreceding) até a linha atual (currentRow)
 w_acumulado = Window.partitionBy("id_cliente") \
                     .orderBy("data_criacao") \
