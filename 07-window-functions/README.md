@@ -12,11 +12,20 @@
 ---
 
 ## 1. Introdução
-As Window Functions possibilitam a realização de cálculos avançados, permitindo o particionamento e a ordenação de dados para análises mais sofisticadas.
 
-A função `Window.partitionBy` é utilizada para definir uma janela de partição em um DataFrame, permitindo que operações de janela sejam aplicadas a subconjuntos específicos dos dados. Ao particionar os dados com base em uma ou mais colunas, é possível realizar cálculos como agregações, classificações e funções analíticas dentro de cada partição, sem afetar outras partições. Isso é particularmente útil para análises que exigem a segmentação dos dados por categorias, como clientes, produtos ou departamentos, garantindo que as operações sejam realizadas de forma isolada e eficiente dentro de cada grupo.
+As **Window Functions** (Funções de Janela) permitem realizar cálculos avançados em um conjunto de linhas relacionadas à linha atual.
 
-A função `Window.partitionBy` aceita um ou mais parâmetros que especificam as colunas pelas quais os dados serão particionados. Esses parâmetros determinam como o DataFrame será dividido em subconjuntos, permitindo que operações de janela sejam aplicadas de forma independente dentro de cada partição. Por exemplo, ao usar `Window.partitionBy("coluna1", "coluna2")`, o DataFrame será particionado com base nos valores combinados de `coluna1` e `coluna2`. Isso é útil para realizar cálculos como somas, médias, classificações e outras funções analíticas dentro de grupos específicos de dados, garantindo que os resultados sejam calculados isoladamente para cada partição.
+A principal diferença entre uma Window Function e um `groupBy` tradicional é a **preservação da granularidade**:
+
+* **groupBy**: Agrupa as linhas e retorna apenas uma linha por grupo (reduzindo o dataset).
+* **Window**: Mantém todas as linhas originais e adiciona uma nova coluna com o resultado do cálculo (como um ranking, uma média móvel ou um valor anterior).
+
+Para definir essa "janela" de atuação, utilizamos a classe `Window` com dois métodos principais:
+
+1. **`partitionBy`**: Divide os dados em grupos lógicos (ex: por cliente ou departamento). O cálculo reinicia a cada novo grupo.
+2. **`orderBy`**: Define a ordem lógica das linhas dentro da partição (ex: ordenar por data para criar um ranking cronológico).
+
+---
 
 ## 2. Exemplo 1 com `row_number()`
 ```python
