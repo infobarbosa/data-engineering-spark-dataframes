@@ -26,7 +26,7 @@ Para muitos Engenheiros de Dados, o SQL é a "língua franca". O Spark permite q
 
 ---
 
-## 2. Setup do Laboratório (ETL Inicial)
+## 2. Setup do Laboratório
 
 Para usar SQL, primeiro precisamos carregar nossos dados brutos e "registrá-los" como tabelas (Views) na memória do Spark.
 
