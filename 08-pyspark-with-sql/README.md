@@ -53,6 +53,7 @@ Crie um arquivo chamado `lab_sql_intro.py`:
 ```python
 from pyspark.sql import SparkSession
 import pyspark.sql.functions as F
+from pyspark.sql.types import StructType, StructField, StringType, LongType, DateType, FloatType, IntegerType, BooleanType, TimestampType, DoubleType
 
 spark = SparkSession.builder \
     .appName("dataeng-spark-sql") \
@@ -82,7 +83,7 @@ df_clientes = spark.read \
 
 # Mostrando o schema
 df_clientes.show(5, truncate=False)
-df_clientesprintSchema()
+df_clientes.printSchema()
 
 
 # ---------------------------------------------------------
@@ -110,9 +111,26 @@ df_pedidos.printSchema()
 # ---------------------------------------------------------
 # 3. Carregando PAGAMENTOS (JSON)
 # ---------------------------------------------------------
+from pyspark.sql.types import BooleanType, TimestampType
+
+schema_pagamentos = StructType([
+    StructField("id_pedido", StringType(), True),
+    StructField("forma_pagamento", StringType(), True),
+    StructField("valor_pagamento", FloatType(), True),
+    StructField("status", BooleanType(), True),
+    StructField("data_processamento", TimestampType(), True),
+    StructField("avaliacao_fraude", StructType([
+        StructField("fraude", BooleanType(), True),
+        StructField("score", DoubleType(), True)
+    ]), True)
+])
+
 df_pagamentos = spark.read \
     .format("json") \
-    .load("./dataset-json-pagamentos/pagamentos.json")
+    .load("./dataset-json-pagamentos/data/pagamentos/", schema=schema_pagamentos)
+
+df_pagamentos.show(5, truncate=False)
+df_pagamentos.printSchema()
 
 # ---------------------------------------------------------
 # 4. REGISTRANDO AS TABELAS TEMPORÁRIAS (TempViews)
@@ -123,6 +141,7 @@ df_pedidos.createOrReplaceTempView("tb_pedidos")
 df_pagamentos.createOrReplaceTempView("tb_pagamentos")
 
 print("Tabelas registradas! Pronto para executar SQL.")
+
 
 ```
 
