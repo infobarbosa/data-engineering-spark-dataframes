@@ -224,13 +224,13 @@ spark.sql(query_cte).show()
 ### Padrões de Nomenclatura para CTEs
 Ao escrever queries complexas com múltiplas CTEs, siga estas diretrizes para manter a legibilidade:
 - Use snake case ou pascal case para nomes de CTEs.
-    * Ex: Use CalculoImposto em vez de calculo_imposto ou cte1.
+    * Ex: `CalculoImposto` (menos verboso e redundante) ou `cte_calculo_imposto` (na opinião deste professor, mas legível embora redundante).
 
 - Seja Descritivo: O nome deve explicar o que o conjunto de dados contém.
-    * Ex: Se a CTE filtra clientes inativos, chame-a de ClientesAtivos em vez de Filtro1.
+    * Ex: Se a CTE filtra clientes inativos, chame-a de `ClientesAtivos` ou `cte_clientes_ativos` em vez de `Filtro1` ou `cte_filtro_1`.
 
 - Fluxo Lógico: Se uma CTE depende da anterior, tente manter nomes que contem uma história 
-    * ex: PedidosBrutos -> PedidosFiltrados -> MetricasFinais.
+    * ex: `PedidosBrutos` -> `PedidosFiltrados` -> `MetricasFinais`.
 
 ---
 
