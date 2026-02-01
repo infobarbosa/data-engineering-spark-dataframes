@@ -61,22 +61,51 @@ spark = SparkSession.builder \
 # ---------------------------------------------------------
 # 1. Carregando CLientES (CSV)
 # ---------------------------------------------------------
-# Schema: id;nome;data_nasc;cpf;email;cidade;uf
+# Definindo o schema
+schema_cliente = StructType([
+    StructField("ID", LongType(), True),
+    StructField("NOME", StringType(), True),
+    StructField("DATA_NASC", DateType(), True),
+    StructField("CPF", StringType(), True),
+    StructField("EMAIL", StringType(), True),
+    StructField("CIDADE", StringType(), True),
+    StructField("UF", StringType(), True)
+])
+
+# Criando o dataframe utilizando o schema definido acima
 df_clientes = spark.read \
-    .format("csv") \
-    .option("header", True) \
-    .option("sep", ";") \
-    .load("./datasets-csv-clientes/clientes.csv.gz")
+        .format("csv") \
+        .option("compression", "gzip") \
+        .option("sep", ";") \
+        .option("header", True) \
+        .load("./datasets-csv-clientes/clientes.csv.gz", schema=schema_cliente)
+
+# Mostrando o schema
+df_clientes.show(5, truncate=False)
+df_clientesprintSchema()
+
 
 # ---------------------------------------------------------
 # 2. Carregando PEDIDOS (CSV particionado) e Criando valor_total
 # ---------------------------------------------------------
-df_pedidos = spark.read \
-    .format("csv") \
-    .option("header", True) \
+schema_pedidos = StructType([
+    StructField("id_pedido", StringType(), True),
+    StructField("produto", StringType(), True),
+    StructField("valor_unitario", FloatType(), True),
+    StructField("quantidade", IntegerType(), True),
+    StructField("data_criacao", DateType(), True),
+    StructField("uf", StringType(), True),
+    StructField("id_cliente", LongType(), True)
+])
+
+df_pedidos = spark.read. \
+    schema(schema_pedidos). \
+    option("header", "true") \
     .option("sep", ";") \
-    .load("./datasets-csv-pedidos/data/pedidos/") \
-    .withColumn("valor_total", F.col("valor_unitario") * F.col("quantidade"))
+    .csv("./datasets-csv-pedidos/data/pedidos/")
+
+df_pedidos.show(5, truncate=False)
+df_pedidos.printSchema()
 
 # ---------------------------------------------------------
 # 3. Carregando PAGAMENTOS (JSON)
