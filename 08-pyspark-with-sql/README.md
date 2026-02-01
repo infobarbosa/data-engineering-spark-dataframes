@@ -353,7 +353,7 @@ df_seguro.show(5, truncate=False)
     from pyspark.sql import SparkSession
 
     # 1. Criar a primeira SparkSession (Representando o Processo A - QG do Chapolin)
-    spark1 = SparkSession.builder.appName("Vilões_Chapolin").getOrCreate()
+    spark1 = SparkSession.builder.appName("dataeng-spark-sql").getOrCreate()
 
     # Dados baseados na nossa simulação de maldade
     # Note que os valores numéricos são passados sem aspas para serem inferidos como Long/Integer
