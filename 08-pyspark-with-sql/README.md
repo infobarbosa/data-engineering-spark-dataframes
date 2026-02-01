@@ -99,9 +99,9 @@ Output esperado:
 {"id_pedido": "04065285-5a0b-4631-af25-ea318f389b83", "forma_pagamento": "CARTAO_CREDITO", "valor_pagamento": 900.0, "status": true, "data_processamento": "2026-01-23T15:30:16.761626", "avaliacao_fraude": {"fraude": false, "score": 0.02}}
 ```
 
-### 2.2. Script de Carga
+### 2.2. Script inicial
 
-Crie um arquivo chamado `lab_sql_intro.py`:
+Crie um arquivo chamado `spark-sql-01.py`:
 
 ```python
 from pyspark.sql import SparkSession
