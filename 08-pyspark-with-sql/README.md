@@ -198,12 +198,12 @@ WITH cte_vendas_por_estado AS (
     FROM tb_pedidos
     GROUP BY uf
 ),
-ct_metricas_nacionais AS (
+cte_metricas_nacionais AS (
     -- Bloco 2: Calcula a média global (Granularidade: País)
     -- Note que aqui não fazemos GROUP BY, gerando uma única linha com a média do Brasil
     SELECT 
         AVG(ticket_medio_uf) as ticket_medio_brasil
-    FROM VendasPorEstado
+    FROM cte_vendas_por_estado
 )
 -- Bloco Final: Cruza os estados com a média nacional
 SELECT 
