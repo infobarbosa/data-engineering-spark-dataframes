@@ -349,37 +349,60 @@ df_seguro.show(5, truncate=False)
 
     * Exemplo:
     ```python
+
     from pyspark.sql import SparkSession
 
-    # 1. Criar a primeira SparkSession (Representando o Processo A)
-    spark1 = SparkSession.builder.appName("Processo_A").getOrCreate()
+    # 1. Criar a primeira SparkSession (Representando o Processo A - QG do Chapolin)
+    spark1 = SparkSession.builder.appName("Vilões_Chapolin").getOrCreate()
 
-    # Criar dados de exemplo
-    data = [("Spark", 2014), ("Databricks", 2013)]
-    df = spark1.createDataFrame(data, ["Tecnologia", "Ano"])
+    # Dados baseados na nossa simulação de maldade
+    # Note que os valores numéricos são passados sem aspas para serem inferidos como Long/Integer
+    data = [
+        ("Alma Negra", "Ramón Valdés", 98),
+        ("Poucas Trancas", "Rubén Aguirre", 92),
+        ("Racha Cuca", "Ramón Valdés", 85),
+        ("Tripa Seca", "Ramón Valdés", 78),
+        ("Bruxa Baratuxa", "Maria Antonieta de las Nieves", 75),
+        ("Cuajinais", "Carlos Villagrán", 70),
+        ("Shory (Nenê)", "Rubén Aguirre", 65),
+        ("Matadouro", "Rubén Aguirre", 60),
+        ("Rosa a Rumorosa", "Florinda Meza", 40)
+    ]
+
+    # Criando o DataFrame com a coluna atualizada
+    df_viloes = spark1.createDataFrame(data, ["vilao", "ator", "coeficiente_de_maldade"])
 
     # 2. Criar uma View LOCAL e uma View GLOBAL
-    df.createOrReplaceTempView("view_local_processo_a")
-    df.createOrReplaceGlobalTempView("view_global_compartilhada")
+    # A view local só "vive" dentro da spark1
+    df_viloes.createOrReplaceTempView("viloes_locais")
 
-    print("--- No Processo A ---")
-    spark1.sql("SELECT 'Sim' as acessa_local FROM view_local_processo_a").show()
-    spark1.sql("SELECT 'Sim' as acessa_global FROM global_temp.view_global_compartilhada").show()
+    # A view global fica no catálogo global_temp, visível para outras sessões
+    df_viloes.createOrReplaceGlobalTempView("viloes_globais_compartilhados")
 
-    # 3. Criar a segunda SparkSession (Representando o Processo B)
+    print("--- No Processo A (Sessão 1) ---")
+    print("Acessando View Local:")
+    spark1.sql("SELECT * FROM viloes_locais WHERE coeficiente_de_maldade > 80").show()
+
+    # 3. Criar a segunda SparkSession (Representando o Processo B - Vilões em outro esconderijo)
     # O método .newSession() cria um ambiente isolado mas compartilha o mesmo SparkContext
     spark2 = spark1.newSession()
 
-    print("--- No Processo B ---")
+    print("--- No Processo B (Sessão 2) ---")
     try:
-        # Isso vai FALHAR porque a view local pertence apenas à spark1
-        spark2.sql("SELECT * FROM view_local_processo_a").show()
+        # Isso vai FALHAR porque a view local 'viloes_locais' pertence apenas à spark1
+        spark2.sql("SELECT * FROM viloes_locais").show()
     except Exception as e:
-        print("ERRO: Processo B não enxerga a view local da Session A.")
+        print("ERRO ESPERADO: O Processo B não tem astúcia suficiente para enxergar a view local da Session A.")
 
-    # Isso vai FUNCIONAR porque a global_temp atravessa as sessões
-    print("\nSUCESSO: Processo B acessando a View Global:")
-    spark2.sql("SELECT * FROM global_temp.view_global_compartilhada").show()
+    # Isso vai FUNCIONAR porque a global_temp atravessa as sessões dentro da mesma aplicação
+    print("\nSUCESSO: Processo B acessando os Vilões via View Global:")
+    spark2.sql("""
+        SELECT vilao, coeficiente_de_maldade 
+        FROM global_temp.viloes_globais_compartilhados 
+        ORDER BY coeficiente_de_maldade DESC
+    """).show()
+
+
     ```
 
 2. **SQL Injection:**
