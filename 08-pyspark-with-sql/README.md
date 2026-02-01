@@ -509,7 +509,7 @@ spark.sql(query_desafio).show(20, truncate=False)
 ---
 
 ## 10. Parabéns!
-Você agora domina a integração PySpark + SQL! Essa habilidade é essencial para migrar cargas de trabalho de Data Warehouses tradicionais para o Spark e para colaborar com analistas de dados que preferem SQL.
+Você agora domina a integração PySpark + SQL! Essa habilidade é essencial para migrar cargas de trabalho de Data Warehouses tradicionais para o Spark e para colaborar com profissionais de dados que preferem SQL.
 
 ---
 
