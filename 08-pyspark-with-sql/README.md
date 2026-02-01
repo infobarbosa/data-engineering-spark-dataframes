@@ -40,9 +40,9 @@ Utilizaremos três fontes de dados distintas:
 Faça o clone dos repositórios:
 
 ```sh
-git clone [https://github.com/infobarbosa/datasets-csv-clientes](https://github.com/infobarbosa/datasets-csv-clientes)
-git clone [https://github.com/infobarbosa/datasets-csv-pedidos](https://github.com/infobarbosa/datasets-csv-pedidos)
-git clone [https://github.com/infobarbosa/dataset-json-pagamentos](https://github.com/infobarbosa/dataset-json-pagamentos)
+git clone https://github.com/infobarbosa/datasets-csv-clientes
+git clone https://github.com/infobarbosa/datasets-csv-pedidos
+git clone https://github.com/infobarbosa/dataset-json-pagamentos
 
 ```
 
