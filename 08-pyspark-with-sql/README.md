@@ -324,7 +324,7 @@ Gerar uma lista de clientes que possuem pedidos realizados, mas cujo pagamento c
 
 1. Criar uma Query SQL que faça o JOIN entre `tb_clientes`, `tb_pedidos` e `tb_pagamentos`.
 2. Utilizar `CASE WHEN` para criar uma coluna `status_final`:
-* Se o pagamento for confirmado (`status = 'aprovado'`), marcar como **"Venda Confirmada"**.
+* Se o pagamento for confirmado (`status = true`), marcar como **"Venda Confirmada"**.
 * Se o pagamento for fraude (`fraude = true`), marcar como **"Fraude Detectada"**.
 * Se não houver registro de pagamento (NULL no join), marcar como **"Pagamento Pendente"**.
 
