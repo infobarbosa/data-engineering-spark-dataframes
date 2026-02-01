@@ -185,35 +185,52 @@ Em Engenharia de Dados, queries "monstruosas" são comuns. As CTEs (cláusula `W
 **Cenário:** Calcular o Ticket Médio por estado e listar apenas os estados que estão acima da média geral do Brasil.
 
 ```python
-print("--- Estados acima da Média (CTE) ---")
+print("--- Estados com Ticket Médio acima da Média Nacional (CTE) ---")
 
 query_cte = """
-WITH VendasPorEstado AS (
-    -- Bloco 1: Calcula totais por estado
+WITH cte_vendas_por_estado AS (
+    -- Bloco 1: Calcula métricas por estado (Granularidade: UF)
     SELECT 
         uf,
         SUM(valor_total) as receita_estado,
-        COUNT(id_pedido) as qtd_pedidos
+        COUNT(id_pedido) as qtd_pedidos,
+        (SUM(valor_total) / COUNT(id_pedido)) as ticket_medio_uf
     FROM tb_pedidos
     GROUP BY uf
 ),
-Indicadores AS (
-    -- Bloco 2: Calcula o ticket médio
+ct_metricas_nacionais AS (
+    -- Bloco 2: Calcula a média global (Granularidade: País)
+    -- Note que aqui não fazemos GROUP BY, gerando uma única linha com a média do Brasil
     SELECT 
-        uf,
-        receita_estado,
-        (receita_estado / qtd_pedidos) as ticket_medio
+        AVG(ticket_medio_uf) as ticket_medio_brasil
     FROM VendasPorEstado
 )
--- Bloco Final: Filtra e Ordena
-SELECT * FROM Indicadores
-WHERE ticket_medio > 2500 -- Apenas tickets altos
-ORDER BY ticket_medio DESC
+-- Bloco Final: Cruza os estados com a média nacional
+SELECT 
+    e.uf,
+    ROUND(e.ticket_medio_uf, 2) as ticket_medio_uf,
+    ROUND(n.ticket_medio_brasil, 2) as media_nacional,
+    ROUND(e.ticket_medio_uf - n.ticket_medio_brasil, 2) as diferenca
+FROM cte_vendas_por_estado e
+CROSS JOIN cte_metricas_nacionais n -- Une a linha única da média com todos os estados
+WHERE e.ticket_medio_uf > n.ticket_medio_brasil
+ORDER BY diferenca DESC
 """
 
 spark.sql(query_cte).show()
 
 ```
+
+### Padrões de Nomenclatura para CTEs
+Ao escrever queries complexas com múltiplas CTEs, siga estas diretrizes para manter a legibilidade:
+- Use snake case ou pascal case para nomes de CTEs.
+    * Ex: Use CalculoImposto em vez de calculo_imposto ou cte1.
+
+- Seja Descritivo: O nome deve explicar o que o conjunto de dados contém.
+    * Ex: Se a CTE filtra clientes inativos, chame-a de ClientesAtivos em vez de Filtro1.
+
+- Fluxo Lógico: Se uma CTE depende da anterior, tente manter nomes que contem uma história 
+    * ex: PedidosBrutos -> PedidosFiltrados -> MetricasFinais.
 
 ---
 
