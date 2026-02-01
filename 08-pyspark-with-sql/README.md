@@ -455,10 +455,12 @@ spark.sql(query_desafio).show(20, truncate=False)
 
 ---
 
-## 9. Parabéns!
-
+## 10. Parabéns!
 Você agora domina a integração PySpark + SQL! Essa habilidade é essencial para migrar cargas de trabalho de Data Warehouses tradicionais para o Spark e para colaborar com analistas de dados que preferem SQL.
 
-**Próximos Passos:**
-Não se esqueça de destruir seus recursos (cluster ou ambiente Cloud9) para evitar custos extras.
+---
 
+## 11. Destruição de recursos
+Para evitar custos desnecessários, lembre-se de destruir os recursos criados durante este módulo:
+- Exclua quaisquer instâncias do AWS Cloud9 que não sejam mais necessárias.
+- Remova dados temporários ou resultados intermediários armazenados no S3.
