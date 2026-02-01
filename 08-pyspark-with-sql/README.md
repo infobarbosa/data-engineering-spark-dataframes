@@ -234,7 +234,7 @@ Ao escrever queries complexas com múltiplas CTEs, siga estas diretrizes para ma
 
 ---
 
-## 5. Window Functions no SQL (O Poder Analítico)
+## 5. Window Functions no SQL
 
 No módulo anterior, usamos a classe `Window` no Python. No SQL, a sintaxe é padrão ANSI (`OVER PARTITION BY`), o que facilita muito para quem vem de bancos como Oracle, SQL Server ou PostgreSQL.
 
@@ -266,7 +266,7 @@ spark.sql("""
 
 ## 6. Abordagem Híbrida (Best of Both Worlds)
 
-O "superpoder" do Spark é misturar as linguagens. Você pode usar SQL para filtrar e juntar dados (onde o SQL é mais legível) e Python para transformações complexas ou I/O (onde o Python é melhor).
+Você pode usar SQL para filtrar e juntar dados (onde o SQL é mais legível) e Python para transformações complexas ou I/O (onde o Python é melhor).
 
 **Exemplo:** Usar SQL para juntar tabelas e Python para aplicar uma máscara de segurança (hash) no email.
 
@@ -298,18 +298,18 @@ df_seguro.show(5, truncate=False)
 ## 7. Boas Práticas e Pitfalls
 
 1. **TempView vs GlobalTempView:**
-* `createOrReplaceTempView`: A tabela só existe nesta sessão do Spark. Se o script terminar, a tabela "some".
-* `createGlobalTempView`: A tabela é compartilhada entre sessões na mesma aplicação Spark (útil em Notebooks compartilhados). Para acessar, use `SELECT * FROM global_temp.minha_tabela`.
+    * `createOrReplaceTempView`: A tabela só existe nesta sessão do Spark. Se o script terminar, a tabela "some".
+    * `createGlobalTempView`: A tabela é compartilhada entre sessões na mesma aplicação Spark (útil em Notebooks compartilhados). Para acessar, use `SELECT * FROM global_temp.minha_tabela`.
 
 
 2. **SQL Injection:**
-* **Nunca** faça isso: `spark.sql(f"SELECT * FROM table WHERE id = {user_input}")`.
-* Embora menos crítico em pipelines batch do que em web apps, é uma prática ruim.
+    * **Nunca** faça isso: `spark.sql(f"SELECT * FROM table WHERE id = {user_input}")`.
+    * Embora menos crítico em pipelines batch do que em web apps, é uma prática ruim.
 
 
 3. **Performance (Catalyst Optimizer):**
-* Muitos perguntam: *"O SQL é mais lento que o PySpark?"*
-* **Resposta:** Não. O Spark converte tanto o SQL quanto o código DataFrame Python para o mesmo Plano de Execução Lógico e Físico (via Catalyst Optimizer). Use o que for mais legível para sua equipe.
+    * *"O SQL é mais lento que o PySpark?"*
+    * **Não!** O Spark converte tanto o SQL quanto o código DataFrame Python para o mesmo Plano de Execução Lógico e Físico (via Catalyst Optimizer). Use o que for mais legível para sua equipe.
 
 ---
 
