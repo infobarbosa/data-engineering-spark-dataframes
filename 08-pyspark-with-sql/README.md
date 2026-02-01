@@ -105,6 +105,8 @@ df_pedidos = spark.read. \
     .option("sep", ";") \
     .csv("./datasets-csv-pedidos/data/pedidos/")
 
+df_pedidos = df_pedidos.withColumn("valor_total", F.col("valor_unitario") * F.col("quantidade"))
+
 df_pedidos.show(5, truncate=False)
 df_pedidos.printSchema()
 
