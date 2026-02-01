@@ -60,7 +60,7 @@ spark = SparkSession.builder \
     .getOrCreate()
 
 # ---------------------------------------------------------
-# 1. Carregando CLientES (CSV)
+# 1. Carregando Clientes (CSV)
 # ---------------------------------------------------------
 # Definindo o schema
 schema_cliente = StructType([
@@ -234,7 +234,53 @@ Ao escrever queries complexas com múltiplas CTEs, siga estas diretrizes para ma
 
 ---
 
-## 5. Window Functions no SQL
+---
+## 5. Rollup e Cube
+```python
+print("### Rollup ###")
+query_rollup = """
+    SELECT 
+        YEAR(data_criacao) as ano,
+        SUM(valor_total) as receita,
+        COUNT(id_pedido) as qtd_pedidos
+    FROM tb_pedidos
+    WHERE uf = 'RJ'
+    AND produto = 'TABLET'
+    GROUP BY ROLLUP(ano)
+    ORDER BY ano DESC
+"""
+
+df_rollup = spark.sql(query_rollup)
+df_rollup.printSchema()
+df_rollup.show(10, truncate=False)
+
+```
+
+```python
+
+print("### Cube ###")
+query_cube = """
+    SELECT 
+        uf,
+        YEAR(data_criacao) as ano,
+        SUM(valor_total) as receita,
+        COUNT(id_pedido) as qtd_pedidos
+    FROM tb_pedidos
+    WHERE uf = 'RJ'
+    AND produto = 'TABLET'
+    GROUP BY CUBE(uf, ano)
+    ORDER BY uf, ano DESC
+"""
+
+df_cube = spark.sql(query_cube)
+df_cube.printSchema()
+df_cube.show(10, truncate=False)
+
+```
+
+---
+
+## 6. Window Functions no SQL
 
 No módulo anterior, usamos a classe `Window` no Python. No SQL, a sintaxe é padrão ANSI (`OVER PARTITION BY`), o que facilita muito para quem vem de bancos como Oracle, SQL Server ou PostgreSQL.
 
@@ -264,7 +310,7 @@ spark.sql("""
 
 ---
 
-## 6. Abordagem Híbrida (Best of Both Worlds)
+## 7. Abordagem Híbrida (Best of Both Worlds)
 
 Você pode usar SQL para filtrar e juntar dados (onde o SQL é mais legível) e Python para transformações complexas ou I/O (onde o Python é melhor).
 
@@ -295,12 +341,46 @@ df_seguro.show(5, truncate=False)
 
 ---
 
-## 7. Boas Práticas e Pitfalls
+## 8. Boas Práticas e Pitfalls
 
 1. **TempView vs GlobalTempView:**
     * `createOrReplaceTempView`: A tabela só existe nesta sessão do Spark. Se o script terminar, a tabela "some".
     * `createGlobalTempView`: A tabela é compartilhada entre sessões na mesma aplicação Spark (útil em Notebooks compartilhados). Para acessar, use `SELECT * FROM global_temp.minha_tabela`.
 
+    * Exemplo:
+    ```python
+    from pyspark.sql import SparkSession
+
+    # 1. Criar a primeira SparkSession (Representando o Processo A)
+    spark1 = SparkSession.builder.appName("Processo_A").getOrCreate()
+
+    # Criar dados de exemplo
+    data = [("Spark", 2014), ("Databricks", 2013)]
+    df = spark1.createDataFrame(data, ["Tecnologia", "Ano"])
+
+    # 2. Criar uma View LOCAL e uma View GLOBAL
+    df.createOrReplaceTempView("view_local_processo_a")
+    df.createOrReplaceGlobalTempView("view_global_compartilhada")
+
+    print("--- No Processo A ---")
+    spark1.sql("SELECT 'Sim' as acessa_local FROM view_local_processo_a").show()
+    spark1.sql("SELECT 'Sim' as acessa_global FROM global_temp.view_global_compartilhada").show()
+
+    # 3. Criar a segunda SparkSession (Representando o Processo B)
+    # O método .newSession() cria um ambiente isolado mas compartilha o mesmo SparkContext
+    spark2 = spark1.newSession()
+
+    print("--- No Processo B ---")
+    try:
+        # Isso vai FALHAR porque a view local pertence apenas à spark1
+        spark2.sql("SELECT * FROM view_local_processo_a").show()
+    except Exception as e:
+        print("ERRO: Processo B não enxerga a view local da Session A.")
+
+    # Isso vai FUNCIONAR porque a global_temp atravessa as sessões
+    print("\nSUCESSO: Processo B acessando a View Global:")
+    spark2.sql("SELECT * FROM global_temp.view_global_compartilhada").show()
+    ```
 
 2. **SQL Injection:**
     * **Nunca** faça isso: `spark.sql(f"SELECT * FROM table WHERE id = {user_input}")`.
@@ -313,7 +393,7 @@ df_seguro.show(5, truncate=False)
 
 ---
 
-## 8. Desafio: Relatório de Inadimplência e VIPs
+## 9. Desafio: Relatório de Inadimplência e VIPs
 
 Você precisa entregar um relatório financeiro cruzando as três bases de dados.
 
