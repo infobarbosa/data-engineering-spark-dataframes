@@ -39,11 +39,64 @@ Utilizaremos três fontes de dados distintas:
 
 Faça o clone dos repositórios:
 
+* Clientes
 ```sh
 git clone https://github.com/infobarbosa/datasets-csv-clientes
+
+```
+
+```sh
+zcat datasets-csv-clientes/clientes.csv.gz | head -n 5
+
+```
+
+Output esperado:
+```
+id;nome;data_nasc;cpf;email;cidade;uf
+1;Calebe Pinto;1988-03-01;645.278.301-71;calebe.pinto@hotmail.com;Vila Velha;ES
+2;Lorenzo Silveira;1958-06-04;167.259.048-58;lorenzo.silveira@hotmail.com;Picos;PI
+3;Henry da Conceição;2003-11-13;685.402.197-94;henry.da.conceicao@live.com;Parnamirim;RN
+4;João Pedro Duarte;1995-10-26;354.806.172-90;joao.pedro.duarte@hotmail.com;Maracanaú;CE
+```
+
+* Pedidos
+```sh
 git clone https://github.com/infobarbosa/datasets-csv-pedidos
+
+```
+
+```sh
+zcat datasets-csv-pedidos/data/pedidos/pedidos-2026-01.csv.gz | head -5
+
+```
+
+Output esperado:
+```
+ID_PEDIDO;PRODUTO;VALOR_UNITARIO;QUANTIDADE;DATA_CRIACAO;UF;ID_CLIENTE
+f198e8f7-033d-414d-b032-20975e84edde;LIQUIDIFICADOR;300.0;1;2026-01-05T18:36:28;MG;8409
+97969db5-9304-4b80-b19e-3a9d60ce6520;CELULAR;1000.0;3;2026-01-01T11:58:48;DF;934
+f1db6c7e-0701-42fd-90b2-638b57cefe38;NOTEBOOK;1500.0;2;2026-01-17T15:28:57;MG;5872
+3994d9fa-6609-4818-8efa-c3a570a6116a;GELADEIRA;2000.0;1;2026-01-27T13:37:31;MA;174
+```
+
+* Pagamentos
+```sh
 git clone https://github.com/infobarbosa/dataset-json-pagamentos
 
+```
+
+```sh
+zcat dataset-json-pagamentos/data/pagamentos/pagamentos-2026-01.json.gz | head -5
+
+```
+
+Output esperado:
+```
+{"id_pedido": "f198e8f7-033d-414d-b032-20975e84edde", "forma_pagamento": "PIX", "valor_pagamento": 285.0, "status": true, "data_processamento": "2026-01-06T02:29:21.830930", "avaliacao_fraude": {"fraude": false, "score": 0.12}}
+{"id_pedido": "97969db5-9304-4b80-b19e-3a9d60ce6520", "forma_pagamento": "PIX", "valor_pagamento": 2850.0, "status": true, "data_processamento": "2026-01-01T22:26:07.151965", "avaliacao_fraude": {"fraude": false, "score": 0.11}}
+{"id_pedido": "f1db6c7e-0701-42fd-90b2-638b57cefe38", "forma_pagamento": "PIX", "valor_pagamento": 2850.0, "status": true, "data_processamento": "2026-01-17T15:48:54.507491", "avaliacao_fraude": {"fraude": false, "score": 0.83}}
+{"id_pedido": "3994d9fa-6609-4818-8efa-c3a570a6116a", "forma_pagamento": "CARTAO_CREDITO", "valor_pagamento": 2000.0, "status": true, "data_processamento": "2026-01-27T20:50:41.884628", "avaliacao_fraude": {"fraude": false, "score": 0.56}}
+{"id_pedido": "04065285-5a0b-4631-af25-ea318f389b83", "forma_pagamento": "CARTAO_CREDITO", "valor_pagamento": 900.0, "status": true, "data_processamento": "2026-01-23T15:30:16.761626", "avaliacao_fraude": {"fraude": false, "score": 0.02}}
 ```
 
 ### 2.2. Script de Carga
