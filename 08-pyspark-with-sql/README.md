@@ -506,6 +506,134 @@ spark.sql(query_desafio).show(20, truncate=False)
 
 ```
 
+### 9.1 - Soluções possíveis
+**Não desista!** Tente mais algumas vezes antes de conferir as respostas. ;)
+
+<detail>
+    <summary>Solução 1</summary>
+
+```python
+df_relatorio = spark.sql("""
+    WITH PagamentosPorPedido AS (
+        -- 1. Agrega pagamentos por pedido
+        SELECT 
+            id_pedido,
+            SUM(valor_pagamento) AS total_pago_pedido
+        FROM tb_pagamentos
+        GROUP BY id_pedido
+    ),
+
+    DetalhePedidos AS (
+        -- 2. Cruza Pedidos com Pagamentos
+        SELECT 
+            p.id_cliente,
+            p.id_pedido,
+            p.valor_total AS valor_pedido,
+            COALESCE(pg.total_pago_pedido, 0) AS valor_pago,
+            (p.valor_total - COALESCE(pg.total_pago_pedido, 0)) AS saldo_pendente
+        FROM tb_pedidos p
+        LEFT JOIN PagamentosPorPedido pg ON p.id_pedido = pg.id_pedido
+    ),
+
+    MetricasPorCliente AS (
+        -- 3. Agrega por Cliente
+        SELECT 
+            c.ID AS id_cliente,
+            c.NOME AS nome,
+            SUM(dp.valor_pedido) AS total_comprado,
+            SUM(dp.saldo_pendente) AS total_devido,
+            MAX(CASE WHEN dp.saldo_pendente > 0.01 THEN 1 ELSE 0 END) AS indicador_inadimplencia
+        FROM tb_clientes c
+        INNER JOIN DetalhePedidos dp ON c.ID = dp.id_cliente
+        GROUP BY c.ID, c.NOME
+    )
+
+    -- 4. Relatório Final
+    SELECT 
+        id_cliente,
+        nome,
+        ROUND(total_comprado, 2) AS total_comprado,
+        ROUND(total_devido, 2) AS total_devido,
+        CASE 
+            WHEN indicador_inadimplencia = 1 THEN 'INADIMPLENTE'
+            ELSE 'EM DIA'
+        END AS status_pagamento,
+        CASE 
+            WHEN indicador_inadimplencia = 0 AND total_comprado > 2000 THEN 'VIP'
+            ELSE 'STANDARD'
+        END AS classe_cliente
+    FROM MetricasPorCliente
+    ORDER BY total_devido DESC, total_comprado DESC
+""")
+
+df_relatorio.show(truncate=False)
+
+```
+
+</detail>
+
+<detail>
+    <summary>Solução 2</summary>
+
+```python
+df_relatorio = spark.sql("""
+    WITH PagamentosEnriquecidos AS (
+        SELECT DISTINCT 
+            id_pedido,
+            SUM(valor_pagamento) OVER (PARTITION BY id_pedido) AS total_pago_pedido
+        FROM tb_pagamentos
+    ),
+
+    DetalhePedidos AS (
+        -- Cruzamento dos Pedidos com o Total Pago (calculado via Window Function)
+        SELECT 
+            p.id_cliente,
+            p.id_pedido,
+            p.valor_total AS valor_pedido,
+            -- Tratamento de Nulos para pedidos sem pagamento registrado
+            COALESCE(pe.total_pago_pedido, 0) AS valor_pago,
+            (p.valor_total - COALESCE(pe.total_pago_pedido, 0)) AS saldo_pendente
+        FROM tb_pedidos p
+        LEFT JOIN PagamentosEnriquecidos pe ON p.id_pedido = pe.id_pedido
+    ),
+
+    MetricasPorCliente AS (
+        -- Consolidação por Cliente
+        SELECT 
+            c.ID AS id_cliente,
+            c.NOME AS nome,
+            SUM(dp.valor_pedido) AS total_comprado,
+            SUM(dp.saldo_pendente) AS total_devido,
+            -- Regra: Se houver saldo pendente > 0.01 (margem para float), é inadimplente
+            MAX(CASE WHEN dp.saldo_pendente > 0.01 THEN 1 ELSE 0 END) AS indicador_inadimplencia
+        FROM tb_clientes c
+        INNER JOIN DetalhePedidos dp ON c.ID = dp.id_cliente
+        GROUP BY c.ID, c.NOME
+    )
+
+    -- Relatório Final
+    SELECT 
+        id_cliente,
+        nome,
+        ROUND(total_comprado, 2) AS total_comprado,
+        ROUND(total_devido, 2) AS total_devido,
+        CASE 
+            WHEN indicador_inadimplencia = 1 THEN 'INADIMPLENTE'
+            ELSE 'EM DIA'
+        END AS status_pagamento,
+        CASE 
+            -- Regra VIP: Cliente EM DIA e com alto volume de compras (> 2000)
+            WHEN indicador_inadimplencia = 0 AND total_comprado > 2000 THEN 'VIP'
+            ELSE 'STANDARD'
+        END AS classe_cliente
+    FROM MetricasPorCliente
+    ORDER BY total_devido DESC, total_comprado DESC
+""")
+
+df_relatorio.show(truncate=False)
+```
+</detail>
+
 ---
 
 ## 10. Parabéns!
