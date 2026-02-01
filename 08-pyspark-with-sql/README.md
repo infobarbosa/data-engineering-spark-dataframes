@@ -1,4 +1,3 @@
-
 # PySpark com SQL
 
 **Author:** Prof. Barbosa  
@@ -7,299 +6,289 @@
 
 ---
 
+#### Atenção aos custos!
+**Atenção!** Ao realizar os laboratórios deste módulo, lembre-se de que a execução na AWS pode gerar custos. A responsabilidade pela gestão desses custos é do aluno.
+
+---
+
 ## 1. Introdução
 
-Este módulo demonstra a integração da linguagem SQL com o PySpark, utilizando os datasets de clientes, pedidos e pagamentos como exemplos. O foco é apresentar os conceitos fundamentais dessa integração, e não oferecer um curso completo de SQL.
+O módulo **Spark SQL** permite consultar dados estruturados dentro de programas Spark usando SQL padrão (ANSI) ou a API de DataFrame.
+
+Para muitos Engenheiros de Dados, o SQL é a "língua franca". O Spark permite que você alterne fluidamente entre código Python (para lógica imperativa e I/O) e SQL (para lógica relacional e analítica), aproveitando o melhor dos dois mundos.
+
+**Neste módulo, você aprenderá:**
+* Como expor DataFrames como Tabelas Temporárias.
+* Criar regras de negócio complexas com `CASE WHEN`.
+* Organizar queries longas com `CTEs`.
+* Usar Window Functions (Ranking e Lag) diretamente no SQL.
+* Misturar Python e SQL na mesma pipeline.
 
 ---
 
-## 2. Visualizações temporárias
+## 2. Setup do Laboratório (ETL Inicial)
 
-No PySpark, você pode criar visualizações temporárias a partir de DataFrames usando o método `createOrReplaceTempView`. Essas visualizações permitem que você execute consultas SQL diretamente nos dados carregados. A seguir, um exemplo de como criar uma visualização temporária para um dataset de clientes:
+Para usar SQL, primeiro precisamos carregar nossos dados brutos e "registrá-los" como tabelas (Views) na memória do Spark.
+
+Utilizaremos três fontes de dados distintas:
+1.  **Clientes:** Dados cadastrais (CSV).
+2.  **Pedidos:** Transações de venda (CSV).
+3.  **Pagamentos:** Dados financeiros/bancários (JSON).
+
+### 2.1. Preparação
+
+Faça o clone dos repositórios:
+
+```sh
+git clone [https://github.com/infobarbosa/datasets-csv-clientes](https://github.com/infobarbosa/datasets-csv-clientes)
+git clone [https://github.com/infobarbosa/datasets-csv-pedidos](https://github.com/infobarbosa/datasets-csv-pedidos)
+git clone [https://github.com/infobarbosa/dataset-json-pagamentos](https://github.com/infobarbosa/dataset-json-pagamentos)
+
+```
+
+### 2.2. Script de Carga
+
+Crie um arquivo chamado `lab_sql_intro.py`:
 
 ```python
 from pyspark.sql import SparkSession
-from pyspark.sql.types import StructType, StructField, StringType, IntegerType, FloatType, DateType
+import pyspark.sql.functions as F
 
-# Inicializando a SparkSession
-spark = SparkSession.builder.appName("dataeng-joins").getOrCreate()
-
-print("DataFrame de clientes")
-
-# Definindo o schema dos dados de clientes
-schema_clientes = StructType([
-    StructField("id_cliente", StringType(), True),
-    StructField("nome", StringType(), True),
-    StructField("uf", StringType(), True)
-])
-
-# Dados dos clientes
-dados_clientes = [
-    ('2b162060', 'MARIVALDA', 'SP'),
-    ('2b16242a', 'JUCILENE',  'ES'),
-    ('2b16256a', 'GRACIMAR',  'MG'),
-    ('2b16353c', 'ALDENORA',  'SP'),
-    ('2b1636ae', 'VERA',      'RJ'),
-    ('2b16396a', 'IVONE',     'RJ'),
-    ('2b163bcc', 'LUCILIA',   'RS'),
-    ('2b163bff', 'MARTINS',   ''),
-    ('2b163bdd', 'GENARO',    '')
-]
-
-# Criando o DataFrame de clientes com o schema definido
-df_clientes = spark.createDataFrame(dados_clientes, schema=schema_clientes)
-
-df_clientes.show()
-# Cria uma visualização temporária de CLIENTES
-df_clientes.createOrReplaceTempView("clientes")
-
-print("DataFrame de pedidos")
-
-schema_pedidos = StructType([
-    StructField("id_cliente", StringType(), True),
-    StructField("id_pedido", IntegerType(), True),
-    StructField("quantidade", IntegerType(), True),
-    StructField("descricao_produto", StringType(), True),
-    StructField("valor_produto", FloatType(), True),
-    StructField("valor_total_pedido", FloatType(), True),
-    StructField("data_pedido", StringType(), True)
-])
-
-# Criando o DataFrame de pedidos com o schema definido
-dados_pedidos = [
-    ('2b162060', 10, 2, 'Celular', 1500.00, 3000.00, "2024-01-01"),
-    ('2b162060', 20, 1, 'Notebook', 3500.00, 3500.00, '2022-09-05'),
-    ('2b16242a', 30, 1, 'Geladeira', 2000.00, 2000.00, '2024-02-03'),
-    ('2b16396a', 40, 1, 'Smart TV', 2500.00, 2500.00, '2024-03-08'),
-    ('2b16353c', 50, 10, 'Teclado', 150.00, 1500.00, '2023-04-10'),
-    ('2b16256a', 60, 1, 'Fogão', 1200.00, 1200.00, '2024-03-02'),
-    ('2b16256a', 70, 1, 'Microondas', 800.00, 800.00, '2024-07-04'),
-    ('2b16256a', 80, 1, 'Máquina de Lavar', 1800.00, 1800.00, '2024-10-06'),
-    ('2b16256a', 90, 1, 'Ventilador', 200.00, 200.00, '2023-12-09'),
-    ('2b16256a', 99, 1, 'Aspirador de Pó', 600.00, 600.00, '2022-09-11')
-]
-
-df_pedidos = spark.createDataFrame(dados_pedidos, schema=schema_pedidos)
-
-df_pedidos.show()
-# Cria uma visualização temporária de PEDIDOS
-df_pedidos.createOrReplaceTempView("pedidos")  
-
-```
-
-Depois de criar a visualização temporária, você pode executar consultas SQL sobre ela como se fosse uma tabela SQL tradicional:
-
-```python
-# Exemplo de consulta SQL em uma visualização temporária
-clientes_df = spark.sql("SELECT * FROM clientes WHERE id_cliente = '2b162060'")
-clientes_df.show()
-
-```
-
-**Nota:** As visualizações temporárias são específicas para a sessão Spark em que foram criadas e não persistem após o término da sessão.
-
----
-
-## 3. Junções
-
-```python
-spark.sql("""
-        SELECT c.id_cliente, c.nome, p.id_pedido, p.valor_total_pedido
-        FROM clientes c
-        JOIN pedidos p ON c.id_cliente = p.id_cliente
-    """).show()
-```
-
----
-
-## 4. Agregações 
-
-As agregações são operações fundamentais em SQL e PySpark, permitindo resumir e analisar grandes volumes de dados. No PySpark, você pode realizar agregações usando funções SQL diretamente nas visualizações temporárias criadas a partir de DataFrames.
-
-### 4.1 Funções de Agregação Comuns
-
-Algumas das funções de agregação mais comuns incluem:
-
-- `COUNT`: Conta o número de linhas.
-- `SUM`: Soma os valores de uma coluna.
-- `AVG`: Calcula a média dos valores de uma coluna.
-- `MIN`: Encontra o valor mínimo de uma coluna.
-- `MAX`: Encontra o valor máximo de uma coluna.
-
-### 4.2 Exemplos de Agregações
-
-A seguir, alguns exemplos de como realizar agregações em visualizações temporárias no PySpark.
-
-#### 4.2.1 Contagem de Pedidos por Cliente
-
-```python
-# Contar o número de pedidos por cliente
-contagem_pedidos = spark.sql("""
-    SELECT id_cliente, COUNT(*) as total_pedidos
-    FROM pedidos
-    GROUP BY id_cliente
-""")
-contagem_pedidos.show()
-```
-
-#### 4.2.2 Soma do Valor Total dos Pedidos por Cliente
-
-```python
-# Somar o valor total dos pedidos por cliente
-soma_valor_pedidos = spark.sql("""
-    SELECT id_cliente, SUM(valor_total_pedido) as valor_total
-    FROM pedidos
-    GROUP BY id_cliente
-""")
-soma_valor_pedidos.show()
-```
-
-#### 4.2.3 Média do Valor dos Produtos por Cliente
-
-```python
-# Calcular a média do valor dos produtos por cliente
-media_valor_produtos = spark.sql("""
-    SELECT id_cliente, AVG(valor_produto) as valor_medio_produto
-    FROM pedidos
-    GROUP BY id_cliente
-""")
-media_valor_produtos.show()
-```
-
-### 4.3 Agregações com Condições
-
-Você também pode aplicar condições nas agregações para obter resultados mais específicos.
-
-#### 4.3.1 Soma do Valor dos Pedidos Acima de um Determinado Valor
-
-```python
-# Somar o valor dos pedidos onde o valor total do pedido é maior que 2000
-soma_valor_pedidos_condicional = spark.sql("""
-    SELECT id_cliente, SUM(valor_total_pedido) as valor_total
-    FROM pedidos
-    WHERE valor_total_pedido > 2000
-    GROUP BY id_cliente
-""")
-soma_valor_pedidos_condicional.show()
-```
-
----
-
-## 5. Rollups e Cubes
-
-Rollups e cubes são técnicas avançadas de agregação que permitem sumarizar dados em múltiplos níveis de granularidade. Essas operações são extremamente úteis para análises multidimensionais, como relatórios de vendas por diferentes combinações de dimensões (por exemplo, por produto, por região, por período).
-
-### 5.1 Rollups
-
-A operação de rollup permite criar subtotais em uma hierarquia de grupos. Por exemplo, você pode calcular subtotais de vendas por ano, por trimestre dentro de cada ano, e por mês dentro de cada trimestre.
-
-#### 5.1.1 Exemplo de Rollup
-
-```python
-# Exemplo de rollup para calcular vendas por ano, trimestre e mês
-rollup_vendas = spark.sql("""
-    SELECT YEAR(data_pedido) as ano, 
-           QUARTER(data_pedido) as trimestre, 
-           MONTH(data_pedido) as mes, 
-           SUM(valor_total_pedido) as total_vendas
-    FROM pedidos
-    GROUP BY ROLLUP(ano, trimestre, mes)
-    ORDER BY ano, trimestre, mes
-""")
-rollup_vendas.show()
-```
-
-### 5.2 Cubes
-
-A operação de cube é uma generalização do rollup que permite calcular subtotais para todas as combinações possíveis de um conjunto de dimensões. Isso é útil para análises que requerem a visualização de dados em todas as perspectivas possíveis.
-
-#### 5.2.1 Exemplo de Cube
-
-```python
-# Exemplo de cube para calcular vendas por combinação de ano, trimestre e mês
-cube_vendas = spark.sql("""
-    SELECT YEAR(data_pedido) as ano, 
-           QUARTER(data_pedido) as trimestre, 
-           MONTH(data_pedido) as mes, 
-           SUM(valor_total_pedido) as total_vendas
-    FROM pedidos
-    GROUP BY CUBE(ano, trimestre, mes)
-    ORDER BY ano, trimestre, mes
-""")
-cube_vendas.show()
-```
-
-### 5.3 Considerações
-
-Rollups e cubes são poderosas ferramentas para análise de dados, permitindo que você obtenha insights detalhados e resumidos de grandes volumes de dados. No PySpark, essas operações são realizadas de maneira eficiente, aproveitando o poder de processamento distribuído do Spark.
-
----
-
-## 6. Desafio
-Faça o clone dos datasets a seguir:
-```sh
-git clone https://github.com/infobarbosa/datasets-csv-clientes
-```
-
-```sh
-git clone https://github.com/infobarbosa/datasets-csv-pedidos
-```
-
-```sh
-git clone https://github.com/infobarbosa/dataset-json-pagamentos
-```
-
-Utilizando os datasets acima e os conhecimentos adquiridos ao longo do curso, elabore os scripts PySpark que respondam às seguintes questões:
-1. Qual o valor total de pedidos para o estado de São Paulo?
-2. Apresente o valor total de pedidos com status de fraude igual a verdadeiro. Agrupe por UF e inclua o total geral considerando todos os estados.
-
-Código inicial:
-```python
-from pyspark.sql import SparkSession
-
-# Inicializando a Spark Session
 spark = SparkSession.builder \
-    .appName("dataeng-desafio-desafio-sql") \
+    .appName("dataeng-spark-sql") \
     .getOrCreate()
 
-# Carregando o dataset pedidos
-df_ped = spark.read \
+# ---------------------------------------------------------
+# 1. Carregando CLientES (CSV)
+# ---------------------------------------------------------
+# Schema: id;nome;data_nasc;cpf;email;cidade;uf
+df_clientes = spark.read \
     .format("csv") \
-    .option("compression", "gzip") \
     .option("header", True) \
     .option("sep", ";") \
-    .load("./datasets-csv-pedidos/*.csv.gz", inferSchema=True)
+    .load("./datasets-csv-clientes/clientes.csv.gz")
 
-# Carregando o dataset clientes
-df_cli = spark.read \
+# ---------------------------------------------------------
+# 2. Carregando PEDIDOS (CSV particionado) e Criando valor_total
+# ---------------------------------------------------------
+df_pedidos = spark.read \
     .format("csv") \
-    .option("compression", "gzip") \
     .option("header", True) \
     .option("sep", ";") \
-    .load("./datasets-csv-clientes/*.csv.gz", inferSchema=True)
+    .load("./datasets-csv-pedidos/data/pedidos/") \
+    .withColumn("valor_total", F.col("valor_unitario") * F.col("quantidade"))
 
-# Carregando o dataset pagamentos
-df_pag = spark.read \
+# ---------------------------------------------------------
+# 3. Carregando PAGAMENTOS (JSON)
+# ---------------------------------------------------------
+df_pagamentos = spark.read \
     .format("json") \
-    .option("multiLine", True) \
-    .load("./dataset-json-pagamentos/*.json", inferSchema=True)
+    .load("./dataset-json-pagamentos/pagamentos.json")
 
-# Mostrando o schema para verificar o carregamento correto dos dados
-df_ped.printSchema()
-df_cli.printSchema()
-df_pag.printSchema()
+# ---------------------------------------------------------
+# 4. REGISTRANDO AS TABELAS TEMPORÁRIAS (TempViews)
+# ---------------------------------------------------------
+# É aqui que a mágica acontece. Damos um "nome SQL" para o DataFrame.
+df_clientes.createOrReplaceTempView("tb_clientes")
+df_pedidos.createOrReplaceTempView("tb_pedidos")
+df_pagamentos.createOrReplaceTempView("tb_pagamentos")
 
-# DESENVOLVA SUA LOGICA AQUI
+print("Tabelas registradas! Pronto para executar SQL.")
 
 ```
+
 ---
 
-## 7. Parabéns!
-Você concluiu com sucesso o módulo de PySpark com SQL! Agora você está apto a integrar consultas SQL com DataFrames no PySpark, realizar junções, agregações e utilizar técnicas avançadas como rollups e cubes. Continue praticando e explorando novas funcionalidades para se tornar ainda mais proficiente em análise de dados com PySpark.
+## 3. Consultas Básicas e Regras de Negócio (`CASE WHEN`)
 
-Bom trabalho e continue aprendendo!
+Uma das maiores vantagens do SQL é a legibilidade para regras de negócio condicionais. Em vez de encadear múltiplos `.when().otherwise()` no Python, usamos `CASE WHEN`.
 
-## 8. Destruição dos recursos
-Para evitar custos desnecessários, lembre-se de destruir os recursos criados durante este módulo:
-- Exclua quaisquer instâncias do AWS Cloud9 que não sejam mais necessárias.
-- Remova dados temporários ou resultados intermediários armazenados no S3.
+**Cenário:** Classificar os pedidos em categorias (Bronze, Prata, Ouro) baseadas no valor total.
+
+```python
+# Adicione ao seu script
+print("--- Classificação de Pedidos (CASE WHEN) ---")
+
+spark.sql("""
+    SELECT 
+        id_pedido,
+        produto,
+        valor_total,
+        CASE 
+            WHEN valor_total > 5000 THEN 'OURO'
+            WHEN valor_total BETWEEN 2000 AND 5000 THEN 'PRATA'
+            ELSE 'BRONZE'
+        END as categoria_cliente
+    FROM tb_pedidos
+    WHERE uf = 'SP'
+    LIMIT 10
+""").show()
+
+```
+
+---
+
+## 4. Organizando a Lógica com CTEs (Common Table Expressions)
+
+Em Engenharia de Dados, queries "monstruosas" são comuns. As CTEs (cláusula `WITH`) permitem quebrar uma query complexa em blocos lógicos menores e reutilizáveis.
+
+**Cenário:** Calcular o Ticket Médio por estado e listar apenas os estados que estão acima da média geral do Brasil.
+
+```python
+print("--- Estados acima da Média (CTE) ---")
+
+query_cte = """
+WITH VendasPorEstado AS (
+    -- Bloco 1: Calcula totais por estado
+    SELECT 
+        uf,
+        SUM(valor_total) as receita_estado,
+        COUNT(id_pedido) as qtd_pedidos
+    FROM tb_pedidos
+    GROUP BY uf
+),
+Indicadores AS (
+    -- Bloco 2: Calcula o ticket médio
+    SELECT 
+        uf,
+        receita_estado,
+        (receita_estado / qtd_pedidos) as ticket_medio
+    FROM VendasPorEstado
+)
+-- Bloco Final: Filtra e Ordena
+SELECT * FROM Indicadores
+WHERE ticket_medio > 2500 -- Apenas tickets altos
+ORDER BY ticket_medio DESC
+"""
+
+spark.sql(query_cte).show()
+
+```
+
+---
+
+## 5. Window Functions no SQL (O Poder Analítico)
+
+No módulo anterior, usamos a classe `Window` no Python. No SQL, a sintaxe é padrão ANSI (`OVER PARTITION BY`), o que facilita muito para quem vem de bancos como Oracle, SQL Server ou PostgreSQL.
+
+**Cenário:** Identificar os 2 pedidos mais caros de cada cliente (Ranking) e calcular a diferença de valor para o pedido anterior (Lag).
+
+```python
+print("--- Ranking e Lag via SQL ---")
+
+spark.sql("""
+    SELECT 
+        id_cliente,
+        data_criacao,
+        valor_total,
+        -- Ranking: O nº 1 é o pedido mais caro do cliente
+        RANK() OVER (PARTITION BY id_cliente ORDER BY valor_total DESC) as rank_valor,
+        
+        -- Lag: Valor do pedido ANTERIOR (cronologicamente) desse mesmo cliente
+        LAG(valor_total) OVER (PARTITION BY id_cliente ORDER BY data_criacao) as valor_pedido_anterior,
+        
+        -- Diferença: Quanto aumentou/diminuiu em relação à compra passada
+        valor_total - LAG(valor_total) OVER (PARTITION BY id_cliente ORDER BY data_criacao) as diferenca
+    FROM tb_pedidos
+    ORDER BY id_cliente, data_criacao
+""").show(10)
+
+```
+
+---
+
+## 6. Abordagem Híbrida (Best of Both Worlds)
+
+O "superpoder" do Spark é misturar as linguagens. Você pode usar SQL para filtrar e juntar dados (onde o SQL é mais legível) e Python para transformações complexas ou I/O (onde o Python é melhor).
+
+**Exemplo:** Usar SQL para juntar tabelas e Python para aplicar uma máscara de segurança (hash) no email.
+
+```python
+from pyspark.sql.functions import sha2
+
+# 1. SQL para o Join (Mais legível que df.join(df, cond, how)...)
+df_join = spark.sql("""
+    SELECT 
+        c.nome,
+        c.email,
+        p.produto,
+        p.valor_total
+    FROM tb_clientes c
+    INNER JOIN tb_pedidos p ON c.id = p.id_cliente
+    WHERE p.uf = 'RJ'
+""")
+
+# 2. Python para transformação de segurança
+df_seguro = df_join.withColumn("email_hash", sha2("email", 256)).drop("email")
+
+print("--- DataFrame Híbrido (SQL + Python) ---")
+df_seguro.show(5, truncate=False)
+
+```
+
+---
+
+## 7. Boas Práticas e Pitfalls
+
+1. **TempView vs GlobalTempView:**
+* `createOrReplaceTempView`: A tabela só existe nesta sessão do Spark. Se o script terminar, a tabela "some".
+* `createGlobalTempView`: A tabela é compartilhada entre sessões na mesma aplicação Spark (útil em Notebooks compartilhados). Para acessar, use `SELECT * FROM global_temp.minha_tabela`.
+
+
+2. **SQL Injection:**
+* **Nunca** faça isso: `spark.sql(f"SELECT * FROM table WHERE id = {user_input}")`.
+* Embora menos crítico em pipelines batch do que em web apps, é uma prática ruim.
+
+
+3. **Performance (Catalyst Optimizer):**
+* Muitos perguntam: *"O SQL é mais lento que o PySpark?"*
+* **Resposta:** Não. O Spark converte tanto o SQL quanto o código DataFrame Python para o mesmo Plano de Execução Lógico e Físico (via Catalyst Optimizer). Use o que for mais legível para sua equipe.
+
+---
+
+## 8. Desafio: Relatório de Inadimplência e VIPs
+
+Você precisa entregar um relatório financeiro cruzando as três bases de dados.
+
+**Objetivo:**
+Gerar uma lista de clientes que possuem pedidos realizados, mas cujo pagamento consta como **"Fraude"** ou não foi encontrado, e ao mesmo tempo listar os clientes **VIPs** (pagamentos confirmados acima de um certo valor).
+
+**Requisitos do Desafio:**
+
+1. Criar uma Query SQL que faça o JOIN entre `tb_clientes`, `tb_pedidos` e `tb_pagamentos`.
+2. Utilizar `CASE WHEN` para criar uma coluna `status_final`:
+* Se o pagamento for confirmado (`status = 'aprovado'`), marcar como **"Venda Confirmada"**.
+* Se o pagamento for fraude (`fraude = true`), marcar como **"Fraude Detectada"**.
+* Se não houver registro de pagamento (NULL no join), marcar como **"Pagamento Pendente"**.
+
+
+3. Utilizar uma Window Function (`SUM OVER`) para calcular o `total_gasto_cliente` (considerando apenas vendas confirmadas).
+4. Exibir: Nome do Cliente, UF, Produto, Status Final e Total Gasto pelo Cliente.
+
+**Dica:** Você vai precisar de `LEFT JOIN` para encontrar os pagamentos pendentes.
+
+**Template de Solução (`desafio_sql.py`):**
+
+```python
+# ... (Setup inicial igual ao script lab_sql_intro.py)
+
+print("--- Relatório Financeiro (Desafio) ---")
+
+query_desafio = """
+    -- Escreva sua Query Aqui
+    SELECT ...
+"""
+
+spark.sql(query_desafio).show(20, truncate=False)
+
+```
+
+---
+
+## 9. Parabéns!
+
+Você agora domina a integração PySpark + SQL! Essa habilidade é essencial para migrar cargas de trabalho de Data Warehouses tradicionais para o Spark e para colaborar com analistas de dados que preferem SQL.
+
+**Próximos Passos:**
+Não se esqueça de destruir seus recursos (cluster ou ambiente Cloud9) para evitar custos extras.
+
