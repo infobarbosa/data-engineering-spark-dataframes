@@ -509,7 +509,7 @@ spark.sql(query_desafio).show(20, truncate=False)
 ### 9.1 - Soluções possíveis
 **Não desista!** Tente mais algumas vezes antes de conferir as respostas. ;)
 
-<detail>
+<details>
     <summary>Solução 1</summary>
 
 ```python
@@ -570,9 +570,9 @@ df_relatorio.show(truncate=False)
 
 ```
 
-</detail>
+</details>
 
-<detail>
+<details>
     <summary>Solução 2</summary>
 
 ```python
@@ -632,7 +632,7 @@ df_relatorio = spark.sql("""
 
 df_relatorio.show(truncate=False)
 ```
-</detail>
+</details>
 
 ---
 
