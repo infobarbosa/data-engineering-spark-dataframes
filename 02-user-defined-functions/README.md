@@ -15,6 +15,14 @@
 
 UDFs permitem a aplicação de funções personalizadas em colunas de um DataFrame. Elas são úteis para operações complexas que não são diretamente suportadas pelas funções nativas do Spark.
 
+**Workflow**
+
+![UDF Workflow](udf-workflow.png)
+
+**Workflow (com Apache Arrow)**
+
+![UDF Workflow com Apache Arrow](udf-workflow-arrow.png)
+
 **Performance:**
 - Embora as UDFs sejam úteis, elas podem impactar a performance, pois quebram a otimização baseada em JVM do Spark.
 - Para operações em larga escala, considere usar funções embutidas do Spark ou expressões SQL quando possível.
