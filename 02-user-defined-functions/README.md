@@ -28,31 +28,70 @@ UDFs permitem a aplicação de funções personalizadas em colunas de um DataFra
 - Para operações em larga escala, considere usar funções embutidas do Spark ou expressões SQL quando possível.
 
 
-**Exemplo:**
+### Exemplo 1 (Com anotação @udf)
 ```python
 from pyspark.sql import SparkSession
-from pyspark.sql.functions import udf
+import pyspark.sql.functions as F
 
-# Criando uma sessão do Spark
-spark = SparkSession.builder \
-    .appName("DataFrames Lab") \
-    .getOrCreate()
+spark = SparkSession.builder.appName("dataeng-udf").getOrCreate()
 
-# Exemplo de criação de DataFrame para teste
-data = [('Barbosa', 7300), ('Roberto', 3650), ( 'Charles', 1825), ('Leandro', 912), ('Evanildo', 14056), ('Francisco', 2103)]
-columns = ["nome", "idade_em_dias"]
-df = spark.createDataFrame(data, columns)
+schema = "id INT, nome STRING, data_nasc DATE, cpf STRING, email STRING, cidade STRING, uf STRING"
+df = spark.read \
+   .format("csv") \
+   .option("sep", ";") \
+   .option("header", True) \
+   .schema(schema) \
+   .load("./datasets-csv-clientes/clientes.csv.gz")
+
+df.printSchema()
+
 df.show()
-from pyspark.sql.types import IntegerType
 
-# Definindo uma UDF para calcular a idade em anos
-@udf(IntegerType())
-def calcular_idade_em_anos(idade_em_dias):
-    return idade_em_dias // 365
+@F.udf
+def classificar_cliente_preferencial(nome: str) -> int:
+    if "Barbosa" in nome:
+        return 1
+    
+    return 0
 
 # Aplicando a UDF em uma coluna do DataFrame
-df = df.withColumn("idade_em_anos", calcular_idade_em_anos(df["idade_em_dias"]))
+df = df.withColumn("cliente_preferencial", classificar_cliente_preferencial(F.col("nome")))
 df.show()
+
+df.filter(F.col("cliente_preferencial") == 1).show(10, truncate=False)
+
+```
+
+### Exemplo 2 (Com @pandas_udf)
+
+```python
+from pyspark.sql import SparkSession
+import pyspark.sql.functions as F
+import pandas as pd
+
+spark = SparkSession.builder.appName("dataeng-pandas-udf").getOrCreate()
+
+schema = "id INT, nome STRING, data_nasc DATE, cpf STRING, email STRING, cidade STRING, uf STRING"
+df = spark.read \
+   .format("csv") \
+   .option("sep", ";") \
+   .option("header", True) \
+   .schema(schema) \
+   .load("./datasets-csv-clientes/clientes.csv.gz")
+
+df.printSchema()
+
+df.show()
+
+@F.pandas_udf("integer")
+def classificar_cliente_preferencial(nome: pd.Series) -> pd.Series:
+    return nome.apply(lambda x: 1 if "Barbosa" in x else 0)
+
+# Aplicando a UDF em uma coluna do DataFrame
+df = df.withColumn("cliente_preferencial", classificar_cliente_preferencial(F.col("nome")))
+df.show()
+
+df.filter(F.col("cliente_preferencial") == 1).show(10, truncate=False)
 
 ```
 
