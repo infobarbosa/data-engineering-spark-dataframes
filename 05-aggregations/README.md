@@ -14,6 +14,21 @@
 ## 1. Introdução
 Agregações de dados são operações fundamentais na análise e processamento de grandes volumes de informação, permitindo transformar conjuntos de dados brutos em resumos significativos. No Apache Spark, as agregações são amplamente utilizadas para consolidar informações, calcular métricas e extrair insights, sendo essenciais para tarefas como a geração de relatórios, a construção de dashboards e a preparação de dados para modelos de Machine Learning. O Spark oferece diversas funções e métodos para realizar agregações de forma eficiente e escalável, desde operações básicas como contagem e soma até técnicas mais avançadas como `rollup` e `cube`.
 
+### Dataset
+Esse laboratório utiliza o seguinte conjunto de dados:
+
+**Pedidos**
+```sh
+git clone https://github.com/infobarbosa/datasets-csv-pedidos.git
+```
+```sh
+zcat datasets-csv-pedidos/data/pedidos/pedidos-2025-12.csv.gz | wc -l 
+```
+```sh
+zcat datasets-csv-pedidos/data/pedidos/pedidos-2025-12.csv.gz | head -10
+```
+
+
 ---
 
 ## 2. Técnicas de Agregação
