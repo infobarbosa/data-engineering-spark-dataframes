@@ -463,7 +463,7 @@ import base64
 
 # Chave válida gerada (44 caracteres, base64 url-safe)
 # Esta chave é fixa para garantir que a leitura e a escrita usem o mesmo segredo.
-# Atenção 8ABDR! NUNCA FAÇA ISSO EM PRODUÇÃO! 
+# Atenção! NUNCA FAÇA ISSO EM PRODUÇÃO! 
 _CHAVE_MESTRA = b'uP0_8K5j9L2m4N6p8Q0r3T5v7X9z1A3b5C7d9E1f3G5='
 
 class EncriptadorCorporativo:
